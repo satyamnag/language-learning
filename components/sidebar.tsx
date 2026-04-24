@@ -23,7 +23,7 @@ export const Sidebar = ({ className }: Props) => {
     )}>
       <Link href="/learn">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <Image src="/mascot.svg" height={40} width={40} alt="Mascot" />
+          <Image src="/logo.png" height={70} width={173} alt="Logo" />
           <h1 className="text-2xl font-extrabold text-green-600 tracking-wide">
             Lingo
           </h1>
