@@ -9,8 +9,8 @@ export const Footer = () => {
           <Image 
             src="/odia.png" 
             alt="Odia" 
-            height={32} 
-            width={40}
+            height={60} 
+            width={120}
             className="mr-4 rounded-md"
           />
           Odia
@@ -19,8 +19,8 @@ export const Footer = () => {
           <Image 
             src="/telugu.png" 
             alt="Telugu" 
-            height={32} 
-            width={40}
+            height={60} 
+            width={120}
             className="mr-4 rounded-md"
           />
           Telugu
@@ -29,8 +29,8 @@ export const Footer = () => {
           <Image 
             src="/tamil.png" 
             alt="Tamil" 
-            height={32} 
-            width={40}
+            height={60} 
+            width={120}
             className="mr-4 rounded-md"
           />
           Tamil
@@ -39,8 +39,8 @@ export const Footer = () => {
           <Image 
             src="/kannad.png" 
             alt="Kannad" 
-            height={32} 
-            width={40}
+            height={60} 
+            width={120}
             className="mr-4 rounded-md"
           />
           Kannad
@@ -49,8 +49,8 @@ export const Footer = () => {
           <Image 
             src="/bengali.png" 
             alt="Bengali" 
-            height={32} 
-            width={40}
+            height={60} 
+            width={120}
             className="mr-4 rounded-md"
           />
           Bengali
