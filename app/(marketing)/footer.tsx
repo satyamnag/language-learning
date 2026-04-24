@@ -7,53 +7,53 @@ export const Footer = () => {
       <div className="max-w-screen-lg mx-auto flex items-center justify-evenly h-full">
         <Button size="lg" variant="ghost" className="w-full">
           <Image 
-            src="/hr.svg" 
-            alt="Croatian" 
+            src="/odia.png" 
+            alt="Odia" 
             height={32} 
             width={40}
             className="mr-4 rounded-md"
           />
-          Croatian
+          Odia
         </Button>
         <Button size="lg" variant="ghost" className="w-full">
           <Image 
-            src="/es.svg" 
-            alt="Spanish" 
+            src="/telugu.png" 
+            alt="Telugu" 
             height={32} 
             width={40}
             className="mr-4 rounded-md"
           />
-          Spanish
+          Telugu
         </Button>
         <Button size="lg" variant="ghost" className="w-full">
           <Image 
-            src="/fr.svg" 
-            alt="French" 
+            src="/tamil.png" 
+            alt="Tamil" 
             height={32} 
             width={40}
             className="mr-4 rounded-md"
           />
-          French
+          Tamil
         </Button>
         <Button size="lg" variant="ghost" className="w-full">
           <Image 
-            src="/it.svg" 
-            alt="Italian" 
+            src="/kannad.png" 
+            alt="Kannad" 
             height={32} 
             width={40}
             className="mr-4 rounded-md"
           />
-          Italian
+          Kannad
         </Button>
         <Button size="lg" variant="ghost" className="w-full">
           <Image 
-            src="/jp.svg" 
-            alt="Japanese" 
+            src="/bengali.png" 
+            alt="Bengali" 
             height={32} 
             width={40}
             className="mr-4 rounded-md"
           />
-          Japanese
+          Bengali
         </Button>
       </div>
     </footer>
