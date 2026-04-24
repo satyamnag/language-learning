@@ -24,23 +24,28 @@ const main = async () => {
     await db.insert(schema.courses).values([
       {
         id: 1,
-        title: "Spanish",
-        imageSrc: "/es.svg",
+        title: "Odia",
+        imageSrc: "/odia.png",
       },
       {
         id: 2,
-        title: "Italian",
-        imageSrc: "/it.svg",
+        title: "Tamil",
+        imageSrc: "/tamil.png",
       },
       {
         id: 3,
-        title: "French",
-        imageSrc: "/fr.svg",
+        title: "Telugu",
+        imageSrc: "/telugu.png",
       },
       {
         id: 4,
-        title: "Croatian",
-        imageSrc: "/hr.svg",
+        title: "Kannad",
+        imageSrc: "/kannad.png",
+      },
+      {
+        id: 4,
+        title: "Bengali",
+        imageSrc: "/bengali.png",
       },
     ]);
 
