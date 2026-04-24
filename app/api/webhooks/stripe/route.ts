@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";           // ADDED: to purge cached data
 
 import db from "@/db/drizzle";
 import { stripe } from "@/lib/stripe";
@@ -45,6 +46,12 @@ export async function POST(req: Request) {
         subscription.current_period_end * 1000,
       ),
     });
+
+    // After inserting a new subscription, revalidate all pages that depend on it
+    revalidatePath("/shop");
+    revalidatePath("/learn");
+    revalidatePath("/quests");
+    revalidatePath("/leaderboard");
   }
 
   if (event.type === "invoice.payment_succeeded") {
@@ -57,8 +64,14 @@ export async function POST(req: Request) {
       stripeCurrentPeriodEnd: new Date(
         subscription.current_period_end * 1000,
       ),
-    }).where(eq(userSubscription.stripeSubscriptionId, subscription.id))
+    }).where(eq(userSubscription.stripeSubscriptionId, subscription.id));
+
+    // Revalidate the same set of pages after updating the subscription period
+    revalidatePath("/shop");
+    revalidatePath("/learn");
+    revalidatePath("/quests");
+    revalidatePath("/leaderboard");
   }
 
   return new NextResponse(null, { status: 200 });
-};
+}
