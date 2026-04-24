@@ -4,8 +4,8 @@ const adminIds = [
   "user_3CDPJEymIqubvwRdpi4xeJRoS7o",
 ];
 
-export const isAdmin = () => {
-  const { userId } = auth();
+export const isAdmin = async () => {
+  const { userId } = await auth();
 
   if (!userId) {
     return false;
