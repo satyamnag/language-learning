@@ -28,7 +28,7 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
   return (
     <div className="mt-4 p-4 border rounded-xl shadow-sm bg-white">
       <label htmlFor="target-language" className="block text-sm font-medium text-gray-700 mb-2">
-        Which language do you want to learn?
+        I want to learn:
       </label>
       <div className="relative">
         <select
