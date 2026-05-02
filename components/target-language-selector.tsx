@@ -16,12 +16,15 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const courseId = parseInt(e.target.value, 10);
-    if (isNaN(courseId)) return; // ignore placeholder selection
+    if (isNaN(courseId)) return; // “Select” placeholder has value=""
 
+    // If the same course is already active, go to /learn directly
     if (courseId === currentCourseId) {
       router.push("/learn");
       return;
     }
+
+    // Otherwise, update the active course (which also redirects to /learn)
     startTransition(async () => {
       await upsertUserProgress(courseId);
     });
