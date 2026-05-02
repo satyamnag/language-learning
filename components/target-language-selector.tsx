@@ -14,17 +14,10 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // Find Hindi course (case‑insensitive) for default selection
-  const hindiCourse = courses.find(
-    (course) => course.title.toLowerCase() === "hindi"
-  );
-  const defaultCourseId = hindiCourse?.id ?? courses[0]?.id;
-
-  // Use current active course if exists; otherwise default to Hindi
-  const selectedValue = currentCourseId ?? defaultCourseId;
-
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const courseId = parseInt(e.target.value, 10);
+    if (isNaN(courseId)) return; // ignore placeholder selection
+
     if (courseId === currentCourseId) {
       router.push("/learn");
       return;
@@ -42,11 +35,12 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
       <div className="relative">
         <select
           id="target-language"
-          value={selectedValue ?? ""}
+          value={currentCourseId ?? ""}
           onChange={handleChange}
           disabled={isPending}
           className="w-full pl-10 pr-8 py-2.5 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
         >
+          <option value="" disabled>Select a language</option>
           {courses.map((course) => (
             <option key={course.id} value={course.id}>
               {course.title}
