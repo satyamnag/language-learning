@@ -10,7 +10,7 @@ export const updateNativeLanguage = async (languageCode: string) => {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Fetch current user progress to get activeCourseId
+  // Fetch current user progress
   const currentProgress = await db.query.userProgress.findFirst({
     where: eq(userProgress.userId, userId),
   });
@@ -34,5 +34,11 @@ export const updateNativeLanguage = async (languageCode: string) => {
     .set({ nativeLanguage: languageCode, activeCourseId })
     .where(eq(userProgress.userId, userId));
 
+  // Revalidate all pages that depend on user progress or course lists
   revalidatePath("/");
+  revalidatePath("/learn");
+  revalidatePath("/courses");
+  revalidatePath("/leaderboard");
+  revalidatePath("/shop");
+  revalidatePath("/quests");
 };
