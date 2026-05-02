@@ -59,9 +59,7 @@ export default async function Home() {
                   </div>
                 )}
               </div>
-              <Button size="lg" variant="secondary" className="w-full mt-3" asChild>
-                <Link href="/learn">Continue Learning</Link>
-              </Button>
+              {/* Continue Learning button removed */}
             </SignedIn>
           </ClerkLoaded>
         </div>
