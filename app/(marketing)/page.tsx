@@ -23,8 +23,8 @@ export default async function Home() {
       <div className="flex flex-col items-center gap-y-8">
         <h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-center">
           Learn, practice, and master Indian regional languages with{" "}
-          <span className="text-blue-600">SUNO</span>{" "}
-          <span className="text-green-600">BOLO</span>.
+          <span className="text-blue-600 font-bold">SUNO</span>{" "}
+          <span className="text-green-600 font-bold">BOLO</span>.
         </h1>
         <div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full">
           <ClerkLoading>
