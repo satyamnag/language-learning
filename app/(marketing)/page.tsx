@@ -46,13 +46,19 @@ export default async function Home() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
-              {courses.length > 0 && (
-                <TargetLanguageSelector
-                  courses={courses}
-                  currentCourseId={activeCourseId ?? undefined}
-                />
-              )}
+              <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex-1">
+                  <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+                </div>
+                {courses.length > 0 && (
+                  <div className="flex-1">
+                    <TargetLanguageSelector
+                      courses={courses}
+                      currentCourseId={activeCourseId ?? undefined}
+                    />
+                  </div>
+                )}
+              </div>
               <Button size="lg" variant="secondary" className="w-full mt-3" asChild>
                 <Link href="/learn">Continue Learning</Link>
               </Button>
