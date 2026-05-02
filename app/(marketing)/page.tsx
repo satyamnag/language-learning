@@ -14,15 +14,11 @@ import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelector } from "@/components/target-language-selector";
 
-// Map language codes to display names (used for filtering native language)
+// Map language codes to display names – only used to filter out the native language from target dropdown
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   hi: "Hindi",
-  te: "Telugu",
-  ta: "Tamil",
-  kn: "Kannada",
-  or: "Odia",
-  bn: "Bengali",
+  // Other languages are not needed because native language can only be English or Hindi
 };
 
 export default async function Home() {
