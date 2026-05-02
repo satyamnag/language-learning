@@ -1,55 +1,43 @@
 import Link from "next/link";
 import Image from "next/image";
+import {
+  ClerkLoading,
+  ClerkLoaded,
+  UserButton,
+} from "@clerk/nextjs";
+import { Loader } from "lucide-react";
 
-import { quests } from "@/constants";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { SidebarItem } from "./sidebar-item";
 
 type Props = {
-  points: number;
+  className?: string;
 };
 
-export const Quests = ({ points }: Props) => {
+export const Sidebar = ({ className }: Props) => {
   return (
-    <div className="border-2 rounded-xl p-4 space-y-4">
-      <div className="flex items-center justify-between w-full space-y-2">
-        <h3 className="font-bold text-lg">
-          Quests
-        </h3>
-        <Link href="/quests">
-          <Button
-            size="sm"
-            variant="primaryOutline"
-          >
-            View all
-          </Button>
-        </Link>
+    <div className={cn(
+      "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 border-r-2 flex-col",
+      className,
+    )}>
+      <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
+        <Image src="/logo.png" height={40} width={40} alt="Logo" />
+        <h1 className="text-2xl font-extrabold text-green-600 tracking-wide">Lingo</h1>
+      </Link>
+      <div className="flex flex-col gap-y-2 flex-1">
+        <SidebarItem label="Learn" href="/learn" iconSrc="/learn.svg" />
+        <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
+        <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
+        <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
       </div>
-      <ul className="w-full space-y-4">
-        {quests.map((quest) => {
-          const progress = (points / quest.value) * 100;
-
-          return (
-            <div
-              className="flex items-center w-full pb-4 gap-x-3"
-              key={quest.title}
-            >
-              <Image
-                src="/points.svg"
-                alt="Points"
-                width={40}
-                height={40}
-              />
-              <div className="flex flex-col gap-y-2 w-full">
-                <p className="text-neutral-700 text-sm font-bold">
-                  {quest.title}
-                </p>
-                <Progress value={progress} className="h-2" />
-              </div>
-            </div>
-          )
-        })}
-      </ul>
+      <div className="p-4">
+        <ClerkLoading>
+          <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
+        </ClerkLoading>
+        <ClerkLoaded>
+          <UserButton afterSignOutUrl="/" />
+        </ClerkLoaded>
+      </div>
     </div>
   );
 };
