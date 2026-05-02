@@ -15,7 +15,6 @@ export const CourseCreate = () => {
     <Create>
       <SimpleForm>
         <TextInput source="title" validate={[required()]} label="Title" />
-        <TextInput source="imageSrc" validate={[required()]} label="Image URL" />
         <SelectInput
           source="sourceLanguage"
           choices={LANGUAGE_OPTIONS}
