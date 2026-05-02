@@ -50,7 +50,7 @@ export default async function Home() {
               {courses.length > 0 && (
                 <TargetLanguageSelector
                   courses={courses}
-                  currentCourseId={activeCourseId}
+                  currentCourseId={activeCourseId ?? undefined}
                 />
               )}
               <Button size="lg" variant="secondary" className="w-full mt-3" asChild>
