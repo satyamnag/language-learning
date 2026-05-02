@@ -35,14 +35,15 @@ export default async function Home() {
     (course) => course.title !== LANGUAGE_NAMES[currentNativeLanguage]
   );
 
-  // Determine the default selected course ID:
-  // - Use the user's activeCourseId if it exists AND the course is still in targetCourses
-  // - Otherwise, try to find a Hindi course (if present) and use its ID
-  // - Finally, use the ID of the first available course in targetCourses
-  let defaultTargetId = userProgress?.activeCourseId;
+  // Determine the default selected course ID (never null)
+  let defaultTargetId: number | undefined = userProgress?.activeCourseId ?? undefined;
+  
+  // If the active course is no longer in the filtered list, reset it
   if (defaultTargetId && !targetCourses.some(c => c.id === defaultTargetId)) {
     defaultTargetId = undefined;
   }
+  
+  // Fallback to Hindi or first available course if no target ID is set
   if (!defaultTargetId && targetCourses.length > 0) {
     const hindiCourse = targetCourses.find(
       (c) => c.title.toLowerCase() === "hindi"
