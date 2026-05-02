@@ -28,7 +28,7 @@ export default async function Home() {
           <span className="text-blue-600 font-bold">SUNO</span>{" "}
           <span className="text-green-600 font-bold">BOLO</span>.
         </h1>
-        <div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full">
+        <div className="flex flex-col items-center gap-y-3 max-w-[380px] w-full">
           <ClerkLoading>
             <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
           </ClerkLoading>
@@ -59,7 +59,6 @@ export default async function Home() {
                   </div>
                 )}
               </div>
-              {/* Continue Learning button removed */}
             </SignedIn>
           </ClerkLoaded>
         </div>
