@@ -10,8 +10,13 @@ import {
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getUserProgress } from "@/db/queries";                     // <-- NEW import
+import { NativeLanguageSelector } from "@/components/native-language-selector"; // <-- NEW import
 
-export default function Home() {
+export default async function Home() {                             // <-- now async
+  const userProgress = await getUserProgress();                   // <-- fetch user data
+  const currentNativeLanguage = userProgress?.nativeLanguage || "en"; // <-- default to English
+
   return (
     <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
       <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
@@ -45,6 +50,8 @@ export default function Home() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
+              {/* NEW: Native language selector appears only for signed‑in users */}
+              <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
               <Button size="lg" variant="secondary" className="w-full" asChild>
                 <Link href="/learn">
                   Continue Learning
@@ -55,5 +62,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }
