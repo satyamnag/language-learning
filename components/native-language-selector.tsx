@@ -7,7 +7,6 @@ type Props = {
   currentNativeLanguage: string;
 };
 
-// You can expand this list with any languages your app supports
 const LANGUAGE_LIST = [
   { code: "en", name: "English" },
   { code: "hi", name: "Hindi" },
@@ -21,10 +20,10 @@ const LANGUAGE_LIST = [
 export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
   const [isPending, startTransition] = useTransition();
 
-  const handleLanguageChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = event.target.value;
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLang = e.target.value;
     startTransition(async () => {
-      await updateNativeLanguage(newLanguage);
+      await updateNativeLanguage(newLang);
     });
   };
 
@@ -36,7 +35,7 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
       <select
         id="native-language"
         value={currentNativeLanguage}
-        onChange={handleLanguageChange}
+        onChange={handleChange}
         disabled={isPending}
         className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
       >

@@ -19,14 +19,28 @@ export const getUserProgress = cache(async () => {
     return null;
   }
 
-  const data = await db.query.userProgress.findFirst({
+  // Step 1: fetch user progress (includes native_language)
+  const userProgressData = await db.query.userProgress.findFirst({
     where: eq(userProgress.userId, userId),
-    with: {
-      activeCourse: true,
-    },
   });
 
-  return data;
+  if (!userProgressData) {
+    return null;
+  }
+
+  // Step 2: if there's an active course, fetch it separately
+  let activeCourse = null;
+  if (userProgressData.activeCourseId) {
+    activeCourse = await db.query.courses.findFirst({
+      where: eq(courses.id, userProgressData.activeCourseId),
+    });
+  }
+
+  // Return the same shape as before (with activeCourse nested)
+  return {
+    ...userProgressData,
+    activeCourse,
+  };
 });
 
 export const getUnits = cache(async () => {
