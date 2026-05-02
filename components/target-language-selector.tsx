@@ -16,7 +16,7 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const courseId = parseInt(e.target.value, 10);
-    if (isNaN(courseId)) return; // “Select” placeholder has value=""
+    if (isNaN(courseId)) return; // placeholder selected
 
     // If the same course is already active, go to /learn directly
     if (courseId === currentCourseId) {
@@ -38,7 +38,7 @@ export const TargetLanguageSelector = ({ courses, currentCourseId }: Props) => {
       <div className="relative">
         <select
           id="target-language"
-          value={currentCourseId ?? ""}
+          value=""   // always start with placeholder, never pre-select
           onChange={handleChange}
           disabled={isPending}
           className="w-full pl-10 pr-8 py-2.5 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
