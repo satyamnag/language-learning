@@ -30,7 +30,7 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
   return (
     <div className="mt-4 p-3 border rounded-lg shadow-sm bg-white">
       <label htmlFor="native-language" className="block text-sm font-medium text-gray-700 mb-1">
-        My native language is…
+        My native language is:
       </label>
       <select
         id="native-language"
