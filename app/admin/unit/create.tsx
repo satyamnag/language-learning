@@ -10,30 +10,26 @@ const LANGUAGE_NAMES: Record<string, string> = {
   bn: "Bengali",
 };
 
+// Format course label: "Title (SourceLanguageName)"
+const formatCourseLabel = (record: any) => {
+  if (!record) return "";
+  const sourceLang = record.sourceLanguage;
+  const sourceName = sourceLang ? (LANGUAGE_NAMES[sourceLang] || sourceLang) : "";
+  return sourceName ? `${record.title} (${sourceName})` : record.title;
+};
+
 export const UnitCreate = () => {
   return (
     <Create>
       <SimpleForm>
-        <TextInput 
-          source="title" 
-          validate={[required()]} 
-          label="Title"
-        />
-        <TextInput 
-          source="description" 
-          validate={[required()]} 
-          label="Description"
-        />
+        <TextInput source="title" validate={[required()]} label="Title" />
+        <TextInput source="description" validate={[required()]} label="Description" />
         <ReferenceInput
           source="courseId"
           reference="courses"
-          optionText={(record: any) => `${record.title} (${LANGUAGE_NAMES[record.sourceLanguage] || record.sourceLanguage})`}
+          optionText={formatCourseLabel}
         />
-        <NumberInput
-          source="order"
-          validate={[required()]}
-          label="Order"
-        />
+        <NumberInput source="order" validate={[required()]} label="Order" />
       </SimpleForm>
     </Create>
   );
