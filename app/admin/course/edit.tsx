@@ -1,4 +1,14 @@
-import { SimpleForm, Edit, TextInput, required } from "react-admin";
+import { SimpleForm, Edit, TextInput, required, SelectInput } from "react-admin";
+
+const LANGUAGE_OPTIONS = [
+  { id: "en", name: "English" },
+  { id: "hi", name: "Hindi" },
+  { id: "te", name: "Telugu" },
+  { id: "ta", name: "Tamil" },
+  { id: "kn", name: "Kannada" },
+  { id: "or", name: "Odia" },
+  { id: "bn", name: "Bengali" },
+];
 
 export const CourseEdit = () => {
   return (
@@ -18,6 +28,12 @@ export const CourseEdit = () => {
           source="imageSrc" 
           validate={[required()]} 
           label="Image"
+        />
+        <SelectInput
+          source="sourceLanguage"
+          choices={LANGUAGE_OPTIONS}
+          validate={[required()]}
+          label="Source Language (Native)"
         />
       </SimpleForm>
     </Edit>

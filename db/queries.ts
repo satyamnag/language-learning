@@ -103,6 +103,13 @@ export const getCourses = cache(async () => {
   return data;
 });
 
+export const getCoursesByNativeLanguage = cache(async (sourceLanguage: string) => {
+  const data = await db.query.courses.findMany({
+    where: eq(courses.sourceLanguage, sourceLanguage),
+  });
+  return data;
+});
+
 export const getCourseById = cache(async (courseId: number) => {
   const data = await db.query.courses.findFirst({
     where: eq(courses.id, courseId),

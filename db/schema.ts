@@ -5,6 +5,7 @@ export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   imageSrc: text("image_src").notNull(),
+  sourceLanguage: text("source_language").notNull().default("en"),
 });
 
 export const coursesRelations = relations(courses, ({ many }) => ({

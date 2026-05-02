@@ -1,6 +1,13 @@
+import { getCoursesByNativeLanguage, getUserProgress } from "@/db/queries";
 import { getCourses, getUserProgress } from "@/db/queries";
 
 import { List } from "./list";
+
+const CoursesPage = async () => {
+  const userProgress = await getUserProgress();
+  const nativeLanguage = userProgress?.nativeLanguage || "en";
+
+  const courses = await getCoursesByNativeLanguage(nativeLanguage);
 
 const CoursesPage = async () => {
   const coursesData = getCourses();
