@@ -11,11 +11,6 @@ type Props = {
 const LANGUAGE_LIST = [
   { code: "en", name: "English" },
   { code: "hi", name: "Hindi" },
-  { code: "te", name: "Telugu" },
-  { code: "ta", name: "Tamil" },
-  { code: "kn", name: "Kannada" },
-  { code: "or", name: "Odia" },
-  { code: "bn", name: "Bengali" },
 ];
 
 export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
