@@ -23,7 +23,7 @@ export const Sidebar = ({ className }: Props) => {
     )}>
       <Link href="/learn">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <Image src="/logo.png" height={70} width={173} alt="Logo" />
+          <Image src="/logo.png" height={55} width={140} alt="Logo" />
         </div>
       </Link>
       <div className="flex flex-col gap-y-2 flex-1">
