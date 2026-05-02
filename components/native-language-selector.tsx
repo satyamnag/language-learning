@@ -31,7 +31,7 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
   return (
     <div className="mt-4 p-4 border rounded-xl shadow-sm bg-white">
       <label htmlFor="native-language" className="block text-sm font-medium text-gray-700 mb-2">
-        My native language is:
+        I understand
       </label>
       <div className="relative">
         <select
