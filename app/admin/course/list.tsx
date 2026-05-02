@@ -16,7 +16,6 @@ export const CourseList = () => {
       <Datagrid rowClick="edit">
         <TextField source="id" />
         <TextField source="title" />
-        <TextField source="imageSrc" />
         <SelectField
           source="sourceLanguage"
           choices={LANGUAGE_OPTIONS}

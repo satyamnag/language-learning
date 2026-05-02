@@ -21,34 +21,6 @@ const main = async () => {
     await db.delete(schema.challengeProgress);
     await db.delete(schema.userSubscription);
 
-    await db.insert(schema.courses).values([
-      {
-        id: 1,
-        title: "Odia",
-        imageSrc: "/odia.png",
-      },
-      {
-        id: 2,
-        title: "Tamil",
-        imageSrc: "/tamil.png",
-      },
-      {
-        id: 3,
-        title: "Telugu",
-        imageSrc: "/telugu.png",
-      },
-      {
-        id: 4,
-        title: "Kannad",
-        imageSrc: "/kannad.png",
-      },
-      {
-        id: 4,
-        title: "Bengali",
-        imageSrc: "/bengali.png",
-      },
-    ]);
-
     await db.insert(schema.units).values([
       {
         id: 1,

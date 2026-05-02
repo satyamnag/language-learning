@@ -4,7 +4,6 @@ import { boolean, integer, pgEnum, pgTable, serial, text, timestamp } from "driz
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  imageSrc: text("image_src").notNull(),
   sourceLanguage: text("source_language").notNull().default("en"),
 });
 
