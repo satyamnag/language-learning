@@ -10,12 +10,15 @@ import {
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getUserProgress } from "@/db/queries";
+import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
+import { TargetLanguageSelector } from "@/components/target-language-selector";
 
 export default async function Home() {
   const userProgress = await getUserProgress();
   const currentNativeLanguage = userProgress?.nativeLanguage || "en";
+  const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
+  const activeCourseId = userProgress?.activeCourseId;
 
   return (
     <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
@@ -44,6 +47,12 @@ export default async function Home() {
             </SignedOut>
             <SignedIn>
               <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+              {courses.length > 0 && (
+                <TargetLanguageSelector
+                  courses={courses}
+                  currentCourseId={activeCourseId}
+                />
+              )}
               <Button size="lg" variant="secondary" className="w-full mt-3" asChild>
                 <Link href="/learn">Continue Learning</Link>
               </Button>
