@@ -21,6 +21,14 @@ const main = async () => {
     await db.delete(schema.challengeProgress);
     await db.delete(schema.userSubscription);
 
+    // ✅ Insert courses with sourceLanguage (default English)
+    await db.insert(schema.courses).values([
+      { id: 1, title: "Spanish", sourceLanguage: "en" },
+      { id: 2, title: "Italian", sourceLanguage: "en" },
+      { id: 3, title: "French", sourceLanguage: "en" },
+      { id: 4, title: "Croatian", sourceLanguage: "en" },
+    ]);
+
     await db.insert(schema.units).values([
       {
         id: 1,
@@ -140,4 +148,3 @@ const main = async () => {
 };
 
 main();
-

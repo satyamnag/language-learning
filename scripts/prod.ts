@@ -23,11 +23,11 @@ const main = async () => {
       db.delete(schema.userSubscription),
     ]);
 
-    // Insert courses
+    // Insert courses (without imageSrc, with sourceLanguage)
     const courses = await db
       .insert(schema.courses)
       .values([
-        { title: "Spanish", imageSrc: "/es.svg" },
+        { title: "Spanish", sourceLanguage: "en" },
       ])
       .returning();
 
