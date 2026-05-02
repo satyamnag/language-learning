@@ -14,7 +14,7 @@ import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelector } from "@/components/target-language-selector";
 
-// Map language codes to their display names (used for filtering)
+// Map language codes to display names (used for filtering native language)
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   hi: "Hindi",
@@ -29,21 +29,18 @@ export default async function Home() {
   const userProgress = await getUserProgress();
   const currentNativeLanguage = userProgress?.nativeLanguage || "en";
   const allCourses = await getCoursesByNativeLanguage(currentNativeLanguage);
-  
-  // Filter out the native language from the target courses list
-  const targetCourses = allCourses.filter(
+
+  // Remove the native language from target options
+  let targetCourses = allCourses.filter(
     (course) => course.title !== LANGUAGE_NAMES[currentNativeLanguage]
   );
+  // Additionally remove Odia from the target dropdown (no Odia course in target)
+  targetCourses = targetCourses.filter((course) => course.title !== "Odia");
 
-  // Determine the default selected course ID (never null)
   let defaultTargetId: number | undefined = userProgress?.activeCourseId ?? undefined;
-  
-  // If the active course is no longer in the filtered list, reset it
   if (defaultTargetId && !targetCourses.some(c => c.id === defaultTargetId)) {
     defaultTargetId = undefined;
   }
-  
-  // Fallback to Hindi or first available course if no target ID is set
   if (!defaultTargetId && targetCourses.length > 0) {
     const hindiCourse = targetCourses.find(
       (c) => c.title.toLowerCase() === "hindi"
