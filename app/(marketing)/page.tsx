@@ -14,11 +14,41 @@ import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelector } from "@/components/target-language-selector";
 
+// Map language codes to their display names (used for filtering)
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+  te: "Telugu",
+  ta: "Tamil",
+  kn: "Kannada",
+  or: "Odia",
+  bn: "Bengali",
+};
+
 export default async function Home() {
   const userProgress = await getUserProgress();
   const currentNativeLanguage = userProgress?.nativeLanguage || "en";
-  const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
-  const activeCourseId = userProgress?.activeCourseId;
+  const allCourses = await getCoursesByNativeLanguage(currentNativeLanguage);
+  
+  // Filter out the native language from the target courses list
+  const targetCourses = allCourses.filter(
+    (course) => course.title !== LANGUAGE_NAMES[currentNativeLanguage]
+  );
+
+  // Determine the default selected course ID:
+  // - Use the user's activeCourseId if it exists AND the course is still in targetCourses
+  // - Otherwise, try to find a Hindi course (if present) and use its ID
+  // - Finally, use the ID of the first available course in targetCourses
+  let defaultTargetId = userProgress?.activeCourseId;
+  if (defaultTargetId && !targetCourses.some(c => c.id === defaultTargetId)) {
+    defaultTargetId = undefined;
+  }
+  if (!defaultTargetId && targetCourses.length > 0) {
+    const hindiCourse = targetCourses.find(
+      (c) => c.title.toLowerCase() === "hindi"
+    );
+    defaultTargetId = hindiCourse?.id ?? targetCourses[0].id;
+  }
 
   return (
     <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
@@ -50,11 +80,11 @@ export default async function Home() {
                 <div className="flex-1">
                   <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
                 </div>
-                {courses.length > 0 && (
+                {targetCourses.length > 0 && (
                   <div className="flex-1">
                     <TargetLanguageSelector
-                      courses={courses}
-                      currentCourseId={activeCourseId ?? undefined}
+                      courses={targetCourses}
+                      currentCourseId={defaultTargetId}
                     />
                   </div>
                 )}
