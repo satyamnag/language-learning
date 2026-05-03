@@ -8,24 +8,29 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  const imageSrc = speaker === 'riya' ? '/riya.jpeg' : speaker === 'aarav' ? '/aarav.jpeg' : '/logo.png';
+  // Determine image source only for valid speakers; otherwise null (no image)
+  const imageSrc = speaker === 'riya' ? '/riya.jpeg' : speaker === 'aarav' ? '/aarav.jpeg' : null;
 
   return (
     <div className="flex items-center gap-x-4 mb-6">
-      <Image
-        src={imageSrc}
-        alt="Speaker"
-        height={60}
-        width={60}
-        className="hidden lg:block rounded-full object-cover"
-      />
-      <Image
-        src={imageSrc}
-        alt="Speaker"
-        height={40}
-        width={40}
-        className="block lg:hidden rounded-full object-cover"
-      />
+      {imageSrc && (
+        <>
+          <Image
+            src={imageSrc}
+            alt="Speaker"
+            height={60}
+            width={60}
+            className="hidden lg:block rounded-full object-cover"
+          />
+          <Image
+            src={imageSrc}
+            alt="Speaker"
+            height={40}
+            width={40}
+            className="block lg:hidden rounded-full object-cover"
+          />
+        </>
+      )}
       <div className="relative py-2 px-4 border-2 rounded-xl text-sm lg:text-base">
         <div ref={ref}>{question}</div>
         {translation && (
