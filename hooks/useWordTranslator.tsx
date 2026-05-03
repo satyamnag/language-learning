@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import tippy from 'tippy.js';
+import tippy, { Instance } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 
 type TranslationCache = Map<string, string>;
@@ -62,18 +62,17 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
     elements.forEach((el) => {
       const word = el.getAttribute('data-word');
       if (!word) return;
-      // Use type assertion to bypass the strict type check for async onShow
       tippy(el, {
         content: 'Loading...',
         placement: 'top',
         theme: 'light',
         arrow: true,
         interactive: false,
-        onShow: async (instance) => {
+        onShow: async (instance: Instance) => {
           const translation = await getTranslation(word);
           instance.setContent(translation);
         }
-      } as any);
+      });
     });
   }, [getTranslation]);
 
