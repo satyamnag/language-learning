@@ -7,31 +7,23 @@ export const ChallengeCreate = () => {
         <TextInput 
           source="question" 
           validate={[required()]} 
-          label="Question"
+          label="Target Language Sentence (e.g., Tamil)"
+        />
+        <TextInput 
+          source="nativeText" 
+          validate={[required()]} 
+          label="Known Language Translation (e.g., English)"
         />
         <SelectInput
           source="type"
           choices={[
-            {
-              id: "SELECT",
-              name: "SELECT",
-            },
-            {
-              id: "ASSIST",
-              name: "ASSIST",
-            }
+            { id: "SELECT", name: "SELECT" },
+            { id: "ASSIST", name: "ASSIST" },
           ]}
           validate={[required()]} 
         />
-        <ReferenceInput
-          source="lessonId"
-          reference="lessons"
-        />
-        <NumberInput
-          source="order"
-          validate={[required()]}
-          label="Order"
-        />
+        <ReferenceInput source="lessonId" reference="lessons" />
+        <NumberInput source="order" validate={[required()]} label="Order" />
       </SimpleForm>
     </Create>
   );

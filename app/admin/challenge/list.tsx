@@ -5,18 +5,13 @@ export const ChallengeList = () => {
     <List>
       <Datagrid rowClick="edit">
         <TextField source="id" />
-        <TextField source="question" />
+        <TextField source="question" label="Target Language Sentence" />
+        <TextField source="nativeText" label="Known Language Translation" />
         <SelectField
           source="type"
           choices={[
-            {
-              id: "SELECT",
-              name: "SELECT",
-            },
-            {
-              id: "ASSIST",
-              name: "ASSIST",
-            }
+            { id: "SELECT", name: "SELECT" },
+            { id: "ASSIST", name: "ASSIST" },
           ]}
         />
         <ReferenceField source="lessonId" reference="lessons" />
