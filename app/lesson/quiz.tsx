@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
 
 import { reduceHearts } from "@/actions/user-progress";
@@ -12,6 +12,7 @@ import { useHeartsModal } from "@/store/use-hearts-modal";
 import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
+import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 import { Header } from "./header";
 import { Footer } from "./footer";
@@ -82,6 +83,22 @@ export const Quiz = ({
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
 
+  // --- Word translator (Tippy.js + Web Worker + cache) for SELECT challenges ---
+  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en'); // Tamil -> English
+  const questionContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (challenge && challenge.type === "SELECT" && challenge.question) {
+      if (questionContainerRef.current) {
+        const html = wrapWords(challenge.question);
+        questionContainerRef.current.innerHTML = html;
+        // Pre‑fetch translations and attach tooltips asynchronously (non‑blocking)
+        attachTooltips(questionContainerRef.current).catch(console.error);
+      }
+    }
+  }, [challenge, wrapWords, attachTooltips]);
+  // --- end of translator integration ---
+
   const onNext = () => {
     setActiveIndex((current) => current + 1);
   };
@@ -127,7 +144,6 @@ export const Quiz = ({
             setStatus("correct");
             setPercentage((prev) => prev + 100 / challenges.length);
 
-            // This is a practice
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
@@ -218,16 +234,24 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700">
-              {title}
-            </h1>
-            <div>
-            {challenge.type === "ASSIST" && (
-              <QuestionBubble
-                question={challenge.question}
-                translation={challenge.nativeText ?? undefined}
+            {/* For SELECT challenges, render the word‑wrappable container with tooltips */}
+            {challenge.type === "SELECT" ? (
+              <div
+                ref={questionContainerRef}
+                className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700"
               />
+            ) : (
+              <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700">
+                {title}
+              </h1>
             )}
+            <div>
+              {challenge.type === "ASSIST" && (
+                <QuestionBubble
+                  question={challenge.question}
+                  translation={challenge.nativeText ?? undefined}
+                />
+              )}
               <Challenge
                 options={options}
                 onSelect={onSelect}

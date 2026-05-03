@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import tippy, { Instance } from 'tippy.js';
+import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 
 type TranslationCache = Map<string, string>;
@@ -24,7 +24,7 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
   const getTranslation = useCallback(async (word: string): Promise<string> => {
     if (cacheRef.current.has(word)) return cacheRef.current.get(word)!;
     if (pendingRef.current.has(word)) return pendingRef.current.get(word)!;
-    const promise = new Promise<string>((resolve, reject) => {
+    const promise = new Promise<string>((resolve) => {
       if (!workerRef.current) {
         resolve(word);
         return;
@@ -56,22 +56,31 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
     }).join('');
   }, []);
 
-  const attachTooltips = useCallback((container: HTMLElement | null) => {
+  const attachTooltips = useCallback(async (container: HTMLElement | null) => {
     if (!container) return;
     const elements = container.querySelectorAll('.word-tippy');
+    if (elements.length === 0) return;
+
+    // Collect all unique words
+    const words = Array.from(elements)
+      .map(el => el.getAttribute('data-word'))
+      .filter((w): w is string => !!w);
+    const uniqueWords = [...new Set(words)];
+
+    // Pre‑fetch all translations (cached)
+    await Promise.all(uniqueWords.map(word => getTranslation(word)));
+
+    // Now create tooltips with the already‑known translation
     elements.forEach((el) => {
       const word = el.getAttribute('data-word');
       if (!word) return;
+      const translation = cacheRef.current.get(word) || word;
       tippy(el, {
-        content: 'Loading...',
+        content: translation,
         placement: 'top',
         theme: 'light',
         arrow: true,
         interactive: false,
-        onShow: async (instance: Instance) => {
-          const translation = await getTranslation(word);
-          instance.setContent(translation);
-        }
       });
     });
   }, [getTranslation]);
