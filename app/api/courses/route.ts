@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import db from "@/db/drizzle";
 import { isAdmin } from "@/lib/admin";
 import { courses } from "@/db/schema";
@@ -9,7 +8,14 @@ export const GET = async () => {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const data = await db.query.courses.findMany();
+  // Explicitly select id, title, and sourceLanguage for the admin dropdown
+  const data = await db.query.courses.findMany({
+    columns: {
+      id: true,
+      title: true,
+      sourceLanguage: true,
+    },
+  });
 
   return NextResponse.json(data);
 };
