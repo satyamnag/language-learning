@@ -14,6 +14,14 @@ export const ChallengeList = () => {
             { id: "ASSIST", name: "ASSIST" },
           ]}
         />
+        <SelectField
+          source="speaker"
+          choices={[
+            { id: "riya", name: "Riya" },
+            { id: "aarav", name: "Aarav" },
+          ]}
+          label="Speaker"
+        />
         <ReferenceField source="lessonId" reference="lessons" />
         <NumberField source="order" />
       </Datagrid>

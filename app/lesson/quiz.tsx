@@ -254,6 +254,7 @@ export const Quiz = ({
                   ref={assistQuestionRef}
                   question={challenge.question}
                   translation={challenge.nativeText ?? undefined}
+                  speaker={challenge.speaker}   // <-- added speaker prop
                 />
               )}
               <Challenge
