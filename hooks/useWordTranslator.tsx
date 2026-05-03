@@ -1,19 +1,14 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 
 type TranslationCache = Map<string, string>;
 
-export const useWordTranslator = (
-  containerRef: React.RefObject<HTMLElement>,
-  sourceLang: string = 'ta', // target language of the sentence (e.g., Tamil)
-  targetLang: string = 'en'   // user's known language
-) => {
+export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string = 'en') => {
   const workerRef = useRef<Worker | null>(null);
   const cacheRef = useRef<TranslationCache>(new Map());
   const pendingRef = useRef<Map<string, Promise<string>>>(new Map());
 
-  // Initialize worker
   useEffect(() => {
     if (typeof window !== 'undefined' && !workerRef.current) {
       workerRef.current = new Worker('/translator-worker.js');
@@ -26,13 +21,12 @@ export const useWordTranslator = (
     return () => workerRef.current?.terminate();
   }, []);
 
-  // Helper to get translation
   const getTranslation = useCallback(async (word: string): Promise<string> => {
     if (cacheRef.current.has(word)) return cacheRef.current.get(word)!;
     if (pendingRef.current.has(word)) return pendingRef.current.get(word)!;
-    const promise = new Promise<string>((resolve) => {
+    const promise = new Promise<string>((resolve, reject) => {
       if (!workerRef.current) {
-        resolve(word); // fallback if no worker
+        resolve(word);
         return;
       }
       const handler = (e: MessageEvent) => {
@@ -48,14 +42,27 @@ export const useWordTranslator = (
     return promise;
   }, [sourceLang, targetLang]);
 
-  // Attach tippy to every text node inside container
-  useEffect(() => {
-    if (!containerRef.current) return;
+  const wrapWords = useCallback((sentence: string): string => {
+    const words = sentence.split(/(\s+)/);
+    return words.map(part => {
+      const trimmed = part.trim();
+      if (trimmed && !/[\s]/.test(trimmed)) {
+        const wordOnly = trimmed.replace(/[.,!?;:]/g, '');
+        if (wordOnly.length > 0) {
+          return `<span class="word-tippy cursor-pointer border-b border-dotted border-gray-400" data-word="${wordOnly}">${part}</span>`;
+        }
+      }
+      return part;
+    }).join('');
+  }, []);
 
-    const elements = containerRef.current.querySelectorAll('.word-tippy');
+  const attachTooltips = useCallback((container: HTMLElement | null) => {
+    if (!container) return;
+    const elements = container.querySelectorAll('.word-tippy');
     elements.forEach((el) => {
       const word = el.getAttribute('data-word');
       if (!word) return;
+      // Use type assertion to bypass the strict type check for async onShow
       tippy(el, {
         content: 'Loading...',
         placement: 'top',
@@ -66,25 +73,9 @@ export const useWordTranslator = (
           const translation = await getTranslation(word);
           instance.setContent(translation);
         }
-      });
+      } as any);
     });
-  }, [containerRef, getTranslation]);
+  }, [getTranslation]);
 
-  // Utility to parse sentences and wrap words in spans
-  const parseAndWrapWords = useCallback((sentence: string): string => {
-    // Simple tokenization (split on spaces and punctuation)
-    // You can improve with a proper tokenizer for Indian languages
-    const words = sentence.split(/(\s+)/);
-    return words.map(part => {
-      const trimmed = part.trim();
-      if (trimmed && !/[\s]/.test(trimmed)) {
-        // Check if it's a word (not just punctuation)
-        const wordOnly = trimmed.replace(/[.,!?;:]/g, '');
-        if (wordOnly.length > 0) {
-          return `<span class="word-tippy cursor-pointer border-b border-dotted border-gray-400" data-word="${wordOnly}">${part}</span>`;
-        }
-      }
-      return part;
-    }).join('');
-  }, []);
+  return { wrapWords, attachTooltips };
 };
