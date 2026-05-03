@@ -83,18 +83,21 @@ export const Quiz = ({
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
 
-  // --- Word translator (Tippy.js + Web Worker + cache) for SELECT challenges ---
-  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en'); // Tamil -> English
-  const questionContainerRef = useRef<HTMLDivElement>(null);
+  // --- Word translator (Tippy.js + cache) for all challenges ---
+  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
+  const selectQuestionRef = useRef<HTMLDivElement>(null);
+  const assistQuestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (challenge && challenge.type === "SELECT" && challenge.question) {
-      if (questionContainerRef.current) {
-        const html = wrapWords(challenge.question);
-        questionContainerRef.current.innerHTML = html;
-        // attachTooltips is synchronous – no .catch needed
-        attachTooltips(questionContainerRef.current);
-      }
+    if (!challenge) return;
+    if (challenge.type === "SELECT" && challenge.question && selectQuestionRef.current) {
+      const html = wrapWords(challenge.question);
+      selectQuestionRef.current.innerHTML = html;
+      attachTooltips(selectQuestionRef.current);
+    } else if (challenge.type === "ASSIST" && challenge.question && assistQuestionRef.current) {
+      const html = wrapWords(challenge.question);
+      assistQuestionRef.current.innerHTML = html;
+      attachTooltips(assistQuestionRef.current);
     }
   }, [challenge, wrapWords, attachTooltips]);
   // --- end of translator integration ---
@@ -234,10 +237,10 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* For SELECT challenges, render the word‑wrappable container with tooltips */}
+            {/* For SELECT challenges, use the word‑wrappable container with tooltips */}
             {challenge.type === "SELECT" ? (
               <div
-                ref={questionContainerRef}
+                ref={selectQuestionRef}
                 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700"
               />
             ) : (
@@ -248,6 +251,7 @@ export const Quiz = ({
             <div>
               {challenge.type === "ASSIST" && (
                 <QuestionBubble
+                  ref={assistQuestionRef}
                   question={challenge.question}
                   translation={challenge.nativeText ?? undefined}
                 />

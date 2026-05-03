@@ -1,14 +1,30 @@
+import { forwardRef } from 'react';
+import Image from "next/image";
+
 type Props = {
   question: string;
   translation?: string;
 };
 
-export const QuestionBubble = ({ question, translation }: Props) => {
+export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation }, ref) => {
   return (
     <div className="flex items-center gap-x-4 mb-6">
-      {/* Mascot images removed */}
+      <Image
+        src="/logo.png"
+        alt="Mascot"
+        height={60}
+        width={60}
+        className="hidden lg:block"
+      />
+      <Image
+        src="/logo.png"
+        alt="Mascot"
+        height={40}
+        width={40}
+        className="block lg:hidden"
+      />
       <div className="relative py-2 px-4 border-2 rounded-xl text-sm lg:text-base">
-        {question}
+        <div ref={ref}>{question}</div>
         {translation && (
           <div className="mt-2 text-xs text-gray-500 border-t pt-1">
             {translation}
@@ -20,4 +36,6 @@ export const QuestionBubble = ({ question, translation }: Props) => {
       </div>
     </div>
   );
-};
+});
+
+QuestionBubble.displayName = 'QuestionBubble';
