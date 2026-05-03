@@ -16,7 +16,24 @@ export async function POST(req: Request) {
     'புதிய': 'new',
     'கணித': 'mathematics',
     'முறைகளை': 'methods',
-    'கற்றோம்': 'learned'
+    'கற்றோம்': 'learned',
+    'காலை': 'morning',
+    'செல்லமே': 'darling',
+    'எழுந்திரு': 'wake up',
+    'சூரியன்': 'sun',
+    'ஏற்கனவே': 'already',
+    'உயர்ந்து': 'risen',
+    'விட்டான்': 'has',
+    'ம்ம்ம்': 'Mmm',
+    'இன்னும்': 'still',
+    'ஐந்து': 'five',
+    'நிமிடம்': 'minutes',
+    'மட்டும்': 'only',
+    'அம்மா': 'Mom',
+    'இனி': 'no more',
+    'சொல்லவேண்டாம்': 'do not say',
+    'மணி': 'o\'clock',
+    'ஆகிவிட்டது': 'has become'
   };
   const translation = mock[word] || word;
   return NextResponse.json({ translation });

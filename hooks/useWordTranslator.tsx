@@ -1,44 +1,29 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 
 type TranslationCache = Map<string, string>;
 
 export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string = 'en') => {
-  const workerRef = useRef<Worker | null>(null);
   const cacheRef = useRef<TranslationCache>(new Map());
   const pendingRef = useRef<Map<string, Promise<string>>>(new Map());
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !workerRef.current) {
-      workerRef.current = new Worker('/translator-worker.js');
-      workerRef.current.onmessage = (e) => {
-        const { word, translation } = e.data;
-        cacheRef.current.set(word, translation);
-        pendingRef.current.delete(word);
-      };
-    }
-    return () => workerRef.current?.terminate();
-  }, []);
 
   const getTranslation = useCallback(async (word: string): Promise<string> => {
     if (cacheRef.current.has(word)) return cacheRef.current.get(word)!;
     if (pendingRef.current.has(word)) return pendingRef.current.get(word)!;
-    const promise = new Promise<string>((resolve) => {
-      if (!workerRef.current) {
-        resolve(word);
-        return;
-      }
-      const handler = (e: MessageEvent) => {
-        if (e.data.word === word) {
-          workerRef.current?.removeEventListener('message', handler);
-          resolve(e.data.translation);
-        }
-      };
-      workerRef.current.addEventListener('message', handler);
-      workerRef.current.postMessage({ word, source: sourceLang, target: targetLang });
-    });
+    const promise = fetch('/api/translate-word', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ word, source: sourceLang, target: targetLang })
+    })
+      .then(res => res.json())
+      .then(data => data.translation || word)
+      .catch(() => word);
     pendingRef.current.set(word, promise);
+    promise.then(translation => {
+      cacheRef.current.set(word, translation);
+      pendingRef.current.delete(word);
+    });
     return promise;
   }, [sourceLang, targetLang]);
 
@@ -56,31 +41,28 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
     }).join('');
   }, []);
 
-  const attachTooltips = useCallback(async (container: HTMLElement | null) => {
+  const attachTooltips = useCallback((container: HTMLElement | null) => {
+    console.log('Attaching tooltips to', container);
     if (!container) return;
     const elements = container.querySelectorAll('.word-tippy');
-    if (elements.length === 0) return;
-
-    // Collect all unique words
-    const words = Array.from(elements)
-      .map(el => el.getAttribute('data-word'))
-      .filter((w): w is string => !!w);
-    const uniqueWords = Array.from(new Set(words));  // fixed: replaced spread with Array.from
-
-    // Pre‑fetch all translations (cached)
-    await Promise.all(uniqueWords.map(word => getTranslation(word)));
-
-    // Now create tooltips with the already‑known translation
     elements.forEach((el) => {
       const word = el.getAttribute('data-word');
       if (!word) return;
-      const translation = cacheRef.current.get(word) || word;
+      let isLoading = false;
       tippy(el, {
-        content: translation,
+        content: 'Loading...',
         placement: 'top',
         theme: 'light',
         arrow: true,
         interactive: false,
+        onShow: (instance) => {
+          if (!isLoading) {
+            isLoading = true;
+            getTranslation(word).then(translation => {
+              instance.setContent(translation);
+            });
+          }
+        }
       });
     });
   }, [getTranslation]);
