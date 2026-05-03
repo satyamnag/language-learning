@@ -18,10 +18,6 @@ export const ChallengeOptionCreate = () => {
           reference="challenges"
         />
         <TextInput
-          source="imageSrc"
-          label="Image URL"
-        />
-        <TextInput
           source="audioSrc"
           label="Audio URL"
         />
