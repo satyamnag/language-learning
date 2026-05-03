@@ -42,7 +42,6 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
   }, []);
 
   const attachTooltips = useCallback((container: HTMLElement | null) => {
-    console.log('Attaching tooltips to', container);
     if (!container) return;
     const elements = container.querySelectorAll('.word-tippy');
     elements.forEach((el) => {

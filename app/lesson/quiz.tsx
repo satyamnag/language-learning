@@ -92,8 +92,8 @@ export const Quiz = ({
       if (questionContainerRef.current) {
         const html = wrapWords(challenge.question);
         questionContainerRef.current.innerHTML = html;
-        // Pre‑fetch translations and attach tooltips asynchronously (non‑blocking)
-        attachTooltips(questionContainerRef.current).catch(console.error);
+        // attachTooltips is synchronous – no .catch needed
+        attachTooltips(questionContainerRef.current);
       }
     }
   }, [challenge, wrapWords, attachTooltips]);
