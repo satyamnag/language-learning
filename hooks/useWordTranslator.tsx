@@ -65,7 +65,7 @@ export const useWordTranslator = (sourceLang: string = 'ta', targetLang: string 
     const words = Array.from(elements)
       .map(el => el.getAttribute('data-word'))
       .filter((w): w is string => !!w);
-    const uniqueWords = [...new Set(words)];
+    const uniqueWords = Array.from(new Set(words));  // fixed: replaced spread with Array.from
 
     // Pre‑fetch all translations (cached)
     await Promise.all(uniqueWords.map(word => getTranslation(word)));
