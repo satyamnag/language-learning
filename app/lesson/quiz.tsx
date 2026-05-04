@@ -251,10 +251,9 @@ export const Quiz = ({
             <div>
             {challenge.type === "ASSIST" && (
               <QuestionBubble
-                key={challenge.id}   // add this line
                 ref={assistQuestionRef}
-                question={challenge.nativeText ?? "?"}
-                translation={challenge.question}
+                question={challenge.question}
+                translation={challenge.nativeText ?? undefined}
                 speaker={challenge.speaker ?? undefined}
               />
             )}
