@@ -8,8 +8,8 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  // Convert speaker to lowercase and use as image filename, e.g., "Riya" -> "/riya.jpeg"
-  const imageSrc = speaker ? `/${speaker.toLowerCase()}.jpeg` : null;
+  // Convert speaker to lowercase and use as image filename, e.g., "Riya" -> "/riya.jpg"
+  const imageSrc = speaker ? `/${speaker.toLowerCase()}.jpg` : null;
 
   return (
     <div className="flex items-center gap-x-4 mb-6">
