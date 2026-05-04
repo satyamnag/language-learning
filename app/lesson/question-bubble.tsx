@@ -1,5 +1,4 @@
 import { forwardRef, useRef, useEffect } from 'react';
-import Image from "next/image";
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
@@ -9,7 +8,6 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  const imageSrc = speaker ? `/${speaker.trim().toLowerCase()}.jpg` : null;
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const translationRef = useRef<HTMLDivElement>(null);
 
@@ -23,22 +21,10 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
 
   return (
     <div className="flex items-start gap-x-4 mb-8">
-      {imageSrc && (
-        <div className="flex-shrink-0">
-          <Image
-            src={imageSrc}
-            alt="Speaker"
-            height={60}
-            width={60}
-            className="hidden lg:block rounded-full object-cover shadow-md"
-          />
-          <Image
-            src={imageSrc}
-            alt="Speaker"
-            height={40}
-            width={40}
-            className="block lg:hidden rounded-full object-cover shadow-md"
-          />
+      {/* Speaker name as text instead of image */}
+      {speaker && (
+        <div className="flex-shrink-0 font-bold text-gray-700 self-center">
+          {speaker.charAt(0).toUpperCase() + speaker.slice(1)}:
         </div>
       )}
       <div className="relative max-w-2xl">
@@ -58,7 +44,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             {translation}
           </div>
         )}
-        {/* Arrow pointing to the speaker image (overlapping triangles for smooth edge) */}
+        {/* Arrow pointing to the left */}
         <div
           className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
           style={{ filter: 'drop-shadow(-2px 0 2px rgba(0,0,0,0.05))' }}
