@@ -249,14 +249,14 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-              {challenge.type === "ASSIST" && (
-                <QuestionBubble
-                  ref={assistQuestionRef}
-                  question={challenge.nativeText ?? "?"}
-                  translation={challenge.question}
-                  speaker={challenge.speaker ?? undefined}
-                />
-              )}
+            {challenge.type === "ASSIST" && (
+              <QuestionBubble
+                ref={assistQuestionRef}
+                question={challenge.question}
+                translation={challenge.nativeText ?? undefined}
+                speaker={challenge.speaker ?? undefined}
+              />
+            )}
               <Challenge
                 options={options}
                 onSelect={onSelect}
