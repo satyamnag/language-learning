@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const { word, source, target } = await req.json();
-  
-  // Complete mock dictionary for the Tamil conversation
+
+  // Combined mock dictionary – Tamil script + Romanized Tamil
   const mock: Record<string, string> = {
-    // Greetings & basic words
+    // === Unicode Tamil (script) ===
     'ஹாய்': 'Hi',
     'ரியா': 'Riya',
     'பள்ளி': 'school',
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     'புதிய': 'new',
     'கணித': 'math',
     'முறைகள்': 'methods',
-    'கற்றோம்': 'learned',
+    'கற்றோם': 'learned',
     'கணிதம்': 'mathematics',
     'கொஞ்சம்': 'a little',
     'கடினமாக': 'hard',
@@ -60,9 +60,63 @@ export async function POST(req: Request) {
     'சுவாரஸ்யமாக': 'interesting',
     'போல': 'seems like',
     'விரும்பினேன்': 'liked',
-    'தமிழ்': 'Tamil'
+    'தமிழ்': 'Tamil',
+
+    // === Romanized Tamil (from conversation sentences) ===
+    'Haai': 'Hi',
+    'Riya': 'Riya',
+    'palli': 'school',
+    'eppadi': 'how',
+    'irundhathu': 'was',
+    'Indru': 'today',
+    'migavum': 'very',
+    'vedikkaiyaaga': 'fun',
+    'Nee': 'you',
+    'enna': 'what',
+    'katraai': 'learned',
+    'Naam': 'we',
+    'pudhiya': 'new',
+    'kanitha': 'math',
+    'muraigal': 'methods',
+    'katrom': 'learned',
+    'Kanitham': 'mathematics',
+    'konjam': 'a little',
+    'kadinamaaga': 'hard',
+    'therigiradhu': 'seems',
+    'Illai': 'no',
+    'aasiriyar': 'teacher',
+    'athai': 'it',
+    'elidhaaga': 'easily',
+    'seithaar': 'made',
+    'Adhu': 'that',
+    'nandraga': 'well',
+    'irukiradhu': 'is',
+    'Aam': 'yes',
+    'vaguppai': 'class',
+    'rasithen': 'enjoyed',
+    'Unakku': 'to you',
+    'ariviyal': 'science',
+    'irundhadha': 'was there?',
+    'oru': 'a',
+    'sothanai': 'experiment',
+    'seithom': 'we did',
+    'Vaav': 'wow',
+    'nirangalaiyum': 'colors also',
+    'thanneeraiyum': 'water also',
+    'kalandhom': 'we mixed',
+    'arumaiyaaga': 'awesome',
+    'Aangila': 'English',
+    'siriya': 'small',
+    'kathaiyai': 'story',
+    'padithom': 'we read',
+    'andha': 'that',
+    'kathai': 'story',
+    'pidithadha': 'liked?',
+    'suvaarsiyamaaga': 'interesting',
+    'pola': 'seems like',
+    'virumbinen': 'liked',
   };
 
-  const translation = mock[word] || word; // fallback to the word itself if missing
+  const translation = mock[word] || word;
   return NextResponse.json({ translation });
 }

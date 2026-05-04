@@ -1,9 +1,12 @@
+"use client";
+
+import { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useCallback } from "react";
 import { useAudio, useKey } from "react-use";
 
 import { cn } from "@/lib/utils";
 import { challenges } from "@/db/schema";
+import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
   id: number;
@@ -14,7 +17,7 @@ type Props = {
   selected?: boolean;
   onClick: () => void;
   disabled?: boolean;
-  status?: "correct" | "wrong" | "none",
+  status?: "correct" | "wrong" | "none";
   type: typeof challenges.$inferSelect["type"];
 };
 
@@ -31,10 +34,19 @@ export const Card = ({
   type,
 }: Props) => {
   const [audio, _, controls] = useAudio({ src: audioSrc || "" });
+  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (textRef.current && text) {
+      const html = wrapWords(text);
+      textRef.current.innerHTML = html;
+      attachTooltips(textRef.current);
+    }
+  }, [text, wrapWords, attachTooltips]);
 
   const handleClick = useCallback(() => {
     if (disabled) return;
-
     controls.play();
     onClick();
   }, [disabled, onClick, controls]);
@@ -57,9 +69,7 @@ export const Card = ({
     >
       {audio}
       {imageSrc && (
-        <div
-          className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full"
-        >
+        <div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full">
           <Image src={imageSrc} fill alt={text} />
         </div>
       )}
@@ -68,14 +78,17 @@ export const Card = ({
         type === "ASSIST" && "flex-row-reverse",
       )}>
         {type === "ASSIST" && <div />}
-        <p className={cn(
-          "text-neutral-600 text-sm lg:text-base",
-          selected && "text-sky-500",
-          selected && status === "correct" 
-            && "text-green-500",
-          selected && status === "wrong" 
-            && "text-rose-500",
-        )}>
+        <p
+          ref={textRef}
+          className={cn(
+            "text-neutral-600 text-sm lg:text-base",
+            selected && "text-sky-500",
+            selected && status === "correct" 
+              && "text-green-500",
+            selected && status === "wrong" 
+              && "text-rose-500",
+          )}
+        >
           {text}
         </p>
         <div className={cn(
