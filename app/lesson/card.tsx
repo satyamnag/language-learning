@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useAudio, useKey } from "react-use";
+import Lottie from "lottie-react";
 
 import { cn } from "@/lib/utils";
 import { challenges } from "@/db/schema";
@@ -33,7 +34,10 @@ export const Card = ({
   disabled,
   type,
 }: Props) => {
-  const [audio, _, controls] = useAudio({ src: audioSrc || "" });
+  const [audio, state, controls] = useAudio({ src: audioSrc || "" });
+  const [isAnimating, setIsAnimating] = useState(false);
+  const lottieRef = useRef<any>(null);
+
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -45,17 +49,42 @@ export const Card = ({
     }
   }, [text, wrapWords, attachTooltips]);
 
-  const handleClick = useCallback(() => {
+  // Listen for audio end to stop animation
+  useEffect(() => {
+    if (!audio) return;
+    const handleEnded = () => {
+      setIsAnimating(false);
+      if (lottieRef.current) {
+        lottieRef.current.stop();
+      }
+    };
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audio]);
+
+  const handleCardClick = useCallback(() => {
     if (disabled) return;
     controls.play();
     onClick();
   }, [disabled, onClick, controls]);
 
-  useKey(shortcut, handleClick, {}, [handleClick]);
+  const handleSpeakerClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent triggering card click
+    if (disabled || !audioSrc) return;
+    controls.play();
+    setIsAnimating(true);
+    if (lottieRef.current) {
+      lottieRef.current.play();
+    }
+  }, [disabled, audioSrc, controls]);
+
+  useKey(shortcut, handleCardClick, {}, [handleCardClick]);
 
   return (
     <div
-      onClick={handleClick}
+      onClick={handleCardClick}
       className={cn(
         "h-full border-2 rounded-xl border-b-4 hover:bg-black/5 p-4 lg:p-6 cursor-pointer active:border-b-2",
         selected && "border-sky-300 bg-sky-100 hover:bg-sky-100",
@@ -91,15 +120,32 @@ export const Card = ({
         >
           {text}
         </p>
-        <div className={cn(
-          "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold",
-          selected && "border-sky-300 text-sky-500",
-          selected && status === "correct" 
-            && "border-green-500 text-green-500",
-          selected && status === "wrong" 
-            && "border-rose-500 text-rose-500",
-        )}>
-          {shortcut}
+        <div className="flex items-center gap-2">
+          {audioSrc && (
+            <div
+              onClick={handleSpeakerClick}
+              className="cursor-pointer hover:opacity-70 transition"
+            >
+              <Lottie
+                lottieRef={lottieRef}
+                path="/speaker.lottie"
+                className="w-6 h-6"
+                loop={false}
+                autoplay={false}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
+          )}
+          <div className={cn(
+            "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold",
+            selected && "border-sky-300 text-sky-500",
+            selected && status === "correct" 
+              && "border-green-500 text-green-500",
+            selected && status === "wrong" 
+              && "border-rose-500 text-rose-500",
+          )}>
+            {shortcut}
+          </div>
         </div>
       </div>
     </div>
