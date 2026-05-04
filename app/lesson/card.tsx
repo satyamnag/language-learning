@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useKey } from "react-use";
-import Lottie from "lottie-react";
+import lottie from "lottie-web";
 
 import { cn } from "@/lib/utils";
 import { challenges } from "@/db/schema";
@@ -36,7 +36,8 @@ export const Card = ({
 }: Props) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const lottieRef = useRef<any>(null);
+  const lottieContainerRef = useRef<HTMLDivElement>(null);
+  const lottieAnimationRef = useRef<any>(null);
 
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -57,19 +58,39 @@ export const Card = ({
     };
   }, [audioSrc]);
 
+  // Initialize Lottie animation
+  useEffect(() => {
+    if (!lottieContainerRef.current) return;
+    const anim = lottie.loadAnimation({
+      container: lottieContainerRef.current,
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: '/speaker.lottie',
+    });
+    lottieAnimationRef.current = anim;
+    return () => {
+      if (lottieAnimationRef.current) {
+        lottieAnimationRef.current.destroy();
+      }
+    };
+  }, []);
+
   // Stop animation when audio ends
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const handleEnded = () => {
       setIsAnimating(false);
-      if (lottieRef.current) lottieRef.current.stop();
+      if (lottieAnimationRef.current) {
+        lottieAnimationRef.current.stop();
+      }
     };
     audio.addEventListener('ended', handleEnded);
     return () => {
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [audioSrc]); // re-run when audio source changes
+  }, [audioSrc]);
 
   // Wrap words for tooltips (unchanged)
   useEffect(() => {
@@ -96,7 +117,9 @@ export const Card = ({
     if (disabled || !audioSrc) return;
     playAudio();
     setIsAnimating(true);
-    if (lottieRef.current) lottieRef.current.play();
+    if (lottieAnimationRef.current) {
+      lottieAnimationRef.current.play();
+    }
   }, [disabled, audioSrc, playAudio]);
 
   useKey(shortcut, handleCardClick, {}, [handleCardClick]);
@@ -141,18 +164,10 @@ export const Card = ({
         <div className="flex items-center gap-2">
           {audioSrc && (
             <div
+              ref={lottieContainerRef}
               onClick={handleSpeakerClick}
-              className="cursor-pointer hover:opacity-70 transition"
-            >
-              <Lottie
-                lottieRef={lottieRef}
-                path="/speaker.lottie"
-                className="w-6 h-6"
-                loop={false}
-                autoplay={false}
-                style={{ cursor: 'pointer' }}
-              />
-            </div>
+              className="w-6 h-6 cursor-pointer hover:opacity-70 transition"
+            />
           )}
           <div className={cn(
             "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold",
