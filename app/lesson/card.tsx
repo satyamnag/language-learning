@@ -14,7 +14,7 @@ type Props = {
   imageSrc: string | null;
   audioSrc: string | null;
   text: string;
-  shortcut: string;
+  shortcut: string;          // still used for keyboard shortcut
   selected?: boolean;
   onClick: () => void;
   disabled?: boolean;
@@ -80,16 +80,14 @@ export const Card = ({
     playAudio();
   }, [disabled, audioSrc, playAudio]);
 
+  // Keyboard shortcut still works even though the badge is removed
   useKey(shortcut, handleCardClick, {}, [handleCardClick]);
 
   return (
     <div
       onClick={handleCardClick}
       className={cn(
-        // Removed all box styling: border, background, shadow, padding, hover effects
-        // Keep only layout and cursor behavior
         "flex items-center justify-between w-full cursor-pointer",
-        // Keep selection styles (only text color changes, no background)
         selected && "text-sky-500",
         selected && status === "correct" && "text-green-500",
         selected && status === "wrong" && "text-rose-500",
@@ -118,7 +116,7 @@ export const Card = ({
         >
           {text}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           {audioSrc && (
             <Volume2
               onClick={handleSpeakerClick}
@@ -126,14 +124,7 @@ export const Card = ({
               strokeWidth={1.5}
             />
           )}
-          <div className={cn(
-            "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold",
-            selected && "border-sky-300 text-sky-500",
-            selected && status === "correct" && "border-green-500 text-green-500",
-            selected && status === "wrong" && "border-rose-500 text-rose-500"
-          )}>
-            {shortcut}
-          </div>
+          {/* Shortcut badge removed – the keyboard shortcut still works */}
         </div>
       </div>
     </div>
