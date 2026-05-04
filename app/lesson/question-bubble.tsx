@@ -1,15 +1,26 @@
-import { forwardRef } from 'react';
+import { forwardRef, useRef, useEffect } from 'react';
 import Image from "next/image";
+import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
   question: string;
-  translation?: string;
+  translation?: string; // Romanized Tamil line
   speaker?: string;
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  // Convert speaker to lowercase and use as image filename, e.g., "Riya" -> "/riya.jpg"
   const imageSrc = speaker ? `/${speaker.toLowerCase()}.jpg` : null;
+  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
+  const translationRef = useRef<HTMLDivElement>(null);
+
+  // Apply tooltips to the translation text (Romanized Tamil) when it exists
+  useEffect(() => {
+    if (translation && translationRef.current) {
+      const html = wrapWords(translation);
+      translationRef.current.innerHTML = html;
+      attachTooltips(translationRef.current);
+    }
+  }, [translation, wrapWords, attachTooltips]);
 
   return (
     <div className="flex items-center gap-x-4 mb-6">
@@ -33,8 +44,8 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
       )}
       <div className="relative py-2 px-4 border-2 rounded-xl text-sm lg:text-base">
         <div ref={ref}>{question}</div>
-        {(
-          <div className="mt-2 text-xs text-gray-500 border-t pt-1">
+        {translation && (
+          <div ref={translationRef} className="mt-2 text-xs text-gray-500 border-t pt-1">
             {translation}
           </div>
         )}
