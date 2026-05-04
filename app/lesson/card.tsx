@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useAudio, useKey } from "react-use";
+import { useKey } from "react-use";
 import Lottie from "lottie-react";
 
 import { cn } from "@/lib/utils";
@@ -34,13 +34,44 @@ export const Card = ({
   disabled,
   type,
 }: Props) => {
-  const [audio, state, controls] = useAudio({ src: audioSrc || "" });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const lottieRef = useRef<any>(null);
 
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const textRef = useRef<HTMLParagraphElement>(null);
 
+  // Create/clean up audio object
+  useEffect(() => {
+    if (!audioSrc) {
+      audioRef.current = null;
+      return;
+    }
+    const audio = new Audio(audioSrc);
+    audioRef.current = audio;
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [audioSrc]);
+
+  // Stop animation when audio ends
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleEnded = () => {
+      setIsAnimating(false);
+      if (lottieRef.current) lottieRef.current.stop();
+    };
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audioSrc]); // re-run when audio source changes
+
+  // Wrap words for tooltips (unchanged)
   useEffect(() => {
     if (textRef.current && text) {
       const html = wrapWords(text);
@@ -49,31 +80,24 @@ export const Card = ({
     }
   }, [text, wrapWords, attachTooltips]);
 
-  // Stop animation when audio ends (using state.ended)
-  useEffect(() => {
-    if (state.ended && isAnimating) {
-      setIsAnimating(false);
-      if (lottieRef.current) {
-        lottieRef.current.stop();
-      }
-    }
-  }, [state.ended, isAnimating]);
+  const playAudio = useCallback(() => {
+    if (!audioRef.current || disabled) return;
+    audioRef.current.play().catch(err => console.warn("Audio play failed:", err));
+  }, [disabled]);
 
   const handleCardClick = useCallback(() => {
     if (disabled) return;
-    controls.play();
+    playAudio();
     onClick();
-  }, [disabled, onClick, controls]);
+  }, [disabled, playAudio, onClick]);
 
   const handleSpeakerClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (disabled || !audioSrc) return;
-    controls.play();
+    playAudio();
     setIsAnimating(true);
-    if (lottieRef.current) {
-      lottieRef.current.play();
-    }
-  }, [disabled, audioSrc, controls]);
+    if (lottieRef.current) lottieRef.current.play();
+  }, [disabled, audioSrc, playAudio]);
 
   useKey(shortcut, handleCardClick, {}, [handleCardClick]);
 
@@ -91,7 +115,6 @@ export const Card = ({
         type === "ASSIST" && "lg:p-3 w-full"
       )}
     >
-      {audio}
       {imageSrc && (
         <div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full">
           <Image src={imageSrc} fill alt={text} />
