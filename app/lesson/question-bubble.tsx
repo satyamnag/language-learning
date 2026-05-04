@@ -1,5 +1,4 @@
-import { forwardRef, useRef, useEffect } from 'react';
-import { useWordTranslator } from "@/hooks/useWordTranslator";
+import { forwardRef } from 'react';
 
 type Props = {
   question: string;
@@ -8,40 +7,24 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  console.log('QuestionBubble speaker:', speaker);
-  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
-  const translationRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (translation && translationRef.current) {
-      const html = wrapWords(translation);
-      translationRef.current.innerHTML = html;
-      attachTooltips(translationRef.current);
-    }
-  }, [translation, wrapWords, attachTooltips]);
-
   return (
     <div className="flex items-start gap-x-4 mb-8">
-      {/* Speaker name as text instead of image */}
       {speaker && (
         <div className="flex-shrink-0 font-bold text-gray-700 self-center">
           {speaker.charAt(0).toUpperCase() + speaker.slice(1)}:
         </div>
       )}
       <div className="relative max-w-2xl">
-        {/* Main question bubble */}
+        {/* Main question bubble (Tamil) – tooltips applied in parent component */}
         <div
           ref={ref}
           className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl shadow-lg p-4 text-gray-800 text-base lg:text-lg leading-relaxed"
         >
           {question}
         </div>
-        {/* Translation line (Romanized) with tooltips */}
+        {/* Translation line (English) – plain text, no tooltips */}
         {translation && (
-          <div
-            ref={translationRef}
-            className="mt-2 text-xs text-gray-500 italic border-l-2 border-gray-300 pl-3"
-          >
+          <div className="mt-2 text-xs text-gray-500 italic border-l-2 border-gray-300 pl-3">
             {translation}
           </div>
         )}
