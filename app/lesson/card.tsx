@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useKey } from "react-use";
 import Lottie from "lottie-react";
+import { Volume2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { challenges } from "@/db/schema";
@@ -37,6 +38,7 @@ export const Card = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const lottieRef = useRef<any>(null);
+  const [lottieError, setLottieError] = useState(false);
 
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -98,10 +100,10 @@ export const Card = ({
     if (disabled || !audioSrc) return;
     playAudio();
     setIsAnimating(true);
-    if (lottieRef.current) {
+    if (lottieRef.current && !lottieError) {
       lottieRef.current.play();
     }
-  }, [disabled, audioSrc, playAudio]);
+  }, [disabled, audioSrc, playAudio, lottieError]);
 
   useKey(shortcut, handleCardClick, {}, [handleCardClick]);
 
@@ -146,17 +148,20 @@ export const Card = ({
           {audioSrc && (
             <div
               onClick={handleSpeakerClick}
-              className="cursor-pointer hover:opacity-70 transition"
+              className="cursor-pointer hover:opacity-70 transition w-6 h-6"
             >
-              <Lottie
-                lottieRef={lottieRef}
-                // Use type assertion to bypass TypeScript error for `path` prop
-                {...({ path: "/speaker.lottie" } as any)}
-                className="w-6 h-6"
-                loop={false}
-                autoplay={false}
-                style={{ cursor: 'pointer' }}
-              />
+              {!lottieError ? (
+                <Lottie
+                  lottieRef={lottieRef}
+                  {...({ path: "/speaker.lottie" } as any)}
+                  className="w-full h-full"
+                  loop={false}
+                  autoplay={false}
+                  onError={() => setLottieError(true)}
+                />
+              ) : (
+                <Volume2 className="w-full h-full text-gray-600" strokeWidth={1.5} />
+              )}
             </div>
           )}
           <div className={cn(
