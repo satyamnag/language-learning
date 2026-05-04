@@ -253,7 +253,7 @@ export const Quiz = ({
               <QuestionBubble
                 ref={assistQuestionRef}
                 question={challenge.question}
-                translation={challenge.nativeText ?? undefined}
+                // translation={challenge.nativeText ?? undefined}   // ← comment or remove this line
                 speaker={challenge.speaker ?? undefined}
               />
             )}
