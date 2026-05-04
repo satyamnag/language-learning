@@ -1,9 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useKey } from "react-use";
-import Lottie from "lottie-react";
 import { Volume2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -36,10 +35,6 @@ export const Card = ({
   type,
 }: Props) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const lottieRef = useRef<any>(null);
-  const [lottieError, setLottieError] = useState(false);
-
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -56,22 +51,6 @@ export const Card = ({
         audioRef.current.pause();
         audioRef.current = null;
       }
-    };
-  }, [audioSrc]);
-
-  // Stop animation when audio ends
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const handleEnded = () => {
-      setIsAnimating(false);
-      if (lottieRef.current) {
-        lottieRef.current.stop();
-      }
-    };
-    audio.addEventListener('ended', handleEnded);
-    return () => {
-      audio.removeEventListener('ended', handleEnded);
     };
   }, [audioSrc]);
 
@@ -99,11 +78,7 @@ export const Card = ({
     e.stopPropagation();
     if (disabled || !audioSrc) return;
     playAudio();
-    setIsAnimating(true);
-    if (lottieRef.current && !lottieError) {
-      lottieRef.current.play();
-    }
-  }, [disabled, audioSrc, playAudio, lottieError]);
+  }, [disabled, audioSrc, playAudio]);
 
   useKey(shortcut, handleCardClick, {}, [handleCardClick]);
 
@@ -146,23 +121,11 @@ export const Card = ({
         </p>
         <div className="flex items-center gap-2">
           {audioSrc && (
-            <div
+            <Volume2
               onClick={handleSpeakerClick}
-              className="cursor-pointer hover:opacity-70 transition w-6 h-6"
-            >
-              {!lottieError ? (
-                <Lottie
-                  lottieRef={lottieRef}
-                  {...({ path: "/speaker.lottie" } as any)}
-                  className="w-full h-full"
-                  loop={false}
-                  autoplay={false}
-                  onError={() => setLottieError(true)}
-                />
-              ) : (
-                <Volume2 className="w-full h-full text-gray-600" strokeWidth={1.5} />
-              )}
-            </div>
+              className="w-6 h-6 text-gray-600 cursor-pointer hover:opacity-70 transition shrink-0"
+              strokeWidth={1.5}
+            />
           )}
           <div className={cn(
             "lg:w-[30px] lg:h-[30px] w-[20px] h-[20px] border-2 flex items-center justify-center rounded-lg text-neutral-400 lg:text-[15px] text-xs font-semibold",
