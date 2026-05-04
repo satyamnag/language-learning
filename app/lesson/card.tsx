@@ -49,20 +49,15 @@ export const Card = ({
     }
   }, [text, wrapWords, attachTooltips]);
 
-  // Listen for audio end to stop animation
+  // Stop animation when audio ends (using state.ended)
   useEffect(() => {
-    if (!audio) return;
-    const handleEnded = () => {
+    if (state.ended && isAnimating) {
       setIsAnimating(false);
       if (lottieRef.current) {
         lottieRef.current.stop();
       }
-    };
-    audio.addEventListener('ended', handleEnded);
-    return () => {
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, [audio]);
+    }
+  }, [state.ended, isAnimating]);
 
   const handleCardClick = useCallback(() => {
     if (disabled) return;
@@ -71,7 +66,7 @@ export const Card = ({
   }, [disabled, onClick, controls]);
 
   const handleSpeakerClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent triggering card click
+    e.stopPropagation();
     if (disabled || !audioSrc) return;
     controls.play();
     setIsAnimating(true);
