@@ -8,6 +8,7 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
+  console.log('QuestionBubble speaker:', speaker);
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const translationRef = useRef<HTMLDivElement>(null);
 
