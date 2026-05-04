@@ -4,12 +4,12 @@ import Image from "next/image";
 type Props = {
   question: string;
   translation?: string;
-  speaker?: string; // 'riya' or 'aarav'
+  speaker?: string;
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  // Determine image source only for valid speakers; otherwise null (no image)
-  const imageSrc = speaker === 'riya' ? '/riya.jpeg' : speaker === 'aarav' ? '/aarav.jpeg' : null;
+  // Convert speaker to lowercase and use as image filename, e.g., "Riya" -> "/riya.jpeg"
+  const imageSrc = speaker ? `/${speaker.toLowerCase()}.jpeg` : null;
 
   return (
     <div className="flex items-center gap-x-4 mb-6">

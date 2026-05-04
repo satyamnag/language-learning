@@ -22,13 +22,9 @@ export const ChallengeCreate = () => {
           ]}
           validate={[required()]} 
         />
-        <SelectInput
+        <TextInput
           source="speaker"
-          choices={[
-            { id: "riya", name: "Riya" },
-            { id: "aarav", name: "Aarav" },
-          ]}
-          label="Speaker"
+          label="Speaker name (e.g., Riya, Aarav, Priya, etc.)"
         />
         <ReferenceInput source="lessonId" reference="lessons" />
         <NumberInput source="order" validate={[required()]} label="Order" />
