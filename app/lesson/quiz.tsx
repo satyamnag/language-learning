@@ -250,12 +250,15 @@ export const Quiz = ({
             )}
             <div>
             {challenge.type === "ASSIST" && (
+              <>
+              {console.log('Debug:', { nativeText: challenge.nativeText, question: challenge.question })}
               <QuestionBubble
                 ref={assistQuestionRef}
                 question={challenge.nativeText ?? "?"}
                 translation={challenge.question}
                 speaker={challenge.speaker ?? undefined}
               />
+              </>
             )}
               <Challenge
                 options={options}
