@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
-  const imageSrc = speaker ? `/${speaker.toLowerCase()}.jpg` : null;
+  const imageSrc = speaker ? `/${speaker.trim().toLowerCase()}.jpg` : null;
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const translationRef = useRef<HTMLDivElement>(null);
 
