@@ -20,7 +20,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
       attachTooltips(translationRef.current);
     }
   }, [translation, wrapWords, attachTooltips]);
-// ggjhg
+
   return (
     <div className="flex items-start gap-x-4 mb-8">
       {imageSrc && (
