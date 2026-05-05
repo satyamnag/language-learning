@@ -11,7 +11,7 @@ type Conversation = typeof challenges.$inferSelect & {
 
 type Props = {
   conversations: Conversation[];
-  activeIndex: number; // only used for styling
+  activeIndex: number;
 };
 
 export const ConversationStack = ({ conversations, activeIndex }: Props) => {
@@ -21,7 +21,6 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
         const isCompleted = conv.completed;
         const isActive = idx === activeIndex;
         const isWaiting = !isCompleted && !isActive;
-
         return (
           <div
             key={conv.id}

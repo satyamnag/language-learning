@@ -203,10 +203,10 @@ export const Quiz = ({
               activeIndex={visibleActiveIndex}
             />
 
-            {/* Action buttons for the active challenge (only one set, at the bottom) */}
+            {/* Action buttons for the active challenge – with key to reset state */}
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge.id}               // ← forces reset for each new challenge
+                key={currentChallenge.id}               // ← CRITICAL: forces fresh component per challenge
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
                 disabled={pending || currentChallenge.completed}

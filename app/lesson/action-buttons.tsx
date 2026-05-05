@@ -26,7 +26,7 @@ export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
   const handleStatusClick = () => {
     if (disabled || statusCompleted) return;
     setStatusCompleted(true);
-    onComplete();
+    onComplete(); // triggers lesson progression
   };
 
   return (
