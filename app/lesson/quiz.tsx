@@ -89,18 +89,23 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Core completion logic ---
+  // --- Core completion logic with re‑entrancy lock ---
+  const isCompletingRef = useRef(false);
+
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
-    if (pending) return;
+    if (pending || isCompletingRef.current) return;
+    isCompletingRef.current = true;
     startTransition(() => {
       if (isCorrect) {
         upsertChallengeProgress(challengeId)
           .then((response) => {
             if (response?.error === "hearts") {
               openHeartsModal();
+              isCompletingRef.current = false;
               return;
             }
             correctControls.play();
+            // Mark this challenge as completed
             setChallenges((prev) =>
               prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
             );
@@ -108,21 +113,32 @@ export const Quiz = ({
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
-            const nextIdx = challenges.findIndex((c, idx) => idx > activeIndex && !c.completed);
-            if (nextIdx !== -1) {
-              setActiveIndex(nextIdx);
-              setStatus("none");
-              setSelectedOption(undefined);
-            } else {
-              setActiveIndex(challenges.length);
-            }
+            // Find the next incomplete challenge using the updated state
+            setChallenges((currentChallenges) => {
+              const nextIdx = currentChallenges.findIndex(
+                (c, idx) => idx > activeIndex && !c.completed
+              );
+              if (nextIdx !== -1) {
+                setActiveIndex(nextIdx);
+                setStatus("none");
+                setSelectedOption(undefined);
+              } else {
+                setActiveIndex(currentChallenges.length);
+              }
+              return currentChallenges; // no change
+            });
+            isCompletingRef.current = false;
           })
-          .catch(() => toast.error("Something went wrong"));
+          .catch(() => {
+            toast.error("Something went wrong");
+            isCompletingRef.current = false;
+          });
       } else {
         reduceHearts(challengeId)
           .then((response) => {
             if (response?.error === "hearts") {
               openHeartsModal();
+              isCompletingRef.current = false;
               return;
             }
             incorrectControls.play();
@@ -130,8 +146,12 @@ export const Quiz = ({
             if (!response?.error) {
               setHearts((prev) => Math.max(prev - 1, 0));
             }
+            isCompletingRef.current = false;
           })
-          .catch(() => toast.error("Something went wrong"));
+          .catch(() => {
+            toast.error("Something went wrong");
+            isCompletingRef.current = false;
+          });
       }
     });
   };
@@ -168,17 +188,48 @@ export const Quiz = ({
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
   // Finish screen
+  if (activeIndex >= challenges.length)Idx + windowCount);
+  let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
+  if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
+
+  // Finish screen
   if (activeIndex >= challenges.length) {
+    return (
+      <>
+        {finishAudio}
+        <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
+        <div className {
     return (
       <>
         {finishAudio}
         <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
         <div className="flex flex-col gap-y-4 lg:gap-y-8 max-w-lg mx-auto text-center items-center justify-center h-full">
           <Image src="/finish.svg" alt="Finish" className="hidden lg:block" height={100} width={100} />
+          <Image src="/finish.svg" alt="Finish" className="block lg:hidden" height="flex flex-col gap-y-4 lg:gap-y-8 max-w-lg mx-auto text-center items-center justify-center h-full">
+          <Image src="/finish.svg" alt="Finish" className="hidden lg:block" height={100} width={100} />
           <Image src="/finish.svg" alt="Finish" className="block lg:hidden" height={50} width={50} />
           <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
           <div className="flex items-center gap-x-4 w-full">
+            <ResultCard variant="points" value={challenges.length *={50} width={50} />
+          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
+          <div className="flex items-center gap-x-4 w-full">
             <ResultCard variant="points" value={challenges.length * 10} />
+            <ResultCard variant="hearts" value={hearts} />
+          </div>
+        </div>
+        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
+      </>
+    );
+  }
+
+  const usesDirectAnswer = !!currentChallenge.directAnswer;
+
+  return (
+    <>
+      {incorrectAudio}
+      {correctAudio}
+      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
+      <div className="flex-1 10} />
             <ResultCard variant="hearts" value={hearts} />
           </div>
         </div>
@@ -203,13 +254,44 @@ export const Quiz = ({
               activeIndex={visibleActiveIndex}
             />
 
-            {/* Action buttons for the active challenge – with key to reset state */}
+            {/* Action buttons for the active challenge */}
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge.id}               // ensures fresh component per challenge
+                key={currentChallenge.id}
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
-                disabled={pending}                      // only pending disables speaker/mic; status ignores it
+                disabled={pending}
+              />
+            )}
+
+            {/* For multiple‑choice challenges, show answer options and footer */}
+            {!usesDirectAnswer && (
+              <>
+                <div className="mt-4">
+                  <Challenge
+                    options={options}
+                    onSelect={onSelect}
+                    status={status}
+                    selectedOption={selectedOption}
+                    disabled={pending}
+                    type={currentChallenge.type}
+                  />
+                </div">
+        <div className="h-full flex items-center justify-center">
+          <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
+            {/* Conversation stack (2 or 3 items) */}
+            <ConversationStack
+              conversations={visibleChallenges}
+              activeIndex={visibleActiveIndex}
+            />
+
+            {/* Action buttons for the active challenge */}
+            {currentChallenge && (
+              <ActionButtons
+                key={currentChallenge.id}
+                audioSrc={currentChallenge.audioSrc ?? undefined}
+                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                disabled={pending}
               />
             )}
 
