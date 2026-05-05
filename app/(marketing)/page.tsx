@@ -3,13 +3,9 @@ import { Loader } from "lucide-react";
 import { 
   ClerkLoaded, 
   ClerkLoading, 
-  SignInButton, 
-  SignUpButton, 
   SignedIn, 
   SignedOut
 } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getUserProgress, getCoursesByNativeLanguage, getCourseProgress, getLessonPercentage, getUnits, getUserSubscription } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
@@ -96,7 +92,7 @@ export default async function Home() {
 
   return (
     <>
-      {/* Marketing hero – only shown when signed out */}
+      {/* Marketing hero – only shown when signed out, buttons removed (already in header) */}
       <SignedOut>
         <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
           <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
@@ -114,18 +110,7 @@ export default async function Home() {
                     <span className="text-blue-600 font-extrabold">SUNO</span>{" "}
                     <span className="text-green-600 font-extrabold">BOLO</span>.
                   </h1>
-                  <div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full mt-4">
-                    <SignUpButton mode="modal" fallbackRedirectUrl="/learn">
-                      <Button size="lg" variant="primary" className="w-full">
-                        Get Started
-                      </Button>
-                    </SignUpButton>
-                    <SignInButton mode="modal" fallbackRedirectUrl="/learn">
-                      <Button size="lg" variant="primaryOutline" className="w-full">
-                        I already have an account
-                      </Button>
-                    </SignInButton>
-                  </div>
+                  {/* Sign‑up / Sign‑in buttons removed – use the header button instead */}
                 </SignedOut>
               </ClerkLoaded>
             </div>
