@@ -12,6 +12,7 @@ import {
   getUserProgress,
   getUserSubscription
 } from "@/db/queries";
+// ✅ Absolute imports – must match your project structure
 import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
 
