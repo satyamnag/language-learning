@@ -8,7 +8,7 @@ type Props = {
   speaker?: string;
   romanized?: string;
   audioSrc?: string;
-  onComplete?: () => void; // optional – for direct‑answer completion
+  onComplete?: () => void;
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized, audioSrc, onComplete }, ref) => {
@@ -31,14 +31,13 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
   };
 
   const handleMicClick = () => {
-    // Placeholder – no functionality yet
     console.log("Mic clicked – voice input coming soon");
   };
 
   const handleStatusClick = () => {
     if (!onComplete || statusCompleted) return;
     setStatusCompleted(true);
-    onComplete(); // triggers the direct‑answer completion and moves to next challenge
+    onComplete();
   };
 
   return (
@@ -48,7 +47,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
           {speaker.charAt(0).toUpperCase() + speaker.slice(1)}:
         </div>
       )}
-      <div className="relative max-w-2xl">
+      <div className="relative max-w-2xl flex flex-col h-full w-full">
         {/* Main Tamil sentence – tooltips via parent */}
         <div
           ref={ref}
@@ -68,8 +67,8 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             {romanized}
           </div>
         )}
-        {/* Speaker, Mic, and Status icons (centered, side by side) */}
-        <div className="flex justify-center gap-3 mt-2">
+        {/* Icons container – pushed to bottom with mt-auto */}
+        <div className="flex justify-center gap-3 mt-auto pt-3 pb-1">
           {audioSrc && (
             <>
               <button
@@ -102,7 +101,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             </button>
           )}
         </div>
-        {/* Arrow pointer */}
+        {/* Arrow pointer – unchanged */}
         <div
           className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
           style={{ filter: 'drop-shadow(-2px 0 2px rgba(0,0,0,0.05))' }}
