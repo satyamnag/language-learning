@@ -8,6 +8,7 @@ type Props = {
   audioSrc?: string;
   targetSentence?: string;   // the sentence the user should speak
   disabled?: boolean;
+  onComplete?: () => void;    // called after pronunciation evaluation (completes challenge)
 };
 
 // Simple Levenshtein‑based similarity (no external dependency)
@@ -31,9 +32,10 @@ function similarity(str1: string, str2: string): number {
   return maxLen === 0 ? 1 : (maxLen - matrix[b.length][a.length]) / maxLen;
 }
 
-export const ActionButtons = ({ audioSrc, targetSentence, disabled }: Props) => {
+export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }: Props) => {
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);  // use 'any' to avoid TypeScript issues with Web Speech API
+  const recognitionRef = useRef<any>(null);
+  const completingRef = useRef(false); // prevent double completion
 
   const handleSpeakerClick = () => {
     if (!audioSrc || disabled) return;
@@ -42,9 +44,8 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled }: Props) => 
   };
 
   const handleMicClick = () => {
-    if (disabled || isListening) return;
+    if (disabled || isListening || completingRef.current) return;
 
-    // Use the correct window property for SpeechRecognition
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast.error("Speech recognition is not supported in this browser.");
@@ -97,7 +98,13 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled }: Props) => 
         emoji = "🔊";
         message = "Keep practicing! Listen carefully and repeat.";
       }
-      toast.success(`${emoji} ${message} (Score: ${rounded}%)`, { duration: 6000 });
+      toast.success(`${emoji} ${message} (Score: ${rounded}%)`, { duration: 5000 });
+
+      // Complete the challenge after evaluation (only once)
+      if (onComplete && !completingRef.current) {
+        completingRef.current = true;
+        onComplete();
+      }
     };
 
     recognition.start();
@@ -108,6 +115,7 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled }: Props) => 
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
+      completingRef.current = false; // reset on unmount
     };
   }, []);
 

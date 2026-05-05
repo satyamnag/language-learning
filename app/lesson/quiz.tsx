@@ -255,6 +255,7 @@ export const Quiz = ({
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 targetSentence={currentChallenge.question}
                 disabled={pending}
+                onComplete={() => completeChallenge(currentChallenge.id, true)}
               />
             )}
 
