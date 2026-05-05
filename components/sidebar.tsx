@@ -20,13 +20,13 @@ export const Sidebar = ({ className }: Props) => {
     )}>
       <Link href="/">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <span className="text-2xl font-extrabold text-green-600 tracking-wide">
+          <span className="text-2xl font-extrabold text-blue-600 tracking-wide">
             bolbolke
           </span>
         </div>
       </Link>
       <div className="flex flex-col gap-y-2 flex-1">
-        <SidebarItem label="Learn" href="/learn" iconSrc="/learn.svg" />
+        {/* "Learn" item removed – homepage now serves learning content */}
         <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
         <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
         <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
