@@ -12,13 +12,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
-import { upsertUserProgress } from "@/actions/user-progress";
-import { redirect } from "next/navigation";
-import { TargetLanguageSelector } from "./target-language-selector-wrapper"; // we'll create a client wrapper
-
-// Instead of using the original TargetLanguageSelector which redirects to /learn,
-// we create a client wrapper that redirects to /lesson after selecting a language.
-// This file is a server component, so we need a client component for the dropdown.
+import { TargetLanguageSelectorClient } from "./target-language-selector-client";
 
 export default async function Home() {
   const userProgress = await getUserProgress();
@@ -62,8 +56,7 @@ export default async function Home() {
                   <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
                 </div>
                 <div className="flex-1">
-                  {/* Custom target language dropdown that redirects to /lesson */}
-                  <ClientTargetLanguageSelector 
+                  <TargetLanguageSelectorClient 
                     courses={courses}
                     currentCourseId={activeCourseId}
                   />
@@ -73,65 +66,6 @@ export default async function Home() {
           </ClerkLoaded>
         </div>
       </div>
-    </div>
-  );
-}
-
-// Client component wrapper for the target language dropdown
-"use client";
-
-import { useRouter } from "next/navigation";
-import { BookOpen } from "lucide-react";
-import { useState, useTransition } from "react";
-import { upsertUserProgress } from "@/actions/user-progress";
-
-type Course = { id: number; title: string };
-
-function ClientTargetLanguageSelector({ courses, currentCourseId }: { courses: Course[]; currentCourseId?: number }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [selected, setSelected] = useState(currentCourseId ?? "");
-
-  const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const courseId = parseInt(e.target.value, 10);
-    if (isNaN(courseId)) return;
-    setSelected(courseId);
-    startTransition(async () => {
-      await upsertUserProgress(courseId);
-      router.push("/lesson");
-    });
-  };
-
-  return (
-    <div className="mt-4 p-4 border rounded-xl shadow-sm bg-white">
-      <label htmlFor="target-language" className="block text-sm font-medium text-gray-700 mb-2">
-        I want to learn
-      </label>
-      <div className="relative">
-        <select
-          id="target-language"
-          value={selected}
-          onChange={handleChange}
-          disabled={isPending}
-          className="w-full pl-10 pr-8 py-2.5 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-        >
-          <option value="" disabled>Select a language</option>
-          {courses.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.title}
-            </option>
-          ))}
-        </select>
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <BookOpen className="h-5 w-5 text-gray-400" />
-        </div>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
-      {isPending && <p className="text-sm text-gray-500 mt-2">Loading...</p>}
     </div>
   );
 }
