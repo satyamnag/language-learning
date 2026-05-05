@@ -6,6 +6,7 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
+import { Volume2 } from "lucide-react";
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -208,6 +209,14 @@ export const Quiz = ({
     });
   };
 
+  // Play audio for direct answer (speaker icon)
+  const playDirectAnswerAudio = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!challenge?.audioSrc) return;
+    const audio = new Audio(challenge.audioSrc);
+    audio.play().catch(err => console.warn("Audio play failed:", err));
+  };
+
   if (!challenge) {
     // Finish screen (unchanged)
     return (
@@ -292,15 +301,26 @@ export const Quiz = ({
               {/* Direct answer button OR traditional challenge options */}
               {usesDirectAnswer ? (
                 <div className="flex justify-center">
-                  <div
-                    ref={directAnswerRef}
-                    role="button"
-                    tabIndex={0}
-                    onClick={handleDirectAnswer}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDirectAnswer(); }}
-                    className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition cursor-pointer text-center"
-                  >
-                    {challenge.directAnswer}
+                  <div className="relative w-full">
+                    <div
+                      ref={directAnswerRef}
+                      role="button"
+                      tabIndex={0}
+                      onClick={handleDirectAnswer}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDirectAnswer(); }}
+                      className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition cursor-pointer text-center"
+                    >
+                      {challenge.directAnswer}
+                    </div>
+                    {challenge.audioSrc && (
+                      <button
+                        onClick={playDirectAnswerAudio}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:opacity-70 transition"
+                        aria-label="Play pronunciation"
+                      >
+                        <Volume2 className="w-5 h-5" strokeWidth={1.5} />
+                      </button>
+                    )}
                   </div>
                 </div>
               ) : (
