@@ -70,7 +70,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
             {romanized}
           </div>
         )}
-        {/* Status icon – bottom right inside bubble */}
+        {/* Status icon – bottom right */}
         <div className="flex justify-end mt-2">
           {isCompleted ? (
             <CheckCircle className="w-6 h-6 text-green-600" strokeWidth={1.8} />
