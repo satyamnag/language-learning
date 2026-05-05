@@ -246,7 +246,7 @@ export const Quiz = ({
             <ResultCard variant="hearts" value={hearts} />
           </div>
         </div>
-        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
+        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/")} />
         {/* Replay button – appears after lesson completion */}
         <div className="flex justify-center gap-6 mt-8 pb-4">
           <button
