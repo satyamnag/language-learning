@@ -6,12 +6,10 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
-  UserButton,
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { getUserProgress } from "@/db/queries";
 
-// Language name mapping for display
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   hi: "Hindi",
@@ -39,10 +37,9 @@ export const Header = async () => {
           </Link>
         </SignedOut>
         <SignedIn>
-          <div className="w-10" /> {/* spacer */}
+          <div className="w-10" /> {/* spacer to keep layout balanced */}
         </SignedIn>
 
-        {/* Language indicator for signed‑in users */}
         <SignedIn>
           {learningLangName && (
             <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full shadow-sm">
@@ -55,9 +52,6 @@ export const Header = async () => {
           <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
         </ClerkLoading>
         <ClerkLoaded>
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
           <SignedOut>
             <SignInButton mode="modal" fallbackRedirectUrl="/">
               <Button size="lg" variant="ghost">Login</Button>
