@@ -20,6 +20,7 @@ import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
+// ✅ Correct absolute imports
 import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
 
