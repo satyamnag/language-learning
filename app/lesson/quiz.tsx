@@ -66,6 +66,7 @@ export const Quiz = ({
   });
   const [challenges, setChallenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
+    // find first incomplete challenge
     const idx = challenges.findIndex((c) => !c.completed);
     return idx === -1 ? 0 : idx;
   });
@@ -76,7 +77,7 @@ export const Quiz = ({
   const currentChallenge = challenges[activeIndex];
   const options = currentChallenge?.challengeOptions ?? [];
 
-  // --- Word translator (Tippy.js + cache) for SELECT questions ---
+  // --- Word translator for SELECT questions ---
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
@@ -89,7 +90,7 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Core completion logic with re‑entrancy lock ---
+  // --- Completion logic using order field ---
   const isCompletingRef = useRef(false);
 
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
@@ -105,7 +106,7 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Mark this challenge as completed
+            // Update challenges by marking this one completed
             setChallenges((prev) =>
               prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
             );
@@ -113,19 +114,22 @@ export const Quiz = ({
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
-            // Find the next incomplete challenge using the updated state
-            setChallenges((currentChallenges) => {
-              const nextIdx = currentChallenges.findIndex(
-                (c, idx) => idx > activeIndex && !c.completed
+            // Find the next incomplete challenge using order
+            setChallenges((prev) => {
+              const completedChallenge = prev.find((c) => c.id === challengeId);
+              if (!completedChallenge) return prev;
+              const nextChallenge = prev.find(
+                (c) => c.order > completedChallenge.order && !c.completed
               );
-              if (nextIdx !== -1) {
-                setActiveIndex(nextIdx);
+              if (nextChallenge) {
+                const nextIndex = prev.indexOf(nextChallenge);
+                setActiveIndex(nextIndex);
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(currentChallenges.length);
+                setActiveIndex(prev.length); // finish lesson
               }
-              return currentChallenges; // no change
+              return prev; // no mutation
             });
             isCompletingRef.current = false;
           })
@@ -156,7 +160,6 @@ export const Quiz = ({
     });
   };
 
-  // For multiple‑choice challenges
   const onSelect = (id: number) => {
     if (status !== "none") return;
     setSelectedOption(id);
@@ -176,10 +179,10 @@ export const Quiz = ({
     }
   };
 
-  // Build conversation stack (2 items initially, 3 after first completion)
+  // Build conversation stack
   let startIdx = activeIndex;
   let windowCount = 2;
-  if (activeIndex > 0 && challenges[activeIndex - 1].completed) {
+  if (activeIndex > 0 && challenges[activeIndex - 1]?.completed) {
     startIdx = activeIndex - 1;
     windowCount = 3;
   }
