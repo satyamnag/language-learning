@@ -13,6 +13,7 @@ import Link from "next/link";
 import { getUserProgress, getCoursesByNativeLanguage } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelectorClient } from "./target-language-selector-client";
+import { LearnContent } from "@/components/learn-content";
 
 export default async function Home() {
   const userProgress = await getUserProgress();
@@ -51,16 +52,22 @@ export default async function Home() {
               </div>
             </SignedOut>
             <SignedIn>
-              <div className="flex flex-col sm:flex-row gap-4 w-full">
-                <div className="flex-1">
-                  <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+              <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+                  </div>
+                  {courses.length > 0 && (
+                    <div className="flex-1">
+                      <TargetLanguageSelectorClient 
+                        courses={courses}
+                        currentCourseId={activeCourseId ?? undefined}
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1">
-                  <TargetLanguageSelectorClient 
-                    courses={courses}
-                    currentCourseId={activeCourseId ?? undefined}
-                  />
-                </div>
+                {/* Learn content (units and lessons) – only shown once a course is selected */}
+                {activeCourseId && <LearnContent />}
               </div>
             </SignedIn>
           </ClerkLoaded>
