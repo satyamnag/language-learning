@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, useRef, useEffect } from "react";
+import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
 
 import { reduceHearts } from "@/actions/user-progress";
@@ -87,14 +87,25 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // Completion logic (only for the active challenge)
+  // Ref to always have the latest activeIndex inside callbacks
+  const activeIndexRef = useRef(activeIndex);
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
   const isCompletingRef = useRef(false);
 
-  const completeChallenge = (challengeId: number, isCorrect: boolean) => {
+  // Core completion (same for status icon and mic)
+  const completeChallenge = useCallback((challengeId: number, isCorrect: boolean) => {
     if (pending || isCompletingRef.current) return;
-    // Use the current challenge object to verify it's still active and not already completed
-    const challengeToComplete = challenges[activeIndex];
-    if (!challengeToComplete || challengeToComplete.completed || challengeToComplete.id !== challengeId) return;
+
+    // Get the current active challenge using the ref
+    const currentIdx = activeIndexRef.current;
+    const activeChallenge = challenges[currentIdx];
+    if (!activeChallenge || activeChallenge.completed || activeChallenge.id !== challengeId) {
+      console.warn("Completion attempted on wrong or already completed challenge");
+      return;
+    }
 
     isCompletingRef.current = true;
     startTransition(() => {
@@ -107,27 +118,27 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Update challenges: mark as completed
-            setChallenges((prev) =>
-              prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
-            );
-            setPercentage((prev) => prev + 100 / challenges.length);
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
-            // Find the next incomplete challenge
+            // Update state: mark as completed
             setChallenges((prev) => {
-              const completedOrder = prev.find((c) => c.id === challengeId)?.order ?? challengeId;
-              const nextIndex = prev.findIndex((c) => (c.order ?? c.id) > completedOrder && !c.completed);
+              const updated = prev.map((c) =>
+                c.id === challengeId ? { ...c, completed: true } : c
+              );
+              // Find next incomplete challenge
+              const completedOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
+              const nextIndex = updated.findIndex((c) => (c.order ?? c.id) > completedOrder && !c.completed);
               if (nextIndex !== -1) {
                 setActiveIndex(nextIndex);
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(prev.length); // all completed
+                setActiveIndex(updated.length); // all completed
               }
-              return prev;
+              return updated;
             });
+            setPercentage((prev) => prev + 100 / challenges.length);
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
             isCompletingRef.current = false;
           })
           .catch(() => {
@@ -155,7 +166,7 @@ export const Quiz = ({
           });
       }
     });
-  };
+  }, [pending, challenges, initialPercentage, correctControls, openHeartsModal, incorrectControls, toast]);
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -176,9 +187,9 @@ export const Quiz = ({
     }
   };
 
-  const handleCompleteChallenge = (challengeId: number) => {
+  const handleCompleteChallenge = useCallback((challengeId: number) => {
     completeChallenge(challengeId, true);
-  };
+  }, [completeChallenge]);
 
   // Build conversation stack
   let startIdx = activeIndex;
@@ -231,7 +242,7 @@ export const Quiz = ({
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 disabled={pending}
-                onComplete={() => completeChallenge(currentChallenge.id, true)} // <-- mic calls this
+                onComplete={() => completeChallenge(currentChallenge.id, true)}
               />
             )}
 
