@@ -87,6 +87,7 @@ export const Quiz = ({
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
+  const directAnswerRef = useRef<HTMLDivElement>(null); // for direct answer container
 
   useEffect(() => {
     if (!challenge) return;
@@ -100,6 +101,16 @@ export const Quiz = ({
       attachTooltips(assistQuestionRef.current);
     }
   }, [challenge, wrapWords, attachTooltips]);
+
+  // Wrap direct answer text and attach tooltips
+  useEffect(() => {
+    if (challenge?.directAnswer && directAnswerRef.current) {
+      const html = wrapWords(challenge.directAnswer);
+      directAnswerRef.current.innerHTML = html;
+      attachTooltips(directAnswerRef.current);
+    }
+  }, [challenge?.directAnswer, wrapWords, attachTooltips]);
+
   // --- end of translator integration ---
 
   const onNext = () => {
@@ -281,13 +292,16 @@ export const Quiz = ({
               {/* Direct answer button OR traditional challenge options */}
               {usesDirectAnswer ? (
                 <div className="flex justify-center">
-                  <button
+                  <div
+                    ref={directAnswerRef}
+                    role="button"
+                    tabIndex={0}
                     onClick={handleDirectAnswer}
-                    disabled={pending || status !== "none"}
-                    className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDirectAnswer(); }}
+                    className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition cursor-pointer text-center"
                   >
                     {challenge.directAnswer}
-                  </button>
+                  </div>
                 </div>
               ) : (
                 <Challenge
