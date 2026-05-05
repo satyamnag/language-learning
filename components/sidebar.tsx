@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   ClerkLoading,
   ClerkLoaded,
@@ -21,7 +20,9 @@ export const Sidebar = ({ className }: Props) => {
     )}>
       <Link href="/">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <Image src="/logo.png" height={55} width={140} alt="Logo" />
+          <span className="text-2xl font-extrabold text-green-600 tracking-wide">
+            bolbolke
+          </span>
         </div>
       </Link>
       <div className="flex flex-col gap-y-2 flex-1">
