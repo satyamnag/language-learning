@@ -6,12 +6,14 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
+import { RotateCw } from "lucide-react";
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
 import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
+import { resetLessonProgress } from "@/actions/lesson-progress";
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 import { Header } from "./header";
@@ -245,6 +247,16 @@ export const Quiz = ({
           </div>
         </div>
         <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
+        {/* Replay button – appears after lesson completion */}
+        <div className="flex justify-center gap-6 mt-8 pb-4">
+          <button
+            onClick={() => resetLessonProgress(lessonId)}
+            className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+            aria-label="Replay lesson"
+          >
+            <RotateCw className="w-7 h-7 text-green-600" strokeWidth={1.8} />
+          </button>
+        </div>
       </>
     );
   }
@@ -272,7 +284,7 @@ export const Quiz = ({
             {currentChallenge && (
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
-                disabled={pending || currentChallenge.completed}   // <-- add || currentChallenge.completed
+                disabled={pending || currentChallenge.completed}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
               />
             )}
