@@ -1,4 +1,5 @@
-import { forwardRef, useRef, useEffect } from 'react';
+import { forwardRef, useRef, useEffect, useState } from 'react';
+import { Circle, CheckCircle } from 'lucide-react';
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
@@ -6,11 +7,23 @@ type Props = {
   translation?: string;
   speaker?: string;
   romanized?: string;
+  isActive?: boolean;
+  isCompleted?: boolean;
+  onComplete?: () => void;
 };
 
-export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized }, ref) => {
+export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
+  question,
+  translation,
+  speaker,
+  romanized,
+  isActive = false,
+  isCompleted = false,
+  onComplete,
+}, ref) => {
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const romanizedRef = useRef<HTMLDivElement>(null);
+  const [localCompleted, setLocalCompleted] = useState(false);
 
   useEffect(() => {
     if (romanized && romanizedRef.current) {
@@ -19,6 +32,12 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
       attachTooltips(romanizedRef.current);
     }
   }, [romanized, wrapWords, attachTooltips]);
+
+  const handleStatusClick = () => {
+    if (!isActive || isCompleted || localCompleted) return;
+    setLocalCompleted(true);
+    onComplete?.();
+  };
 
   return (
     <div className="flex items-start gap-x-4 mb-8">
@@ -44,6 +63,23 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             {romanized}
           </div>
         )}
+        {/* Status icon – bottom right inside bubble */}
+        <div className="flex justify-end mt-2">
+          {isCompleted ? (
+            <CheckCircle className="w-6 h-6 text-green-600" strokeWidth={1.8} />
+          ) : isActive ? (
+            <button
+              onClick={handleStatusClick}
+              className="focus:outline-none"
+              aria-label="Mark as complete"
+            >
+              <Circle className="w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors" strokeWidth={1.8} />
+            </button>
+          ) : (
+            <Circle className="w-6 h-6 text-gray-300" strokeWidth={1.8} />
+          )}
+        </div>
+        {/* Arrow pointer */}
         <div
           className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
           style={{ filter: 'drop-shadow(-2px 0 2px rgba(0,0,0,0.05))' }}

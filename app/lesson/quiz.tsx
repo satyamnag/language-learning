@@ -18,7 +18,6 @@ import { Header } from "./header";
 import { Footer } from "./footer";
 import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
-import { QuestionBubble } from "./question-bubble";
 import { ConversationStack } from "./conversation-stack";
 import { ActionButtons } from "./action-buttons";
 
@@ -76,10 +75,9 @@ export const Quiz = ({
   const currentChallenge = challenges[activeIndex];
   const options = currentChallenge?.challengeOptions ?? [];
 
-  // --- Word translator for SELECT questions ---
+  // Word translator for SELECT questions
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
-  const assistQuestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentChallenge && currentChallenge.type === "SELECT" && currentChallenge.question && selectQuestionRef.current) {
@@ -89,12 +87,11 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Completion logic: only complete the current active challenge ---
+  // Completion logic (only for the active challenge)
   const isCompletingRef = useRef(false);
 
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
     if (pending || isCompletingRef.current) return;
-    // Prevent completing if already completed (stale)
     if (currentChallenge?.completed) return;
 
     isCompletingRef.current = true;
@@ -108,30 +105,26 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Update challenges: mark this one as completed
+            setChallenges((prev) =>
+              prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
+            );
+            setPercentage((prev) => prev + 100 / challenges.length);
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
+            // Find next incomplete challenge
             setChallenges((prev) => {
-              const updated = prev.map((c) =>
-                c.id === challengeId ? { ...c, completed: true } : c
-              );
-              // Find the next incomplete challenge (use order if available, else id)
-              const currentOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
-              const nextIndex = updated.findIndex((c) => {
-                const cmp = (c.order ?? c.id) > currentOrder;
-                return cmp && !c.completed;
-              });
+              const currentOrder = prev.find((c) => c.id === challengeId)?.order ?? challengeId;
+              const nextIndex = prev.findIndex((c) => (c.order ?? c.id) > currentOrder && !c.completed);
               if (nextIndex !== -1) {
                 setActiveIndex(nextIndex);
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(updated.length); // all completed
+                setActiveIndex(prev.length); // all completed
               }
-              return updated;
+              return prev;
             });
-            setPercentage((prev) => prev + 100 / challenges.length);
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
             isCompletingRef.current = false;
           })
           .catch(() => {
@@ -180,6 +173,11 @@ export const Quiz = ({
     }
   };
 
+  // Handler for status icon inside conversation stack
+  const handleCompleteChallenge = (challengeId: number) => {
+    completeChallenge(challengeId, true);
+  };
+
   // Build conversation stack (2 items initially, 3 after first completion)
   let startIdx = activeIndex;
   let windowCount = 2;
@@ -224,13 +222,12 @@ export const Quiz = ({
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
+              onCompleteChallenge={handleCompleteChallenge}
             />
 
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge.id}
                 audioSrc={currentChallenge.audioSrc ?? undefined}
-                onComplete={() => completeChallenge(currentChallenge.id, true)}
                 disabled={pending}
               />
             )}
