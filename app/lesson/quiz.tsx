@@ -88,7 +88,7 @@ export const Quiz = ({
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
-  const directAnswerRef = useRef<HTMLDivElement>(null); // for direct answer container
+  const directAnswerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!challenge) return;
@@ -111,7 +111,6 @@ export const Quiz = ({
       attachTooltips(directAnswerRef.current);
     }
   }, [challenge?.directAnswer, wrapWords, attachTooltips]);
-
   // --- end of translator integration ---
 
   const onNext = () => {
@@ -200,7 +199,6 @@ export const Quiz = ({
               setActiveIndex(activeIndex + 1);
               setStatus("none");
             } else {
-              // This will trigger the finish screen (challenge becomes undefined)
               setActiveIndex(activeIndex + 1);
             }
           }, 800);
@@ -209,16 +207,7 @@ export const Quiz = ({
     });
   };
 
-  // Play audio for direct answer (speaker icon)
-  const playDirectAnswerAudio = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!challenge?.audioSrc) return;
-    const audio = new Audio(challenge.audioSrc);
-    audio.play().catch(err => console.warn("Audio play failed:", err));
-  };
-
   if (!challenge) {
-    // Finish screen (unchanged)
     return (
       <>
         {finishAudio}
@@ -262,8 +251,6 @@ export const Quiz = ({
   }
 
   const title = challenge.type === "ASSIST" ? "" : challenge.question;
-
-  // Determine if this challenge uses a direct answer
   const usesDirectAnswer = !!challenge.directAnswer;
 
   return (
@@ -278,7 +265,6 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* Question rendering (unchanged) */}
             {challenge.type === "SELECT" ? (
               <div
                 ref={selectQuestionRef}
@@ -290,16 +276,16 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-            {challenge.type === "ASSIST" && (
-              <QuestionBubble
-                ref={assistQuestionRef}
-                question={challenge.question}
-                translation={challenge.nativeText ?? undefined}
-                speaker={challenge.speaker ?? undefined}
-                romanized={challenge.directAnswer ?? undefined}   // <-- added this line
-              />
-            )}
-              {/* Direct answer button OR traditional challenge options */}
+              {challenge.type === "ASSIST" && (
+                <QuestionBubble
+                  ref={assistQuestionRef}
+                  question={challenge.question}
+                  translation={challenge.nativeText ?? undefined}
+                  speaker={challenge.speaker ?? undefined}
+                  romanized={challenge.directAnswer ?? undefined}
+                  audioSrc={challenge.audioSrc ?? undefined}
+                />
+              )}
               {usesDirectAnswer ? (
                 <div className="flex justify-center">
                   <div className="relative w-full">
@@ -313,15 +299,7 @@ export const Quiz = ({
                     >
                       {challenge.directAnswer}
                     </div>
-                    {challenge.audioSrc && (
-                      <button
-                        onClick={playDirectAnswerAudio}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:opacity-70 transition"
-                        aria-label="Play pronunciation"
-                      >
-                        <Volume2 className="w-5 h-5" strokeWidth={1.5} />
-                      </button>
-                    )}
+                    {/* Speaker icon removed from here */}
                   </div>
                 </div>
               ) : (
