@@ -89,12 +89,14 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Completion logic using order field (only completes the specified challenge) ---
+  // --- Completion logic: only complete the current active challenge ---
   const isCompletingRef = useRef(false);
 
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
-    // Safety: if pending, already completing, or the challenge is already completed, ignore
-    if (pending || isCompletingRef.current || challenges[activeIndex]?.completed) return;
+    if (pending || isCompletingRef.current) return;
+    // Prevent completing if already completed (stale)
+    if (currentChallenge?.completed) return;
+
     isCompletingRef.current = true;
     startTransition(() => {
       if (isCorrect) {
@@ -106,31 +108,30 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Mark this specific challenge as completed
-            setChallenges((prev) =>
-              prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
-            );
-            setPercentage((prev) => prev + 100 / challenges.length);
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
-            // Find the next incomplete challenge (by order) and make it active
+            // Update challenges: mark this one as completed
             setChallenges((prev) => {
-              const completedOrder = prev.find((c) => c.id === challengeId)?.order;
-              if (completedOrder === undefined) return prev;
-              const nextChallenge = prev.find(
-                (c) => c.order > completedOrder && !c.completed
+              const updated = prev.map((c) =>
+                c.id === challengeId ? { ...c, completed: true } : c
               );
-              if (nextChallenge) {
-                const nextIndex = prev.indexOf(nextChallenge);
+              // Find the next incomplete challenge (use order if available, else id)
+              const currentOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
+              const nextIndex = updated.findIndex((c) => {
+                const cmp = (c.order ?? c.id) > currentOrder;
+                return cmp && !c.completed;
+              });
+              if (nextIndex !== -1) {
                 setActiveIndex(nextIndex);
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(prev.length); // all completed, finish lesson
+                setActiveIndex(updated.length); // all completed
               }
-              return prev;
+              return updated;
             });
+            setPercentage((prev) => prev + 100 / challenges.length);
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
             isCompletingRef.current = false;
           })
           .catch(() => {
@@ -190,7 +191,7 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
-  // Finish screen when all challenges are completed or activeIndex out of range
+  // Finish screen
   if (activeIndex >= challenges.length) {
     return (
       <>
