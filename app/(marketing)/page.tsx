@@ -15,7 +15,6 @@ import { getUserProgress, getCoursesByNativeLanguage, getCourseProgress, getLess
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelectorClient } from "./target-language-selector-client";
 import { Promo } from "@/components/promo";
-import { Quests } from "@/components/quests";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
@@ -66,7 +65,6 @@ async function LearnContent() {
           hasActiveSubscription={isPro}
         />
         {!isPro && <Promo />}
-        <Quests points={userProgress.points} />
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />
