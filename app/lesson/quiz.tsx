@@ -65,6 +65,7 @@ export const Quiz = ({
   });
   const [challenges, setChallenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
+    // find first incomplete challenge (by order)
     const idx = challenges.findIndex((c) => !c.completed);
     return idx === -1 ? 0 : idx;
   });
@@ -87,18 +88,16 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // Completion logic using latest state via refs
+  // Completion logic - uses the challenge captured at call time
   const isCompletingRef = useRef(false);
-  const activeIndexRef = useRef(activeIndex);
-
-  useEffect(() => {
-    activeIndexRef.current = activeIndex;
-  }, [activeIndex]);
 
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
+    // Prevent concurrent completions
     if (pending || isCompletingRef.current) return;
-    // Prevent completing if already completed
-    if (currentChallenge?.completed) return;
+
+    // Use the current challenge object to verify it's still active and not already completed
+    const challengeToComplete = challenges[activeIndex];
+    if (!challengeToComplete || challengeToComplete.completed || challengeToComplete.id !== challengeId) return;
 
     isCompletingRef.current = true;
     startTransition(() => {
@@ -112,26 +111,26 @@ export const Quiz = ({
             }
             correctControls.play();
             // Update challenges: mark as completed
+            setChallenges((prev) =>
+              prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
+            );
+            setPercentage((prev) => prev + 100 / challenges.length);
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
+            // Find the next incomplete challenge (by order field, fallback to id)
             setChallenges((prev) => {
-              const updated = prev.map((c) =>
-                c.id === challengeId ? { ...c, completed: true } : c
-              );
-              // Find next incomplete using updated array and current activeIndexRef
-              const currentOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
-              const nextIndex = updated.findIndex((c) => (c.order ?? c.id) > currentOrder && !c.completed);
+              const completedOrder = prev.find((c) => c.id === challengeId)?.order ?? challengeId;
+              const nextIndex = prev.findIndex((c) => (c.order ?? c.id) > completedOrder && !c.completed);
               if (nextIndex !== -1) {
                 setActiveIndex(nextIndex);
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(updated.length); // all completed
+                setActiveIndex(prev.length); // all completed
               }
-              return updated;
+              return prev;
             });
-            setPercentage((prev) => prev + 100 / challenges.length);
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
             isCompletingRef.current = false;
           })
           .catch(() => {
@@ -139,6 +138,7 @@ export const Quiz = ({
             isCompletingRef.current = false;
           });
       } else {
+        // wrong answer (for multiple-choice)
         reduceHearts(challengeId)
           .then((response) => {
             if (response?.error === "hearts") {
@@ -184,7 +184,7 @@ export const Quiz = ({
     completeChallenge(challengeId, true);
   };
 
-  // Build conversation stack
+  // Build the conversation stack (2 items initially, 3 after first completion)
   let startIdx = activeIndex;
   let windowCount = 2;
   if (activeIndex > 0 && challenges[activeIndex - 1]?.completed) {
