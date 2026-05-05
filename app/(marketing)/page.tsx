@@ -51,6 +51,7 @@ async function LearnContent() {
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
         {/* UserProgress, Promo, Quests removed – hearts/points already in Shop page */}
+        <div /> {/* empty child to satisfy TypeScript */}
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />
