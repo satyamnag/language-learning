@@ -276,16 +276,17 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-              {challenge.type === "ASSIST" && (
-                <QuestionBubble
-                  ref={assistQuestionRef}
-                  question={challenge.question}
-                  translation={challenge.nativeText ?? undefined}
-                  speaker={challenge.speaker ?? undefined}
-                  romanized={challenge.directAnswer ?? undefined}
-                  audioSrc={challenge.audioSrc ?? undefined}
-                />
-              )}
+            {challenge.type === "ASSIST" && (
+              <QuestionBubble
+                ref={assistQuestionRef}
+                question={challenge.question}
+                translation={challenge.nativeText ?? undefined}
+                speaker={challenge.speaker ?? undefined}
+                romanized={challenge.directAnswer ?? undefined}
+                audioSrc={challenge.audioSrc ?? undefined}
+                onComplete={handleDirectAnswer}   // <-- add this line
+              />
+            )}
               {usesDirectAnswer ? (
                 <div className="flex justify-center">
                   <div className="relative w-full">

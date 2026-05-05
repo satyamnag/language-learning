@@ -1,5 +1,5 @@
-import { forwardRef, useRef, useEffect } from 'react';
-import { Volume2, Mic } from 'lucide-react';
+import { forwardRef, useRef, useEffect, useState } from 'react';
+import { Volume2, Mic, Circle, CheckCircle } from 'lucide-react';
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
@@ -8,11 +8,13 @@ type Props = {
   speaker?: string;
   romanized?: string;
   audioSrc?: string;
+  onComplete?: () => void; // optional – for direct‑answer completion
 };
 
-export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized, audioSrc }, ref) => {
+export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized, audioSrc, onComplete }, ref) => {
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const romanizedRef = useRef<HTMLDivElement>(null);
+  const [statusCompleted, setStatusCompleted] = useState(false);
 
   useEffect(() => {
     if (romanized && romanizedRef.current) {
@@ -31,6 +33,12 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
   const handleMicClick = () => {
     // Placeholder – no functionality yet
     console.log("Mic clicked – voice input coming soon");
+  };
+
+  const handleStatusClick = () => {
+    if (!onComplete || statusCompleted) return;
+    setStatusCompleted(true);
+    onComplete(); // triggers the direct‑answer completion and moves to next challenge
   };
 
   return (
@@ -60,25 +68,40 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             {romanized}
           </div>
         )}
-        {/* Speaker & Mic icons (centered, side by side) */}
-        {audioSrc && (
-          <div className="flex justify-center gap-3 mt-2">
+        {/* Speaker, Mic, and Status icons (centered, side by side) */}
+        <div className="flex justify-center gap-3 mt-2">
+          {audioSrc && (
+            <>
+              <button
+                onClick={handleSpeakerClick}
+                className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                aria-label="Play pronunciation"
+              >
+                <Volume2 className="w-6 h-6 text-blue-600 hover:text-blue-700 transition-colors" strokeWidth={1.8} />
+              </button>
+              <button
+                onClick={handleMicClick}
+                className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                aria-label="Voice input (coming soon)"
+              >
+                <Mic className="w-6 h-6 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
+              </button>
+            </>
+          )}
+          {onComplete && (
             <button
-              onClick={handleSpeakerClick}
-              className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              aria-label="Play pronunciation"
+              onClick={handleStatusClick}
+              className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+              aria-label="Mark as complete"
             >
-              <Volume2 className="w-6 h-6 text-blue-600 hover:text-blue-700 transition-colors" strokeWidth={1.8} />
+              {statusCompleted ? (
+                <CheckCircle className="w-6 h-6 text-green-600" strokeWidth={1.8} />
+              ) : (
+                <Circle className="w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors" strokeWidth={1.8} />
+              )}
             </button>
-            <button
-              onClick={handleMicClick}
-              className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              aria-label="Voice input (coming soon)"
-            >
-              <Mic className="w-6 h-6 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
-            </button>
-          </div>
-        )}
+          )}
+        </div>
         {/* Arrow pointer */}
         <div
           className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
