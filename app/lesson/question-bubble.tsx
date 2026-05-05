@@ -1,26 +1,12 @@
-import { forwardRef, useRef, useEffect } from 'react';
-import { useWordTranslator } from "@/hooks/useWordTranslator";
+import { forwardRef } from 'react';
 
 type Props = {
   question: string;
   translation?: string;
   speaker?: string;
-  romanized?: string;
 };
 
-export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized }, ref) => {
-  const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
-  const romanizedRef = useRef<HTMLDivElement>(null);
-
-  // Apply tooltips to the Romanized Tamil text
-  useEffect(() => {
-    if (romanized && romanizedRef.current) {
-      const html = wrapWords(romanized);
-      romanizedRef.current.innerHTML = html;
-      attachTooltips(romanizedRef.current);
-    }
-  }, [romanized, wrapWords, attachTooltips]);
-
+export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
   return (
     <div className="flex items-start gap-x-4 mb-8">
       {speaker && (
@@ -40,12 +26,6 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
         {translation && (
           <div className="mt-2 text-xs text-gray-500 italic border-l-2 border-gray-300 pl-3">
             {translation}
-          </div>
-        )}
-        {/* Romanized Tamil text – now with word‑wise tooltips */}
-        {romanized && (
-          <div ref={romanizedRef} className="mt-1 text-sm text-gray-600 pl-3">
-            {romanized}
           </div>
         )}
         {/* Arrow pointing to the left */}
