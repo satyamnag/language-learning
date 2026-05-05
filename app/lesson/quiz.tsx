@@ -206,6 +206,7 @@ export const Quiz = ({
             {/* Action buttons for the active challenge (only one set, at the bottom) */}
             {currentChallenge && (
               <ActionButtons
+                key={currentChallenge.id}               // ← forces reset for each new challenge
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
                 disabled={pending || currentChallenge.completed}
