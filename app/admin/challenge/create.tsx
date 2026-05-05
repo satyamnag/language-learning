@@ -26,6 +26,10 @@ export const ChallengeCreate = () => {
           source="speaker"
           label="Speaker name (e.g., Riya, Aarav, Priya, etc.)"
         />
+        <TextInput
+          source="directAnswer"
+          label="Direct answer (optional) – if set, challenge options are ignored"
+        />
         <ReferenceInput source="lessonId" reference="lessons" />
         <NumberInput source="order" validate={[required()]} label="Order" />
       </SimpleForm>

@@ -15,6 +15,7 @@ export const ChallengeList = () => {
           ]}
         />
         <TextField source="speaker" label="Speaker" />
+        <TextField source="directAnswer" label="Direct Answer" />
         <ReferenceField source="lessonId" reference="lessons" />
         <NumberField source="order" />
       </Datagrid>

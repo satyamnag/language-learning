@@ -108,7 +108,6 @@ export const Quiz = ({
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
-
     setSelectedOption(id);
   };
 
@@ -129,10 +128,7 @@ export const Quiz = ({
     }
 
     const correctOption = options.find((option) => option.correct);
-
-    if (!correctOption) {
-      return;
-    }
+    if (!correctOption) return;
 
     if (correctOption.id === selectedOption) {
       startTransition(() => {
@@ -142,11 +138,9 @@ export const Quiz = ({
               openHeartsModal();
               return;
             }
-
             correctControls.play();
             setStatus("correct");
             setPercentage((prev) => prev + 100 / challenges.length);
-
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
@@ -161,10 +155,8 @@ export const Quiz = ({
               openHeartsModal();
               return;
             }
-
             incorrectControls.play();
             setStatus("wrong");
-
             if (!response?.error) {
               setHearts((prev) => Math.max(prev - 1, 0));
             }
@@ -174,7 +166,39 @@ export const Quiz = ({
     }
   };
 
+  // Direct answer handler: mark correct and go to next challenge
+  const handleDirectAnswer = () => {
+    if (pending || status !== "none") return;
+    startTransition(() => {
+      upsertChallengeProgress(challenge.id)
+        .then((response) => {
+          if (response?.error === "hearts") {
+            openHeartsModal();
+            return;
+          }
+          correctControls.play();
+          setStatus("correct");
+          setPercentage((prev) => prev + 100 / challenges.length);
+          if (initialPercentage === 100) {
+            setHearts((prev) => Math.min(prev + 1, 5));
+          }
+          // Automatically move to next challenge after a short delay
+          setTimeout(() => {
+            if (activeIndex + 1 < challenges.length) {
+              setActiveIndex(activeIndex + 1);
+              setStatus("none");
+            } else {
+              // This will trigger the finish screen (challenge becomes undefined)
+              setActiveIndex(activeIndex + 1);
+            }
+          }, 800);
+        })
+        .catch(() => toast.error("Something went wrong. Please try again."));
+    });
+  };
+
   if (!challenge) {
+    // Finish screen (unchanged)
     return (
       <>
         {finishAudio}
@@ -204,14 +228,8 @@ export const Quiz = ({
             Great job! <br /> You&apos;ve completed the lesson.
           </h1>
           <div className="flex items-center gap-x-4 w-full">
-            <ResultCard
-              variant="points"
-              value={challenges.length * 10}
-            />
-            <ResultCard
-              variant="hearts"
-              value={hearts}
-            />
+            <ResultCard variant="points" value={challenges.length * 10} />
+            <ResultCard variant="hearts" value={hearts} />
           </div>
         </div>
         <Footer
@@ -225,6 +243,9 @@ export const Quiz = ({
 
   const title = challenge.type === "ASSIST" ? "" : challenge.question;
 
+  // Determine if this challenge uses a direct answer
+  const usesDirectAnswer = !!challenge.directAnswer;
+
   return (
     <>
       {incorrectAudio}
@@ -237,7 +258,7 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* For SELECT challenges, use the word‑wrappable container with tooltips */}
+            {/* Question rendering (unchanged) */}
             {challenge.type === "SELECT" ? (
               <div
                 ref={selectQuestionRef}
@@ -249,31 +270,46 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-            {challenge.type === "ASSIST" && (
-              <QuestionBubble
-                ref={assistQuestionRef}
-                question={challenge.question}
-                translation={challenge.nativeText ?? undefined}
-                speaker={challenge.speaker ?? undefined}
-              />
-            )}
-              <Challenge
-                options={options}
-                onSelect={onSelect}
-                status={status}
-                selectedOption={selectedOption}
-                disabled={pending}
-                type={challenge.type}
-              />
+              {challenge.type === "ASSIST" && (
+                <QuestionBubble
+                  ref={assistQuestionRef}
+                  question={challenge.question}
+                  translation={challenge.nativeText ?? undefined}
+                  speaker={challenge.speaker ?? undefined}
+                />
+              )}
+              {/* Direct answer button OR traditional challenge options */}
+              {usesDirectAnswer ? (
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleDirectAnswer}
+                    disabled={pending || status !== "none"}
+                    className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition"
+                  >
+                    {challenge.directAnswer}
+                  </button>
+                </div>
+              ) : (
+                <Challenge
+                  options={options}
+                  onSelect={onSelect}
+                  status={status}
+                  selectedOption={selectedOption}
+                  disabled={pending}
+                  type={challenge.type}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
-      <Footer
-        disabled={pending || !selectedOption}
-        status={status}
-        onCheck={onContinue}
-      />
+      {!usesDirectAnswer && (
+        <Footer
+          disabled={pending || !selectedOption}
+          status={status}
+          onCheck={onContinue}
+        />
+      )}
     </>
   );
 };

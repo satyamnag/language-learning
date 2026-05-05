@@ -51,8 +51,9 @@ export const challenges = pgTable("challenges", {
   type: challengesEnum("type").notNull(),
   question: text("question").notNull(),
   nativeText: text("native_text"),
-  order: integer("order").notNull(),
   speaker: text("speaker"),
+  order: integer("order").notNull(),
+  directAnswer: text("direct_answer"), // new column – when set, use this as the only answer
 });
 
 export const challengesRelations = relations(challenges, ({ one, many }) => ({
