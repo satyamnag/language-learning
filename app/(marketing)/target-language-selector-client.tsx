@@ -23,7 +23,7 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
     setSelected(courseId);
     startTransition(async () => {
       await upsertUserProgress(courseId);
-      router.push("/lesson");       // ✅ redirects to lesson page
+      router.push("/lesson");        // redirects to lesson page
     });
   };
 
@@ -56,7 +56,7 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
           </svg>
         </div>
       </div>
-      {isPending && <p className="text-sm text-gray-500 mt-2">Loading...</p>}
+      {isPending && <p className="text-sm text-gray-500 mt-2">Redirecting...</p>}
     </div>
   );
 };

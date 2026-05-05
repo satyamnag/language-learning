@@ -92,7 +92,7 @@ export default async function Home() {
 
   return (
     <>
-      {/* Marketing hero – only shown when signed out (buttons removed, header already has login) */}
+      {/* Marketing hero – only shown when signed out */}
       <SignedOut>
         <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
           <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
@@ -117,14 +117,14 @@ export default async function Home() {
         </div>
       </SignedOut>
 
-      {/* Signed‑in dashboard – hero removed, dropdowns placed at top */}
+      {/* Signed‑in dashboard – hero removed, dropdowns at top */}
       <SignedIn>
         <MobileHeader />
         <div className="flex h-full">
           <Sidebar className="hidden lg:flex" />
           <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
             <div className="max-w-[1056px] mx-auto pt-6 h-full">
-              {/* Dropdowns section – replaces the hero/start button */}
+              {/* Dropdowns section */}
               <div className="mb-8">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <div className="flex-1 max-w-md mx-auto sm:mx-0">
@@ -140,7 +140,7 @@ export default async function Home() {
                   </div>
                 </div>
               </div>
-              {/* Learning content (units/lessons) */}
+              {/* Learning content (units/lessons) – only shown if a course is active */}
               {activeCourseId && <LearnContent />}
             </div>
           </main>
