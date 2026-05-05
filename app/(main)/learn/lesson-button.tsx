@@ -1,13 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Crown, Star } from "lucide-react";
-import { CircularProgressbarWithChildren } from "react-circular-progressbar";
-
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-
-import "react-circular-progressbar/dist/styles.css";
 
 type Props = {
   id: number;
@@ -16,101 +11,48 @@ type Props = {
   locked?: boolean;
   current?: boolean;
   percentage: number;
+  title: string;        // lesson title passed from parent
 };
 
 export const LessonButton = ({
   id,
-  index,
-  totalCount,
   locked,
   current,
-  percentage
+  percentage,
+  title,
 }: Props) => {
-  const cycleLength = 8;
-  const cycleIndex = index % cycleLength;
+  const href = `/lesson/${id}`;
 
-  let indentationLevel;
-
-  if (cycleIndex <= 2) {
-    indentationLevel = cycleIndex;
-  } else if (cycleIndex <= 4) {
-    indentationLevel = 4 - cycleIndex;
-  } else if (cycleIndex <= 6) {
-    indentationLevel = 4 - cycleIndex;
-  } else {
-    indentationLevel = cycleIndex - 8;
-  }
-
-  const rightPosition = indentationLevel * 40;
-
-  const isFirst = index === 0;
-  const isLast = index === totalCount;
-  const isCompleted = !current && !locked;
-
-  const Icon = isCompleted ? Check : isLast ? Crown : Star;
-
-  const href = isCompleted ? `/lesson/${id}` : "/lesson";
+  const isCompleted = !locked && !current && percentage === 100;
 
   return (
-    <Link 
-      href={href} 
-      aria-disabled={locked} 
+    <Link
+      href={href}
+      aria-disabled={locked}
       style={{ pointerEvents: locked ? "none" : "auto" }}
+      className={cn(
+        "block w-full mb-3 transition-all duration-200",
+        locked && "opacity-50 cursor-not-allowed",
+        current && "ring-2 ring-green-500 shadow-md"
+      )}
     >
-      <div
-        className="relative"
-        style={{
-          right: `${rightPosition}px`,
-          marginTop: isFirst && !isCompleted ? 60 : 24,
-        }}
-      >
-        {current ? (
-          <div className="h-[102px] w-[102px] relative">
-            {/* "Start" bubble removed – only circular button remains */}
-            <CircularProgressbarWithChildren
-              value={Number.isNaN(percentage) ? 0 : percentage}
-              styles={{
-                path: {
-                  stroke: "#4ade80",
-                },
-                trail: {
-                  stroke: "#e5e7eb",
-                },
-              }}
-            >
-              <Button
-                size="rounded"
-                variant={locked ? "locked" : "secondary"}
-                className="h-[70px] w-[70px] border-b-8"
-              >
-                <Icon
-                  className={cn(
-                    "h-10 w-10",
-                    locked
-                    ? "fill-neutral-400 text-neutral-400 stroke-neutral-400"
-                    : "fill-primary-foreground text-primary-foreground",
-                    isCompleted && "fill-none stroke-[4]"
-                  )}
-                />
-              </Button>
-            </CircularProgressbarWithChildren>
-          </div>
-        ) : (
-          <Button
-            size="rounded"
-            variant={locked ? "locked" : "secondary"}
-            className="h-[70px] w-[70px] border-b-8"
-          >
-            <Icon
-              className={cn(
-                "h-10 w-10",
-                locked
-                ? "fill-neutral-400 text-neutral-400 stroke-neutral-400"
-                : "fill-primary-foreground text-primary-foreground",
-                isCompleted && "fill-none stroke-[4]"
-              )}
-            />
-          </Button>
+      <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-semibold text-gray-800 text-base">
+            {title}
+          </h3>
+          {isCompleted && <Check className="w-5 h-5 text-green-600" />}
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${Math.min(100, percentage)}%` }}
+          />
+        </div>
+        {current && (
+          <p className="text-xs text-gray-500 mt-2 text-right">
+            {Math.round(percentage)}% complete
+          </p>
         )}
       </div>
     </Link>
