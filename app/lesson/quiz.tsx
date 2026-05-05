@@ -206,7 +206,7 @@ export const Quiz = ({
             {/* Action buttons for the active challenge – with key to reset state */}
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge.id}               // ← CRITICAL: forces fresh component per challenge
+                key={currentChallenge?.id ?? activeIndex}   // guaranteed unique key
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
                 disabled={pending || currentChallenge.completed}

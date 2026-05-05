@@ -1,7 +1,7 @@
 "use client";
 
 import { Volume2, Mic, Circle, CheckCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Props = {
   audioSrc?: string;
@@ -11,6 +11,11 @@ type Props = {
 
 export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
   const [statusCompleted, setStatusCompleted] = useState(false);
+
+  // Reset status when a new challenge loads (audioSrc changes)
+  useEffect(() => {
+    setStatusCompleted(false);
+  }, [audioSrc]);
 
   const handleSpeakerClick = () => {
     if (!audioSrc || disabled) return;
@@ -26,7 +31,7 @@ export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
   const handleStatusClick = () => {
     if (disabled || statusCompleted) return;
     setStatusCompleted(true);
-    onComplete(); // triggers lesson progression
+    onComplete();
   };
 
   return (
