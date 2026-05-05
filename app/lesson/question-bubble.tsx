@@ -4,9 +4,10 @@ type Props = {
   question: string;
   translation?: string;
   speaker?: string;
+  romanized?: string; // new – Romanized Tamil text (from challenge.directAnswer)
 };
 
-export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker }, ref) => {
+export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, translation, speaker, romanized }, ref) => {
   return (
     <div className="flex items-start gap-x-4 mb-8">
       {speaker && (
@@ -22,10 +23,16 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
         >
           {question}
         </div>
-        {/* Translation line (English) – plain text, no tooltips */}
+        {/* English translation – plain text, no tooltips */}
         {translation && (
           <div className="mt-2 text-xs text-gray-500 italic border-l-2 border-gray-300 pl-3">
             {translation}
+          </div>
+        )}
+        {/* Romanized Tamil text – slightly larger, plain, no button */}
+        {romanized && (
+          <div className="mt-1 text-sm text-gray-600 pl-3">
+            {romanized}
           </div>
         )}
         {/* Arrow pointing to the left */}

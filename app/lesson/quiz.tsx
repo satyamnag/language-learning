@@ -290,14 +290,15 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-              {challenge.type === "ASSIST" && (
-                <QuestionBubble
-                  ref={assistQuestionRef}
-                  question={challenge.question}
-                  translation={challenge.nativeText ?? undefined}
-                  speaker={challenge.speaker ?? undefined}
-                />
-              )}
+            {challenge.type === "ASSIST" && (
+              <QuestionBubble
+                ref={assistQuestionRef}
+                question={challenge.question}
+                translation={challenge.nativeText ?? undefined}
+                speaker={challenge.speaker ?? undefined}
+                romanized={challenge.directAnswer}   // <-- added this line
+              />
+            )}
               {/* Direct answer button OR traditional challenge options */}
               {usesDirectAnswer ? (
                 <div className="flex justify-center">
