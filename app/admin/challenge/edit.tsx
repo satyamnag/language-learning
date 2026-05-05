@@ -27,6 +27,10 @@ export const ChallengeEdit = () => {
           label="Speaker name (e.g., Riya, Aarav, Priya, etc.)"
         />
         <TextInput
+          source="audioSrc"
+          label="Audio URL (optional)"
+        />
+        <TextInput
           source="directAnswer"
           label="Direct answer (optional) – if set, challenge options are ignored"
         />

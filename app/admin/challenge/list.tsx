@@ -15,6 +15,7 @@ export const ChallengeList = () => {
           ]}
         />
         <TextField source="speaker" label="Speaker" />
+        <TextInput source="audioSrc" label="Audio URL (optional)"/>
         <TextField source="directAnswer" label="Direct Answer" />
         <ReferenceField source="lessonId" reference="lessons" />
         <NumberField source="order" />

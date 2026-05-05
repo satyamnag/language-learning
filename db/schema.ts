@@ -53,7 +53,8 @@ export const challenges = pgTable("challenges", {
   nativeText: text("native_text"),
   speaker: text("speaker"),
   order: integer("order").notNull(),
-  directAnswer: text("direct_answer"), // new column – when set, use this as the only answer
+  directAnswer: text("direct_answer"),
+  audioSrc: text("audio_src"),
 });
 
 export const challengesRelations = relations(challenges, ({ one, many }) => ({
