@@ -22,6 +22,8 @@ import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
 import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
+import { Sidebar } from "@/components/sidebar";
+import { MobileHeader } from "@/components/mobile-header";
 
 // Inline component to avoid import path issues
 async function LearnContent() {
@@ -126,22 +128,33 @@ export default async function Home() {
               </div>
             </SignedOut>
             <SignedIn>
-              <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
-                  </div>
-                  {courses.length > 0 && (
-                    <div className="flex-1">
-                      <TargetLanguageSelectorClient 
-                        courses={courses}
-                        currentCourseId={activeCourseId ?? undefined}
-                      />
+              {/* Sidebar + main content layout (same as /learn) */}
+              <>
+                <MobileHeader />
+                <div className="flex h-full">
+                  <Sidebar className="hidden lg:flex" />
+                  <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
+                    <div className="max-w-[1056px] mx-auto pt-6 h-full">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1">
+                            <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+                          </div>
+                          {courses.length > 0 && (
+                            <div className="flex-1">
+                              <TargetLanguageSelectorClient 
+                                courses={courses}
+                                currentCourseId={activeCourseId ?? undefined}
+                              />
+                            </div>
+                          )}
+                        </div>
+                        {activeCourseId && <LearnContent />}
+                      </div>
                     </div>
-                  )}
+                  </main>
                 </div>
-                {activeCourseId && <LearnContent />}
-              </div>
+              </>
             </SignedIn>
           </ClerkLoaded>
         </div>
