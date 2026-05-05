@@ -20,6 +20,7 @@ import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
 import { QuestionBubble } from "./question-bubble";
 import { ConversationStack } from "./conversation-stack";
+import { ActionButtons } from "./action-buttons";
 
 type Props ={
   initialPercentage: number;
@@ -86,10 +87,9 @@ export const Quiz = ({
       selectQuestionRef.current.innerHTML = html;
       attachTooltips(selectQuestionRef.current);
     }
-    // For ASSIST challenges, tooltips are handled inside QuestionBubble
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Core completion logic (used by both status icon and multiple‑choice) ---
+  // --- Core completion logic ---
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
     if (pending) return;
     startTransition(() => {
@@ -101,7 +101,6 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Mark completed locally
             setChallenges((prev) =>
               prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
             );
@@ -109,14 +108,12 @@ export const Quiz = ({
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
-            // Find next incomplete
             const nextIdx = challenges.findIndex((c, idx) => idx > activeIndex && !c.completed);
             if (nextIdx !== -1) {
               setActiveIndex(nextIdx);
               setStatus("none");
               setSelectedOption(undefined);
             } else {
-              // All completed
               setActiveIndex(challenges.length);
             }
           })
@@ -159,17 +156,9 @@ export const Quiz = ({
     }
   };
 
-  // For direct‑answer challenges (via status icon in QuestionBubble)
-  const handleDirectAnswerComplete = () => {
-    if (currentChallenge && !pending) {
-      completeChallenge(currentChallenge.id, true);
-    }
-  };
-
-  // Build the conversation stack: initially show 2 items (active + next); after first completion show 3 items.
+  // Build conversation stack (2 items initially, 3 after first completion)
   let startIdx = activeIndex;
-  let windowCount = 2; // default: show active and next waiting
-  // If there is a completed conversation immediately above the active, include it (so we show 3 items)
+  let windowCount = 2;
   if (activeIndex > 0 && challenges[activeIndex - 1].completed) {
     startIdx = activeIndex - 1;
     windowCount = 3;
@@ -208,19 +197,22 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* Conversation stack (2 or 3 items depending on progress) */}
+            {/* Conversation stack (2 or 3 items) */}
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
-              onComplete={(idx) => {
-                const conv = visibleChallenges[idx];
-                if (conv && conv.id === currentChallenge.id) {
-                  completeChallenge(conv.id, true);
-                }
-              }}
             />
 
-            {/* For multiple‑choice challenges that are NOT direct‑answer, show answer options and footer */}
+            {/* Action buttons for the active challenge (only one set, at the bottom) */}
+            {currentChallenge && (
+              <ActionButtons
+                audioSrc={currentChallenge.audioSrc ?? undefined}
+                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                disabled={pending || currentChallenge.completed}
+              />
+            )}
+
+            {/* For multiple‑choice challenges, show answer options and footer */}
             {!usesDirectAnswer && (
               <>
                 <div className="mt-4">
