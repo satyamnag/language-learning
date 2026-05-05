@@ -10,9 +10,7 @@ import { redirect } from "next/navigation";
 import { getUserProgress, getCoursesByNativeLanguage, getCourseProgress, getLessonPercentage, getUnits, getUserSubscription } from "@/db/queries";
 import { NativeLanguageSelector } from "@/components/native-language-selector";
 import { TargetLanguageSelectorClient } from "./target-language-selector-client";
-import { Promo } from "@/components/promo";
 import { FeedWrapper } from "@/components/feed-wrapper";
-import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
 import { Unit } from "@/app/(main)/learn/unit";
@@ -49,17 +47,10 @@ async function LearnContent() {
     redirect("/courses");
   }
 
-  const isPro = !!userSubscription?.isActive;
-
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
-        <UserProgress
-          activeCourse={userProgress.activeCourse}
-          hearts={userProgress.hearts}
-          points={userProgress.points}
-          hasActiveSubscription={isPro}
-        />
+        {/* UserProgress, Promo, Quests removed – hearts/points already in Shop page */}
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />
@@ -103,7 +94,7 @@ export default async function Home() {
                 <SignedOut>
                   <h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-justify">
                     Learn, practice, and master Indian regional languages with{" "}
-                    <span className="text-green-600 font-extrabold">bolbolke</span>{"."}
+                    <span className="text-green-600 font-extrabold">bolbolke</span>.
                   </h1>
                 </SignedOut>
               </ClerkLoaded>
