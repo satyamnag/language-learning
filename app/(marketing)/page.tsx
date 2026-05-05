@@ -58,7 +58,7 @@ export default async function Home() {
                 <div className="flex-1">
                   <TargetLanguageSelectorClient 
                     courses={courses}
-                    currentCourseId={activeCourseId}
+                    currentCourseId={activeCourseId ?? undefined}
                   />
                 </div>
               </div>
