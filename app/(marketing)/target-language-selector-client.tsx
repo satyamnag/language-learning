@@ -23,7 +23,7 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
     setSelected(courseId);
     startTransition(async () => {
       await upsertUserProgress(courseId);
-      router.refresh(); // reload server components to show new course data
+      router.push("/lesson");       // ✅ redirects to lesson page
     });
   };
 
