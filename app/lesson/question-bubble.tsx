@@ -25,6 +25,13 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
   const romanizedRef = useRef<HTMLDivElement>(null);
   const [localCompleted, setLocalCompleted] = useState(false);
 
+  // Reset local completed when a new challenge becomes active
+  useEffect(() => {
+    if (isActive) {
+      setLocalCompleted(false);
+    }
+  }, [isActive]);
+
   useEffect(() => {
     if (romanized && romanizedRef.current) {
       const html = wrapWords(romanized);
