@@ -206,10 +206,10 @@ export const Quiz = ({
             {/* Action buttons for the active challenge – with key to reset state */}
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge?.id ?? activeIndex}   // guaranteed unique key
+                key={currentChallenge.id}               // ensures fresh component per challenge
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
-                disabled={pending || currentChallenge.completed}
+                disabled={pending}                      // only pending disables speaker/mic; status ignores it
               />
             )}
 

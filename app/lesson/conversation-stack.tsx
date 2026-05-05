@@ -20,7 +20,6 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
       {conversations.map((conv, idx) => {
         const isCompleted = conv.completed;
         const isActive = idx === activeIndex;
-        const isWaiting = !isCompleted && !isActive;
         return (
           <div
             key={conv.id}

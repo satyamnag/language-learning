@@ -29,7 +29,7 @@ export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
   };
 
   const handleStatusClick = () => {
-    if (disabled || statusCompleted) return;
+    if (statusCompleted) return;   // ignore disabled prop – always clickable for active challenge
     setStatusCompleted(true);
     onComplete();
   };
@@ -54,8 +54,7 @@ export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
       </button>
       <button
         onClick={handleStatusClick}
-        disabled={disabled}
-        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
         aria-label="Mark as complete"
       >
         {statusCompleted ? (

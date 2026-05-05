@@ -28,26 +28,22 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
         </div>
       )}
       <div className="relative max-w-2xl flex flex-col h-full w-full">
-        {/* Main Tamil sentence – tooltips via parent */}
         <div
           ref={ref}
           className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl shadow-lg p-4 text-gray-800 text-base lg:text-lg leading-relaxed"
         >
           {question}
         </div>
-        {/* English translation – plain text */}
         {translation && (
           <div className="mt-2 text-xs text-gray-500 italic border-l-2 border-gray-300 pl-3">
             {translation}
           </div>
         )}
-        {/* Romanized Tamil text – with tooltips */}
         {romanized && (
           <div ref={romanizedRef} className="mt-1 text-sm text-gray-600 pl-3">
             {romanized}
           </div>
         )}
-        {/* Arrow pointer – unchanged */}
         <div
           className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-200"
           style={{ filter: 'drop-shadow(-2px 0 2px rgba(0,0,0,0.05))' }}
