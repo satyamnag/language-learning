@@ -21,7 +21,7 @@ import { ResultCard } from "./result-card";
 import { ConversationStack } from "./conversation-stack";
 import { ActionButtons } from "./action-buttons";
 
-type Props ={
+type Props = {
   initialPercentage: number;
   initialHearts: number;
   initialLessonId: number;
@@ -87,7 +87,7 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // Ref to always have the latest activeIndex inside callbacks
+  // Ref to keep the latest activeIndex inside callbacks
   const activeIndexRef = useRef(activeIndex);
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -95,78 +95,93 @@ export const Quiz = ({
 
   const isCompletingRef = useRef(false);
 
-  // Core completion (same for status icon and mic)
-  const completeChallenge = useCallback((challengeId: number, isCorrect: boolean) => {
-    if (pending || isCompletingRef.current) return;
+  // Core completion logic (used by both status icon and mic)
+  const completeChallenge = useCallback(
+    (challengeId: number, isCorrect: boolean) => {
+      console.log("🔵 completeChallenge called", { challengeId, isCorrect, pending, isCompleting: isCompletingRef.current });
+      if (pending || isCompletingRef.current) return;
 
-    // Get the current active challenge using the ref
-    const currentIdx = activeIndexRef.current;
-    const activeChallenge = challenges[currentIdx];
-    if (!activeChallenge || activeChallenge.completed || activeChallenge.id !== challengeId) {
-      console.warn("Completion attempted on wrong or already completed challenge");
-      return;
-    }
-
-    isCompletingRef.current = true;
-    startTransition(() => {
-      if (isCorrect) {
-        upsertChallengeProgress(challengeId)
-          .then((response) => {
-            if (response?.error === "hearts") {
-              openHeartsModal();
-              isCompletingRef.current = false;
-              return;
-            }
-            correctControls.play();
-            // Update state: mark as completed
-            setChallenges((prev) => {
-              const updated = prev.map((c) =>
-                c.id === challengeId ? { ...c, completed: true } : c
-              );
-              // Find next incomplete challenge
-              const completedOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
-              const nextIndex = updated.findIndex((c) => (c.order ?? c.id) > completedOrder && !c.completed);
-              if (nextIndex !== -1) {
-                setActiveIndex(nextIndex);
-                setStatus("none");
-                setSelectedOption(undefined);
-              } else {
-                setActiveIndex(updated.length); // all completed
-              }
-              return updated;
-            });
-            setPercentage((prev) => prev + 100 / challenges.length);
-            if (initialPercentage === 100) {
-              setHearts((prev) => Math.min(prev + 1, 5));
-            }
-            isCompletingRef.current = false;
-          })
-          .catch(() => {
-            toast.error("Something went wrong");
-            isCompletingRef.current = false;
-          });
-      } else {
-        reduceHearts(challengeId)
-          .then((response) => {
-            if (response?.error === "hearts") {
-              openHeartsModal();
-              isCompletingRef.current = false;
-              return;
-            }
-            incorrectControls.play();
-            setStatus("wrong");
-            if (!response?.error) {
-              setHearts((prev) => Math.max(prev - 1, 0));
-            }
-            isCompletingRef.current = false;
-          })
-          .catch(() => {
-            toast.error("Something went wrong");
-            isCompletingRef.current = false;
-          });
+      // Verify that the challenge is the current active one
+      const currentIdx = activeIndexRef.current;
+      const activeCh = challenges[currentIdx];
+      if (!activeCh || activeCh.completed || activeCh.id !== challengeId) {
+        console.warn("❌ Not the active challenge or already completed", {
+          activeChId: activeCh?.id,
+          challengeId,
+          completed: activeCh?.completed,
+        });
+        return;
       }
-    });
-  }, [pending, challenges, initialPercentage, correctControls, openHeartsModal, incorrectControls, toast]);
+
+      isCompletingRef.current = true;
+      startTransition(() => {
+        if (isCorrect) {
+          upsertChallengeProgress(challengeId)
+            .then((response) => {
+              if (response?.error === "hearts") {
+                openHeartsModal();
+                isCompletingRef.current = false;
+                return;
+              }
+              correctControls.play();
+              console.log("✅ Challenge completed, updating state");
+
+              // Mark the challenge as completed
+              setChallenges((prev) => {
+                const updated = prev.map((c) =>
+                  c.id === challengeId ? { ...c, completed: true } : c
+                );
+                // Find the next incomplete challenge (by order)
+                const completedOrder = updated.find((c) => c.id === challengeId)?.order ?? challengeId;
+                const nextIndex = updated.findIndex(
+                  (c) => (c.order ?? c.id) > completedOrder && !c.completed
+                );
+                console.log("🔍 Next index found:", nextIndex);
+                if (nextIndex !== -1) {
+                  setActiveIndex(nextIndex);
+                  setStatus("none");
+                  setSelectedOption(undefined);
+                } else {
+                  setActiveIndex(updated.length); // all completed
+                }
+                return updated;
+              });
+              setPercentage((prev) => prev + 100 / challenges.length);
+              if (initialPercentage === 100) {
+                setHearts((prev) => Math.min(prev + 1, 5));
+              }
+              isCompletingRef.current = false;
+            })
+            .catch((err) => {
+              console.error("Error in upsertChallengeProgress", err);
+              toast.error("Something went wrong");
+              isCompletingRef.current = false;
+            });
+        } else {
+          reduceHearts(challengeId)
+            .then((response) => {
+              if (response?.error === "hearts") {
+                openHeartsModal();
+                isCompletingRef.current = false;
+                return;
+              }
+              incorrectControls.play();
+              setStatus("wrong");
+              if (!response?.error) {
+                setHearts((prev) => Math.max(prev - 1, 0));
+              }
+              isCompletingRef.current = false;
+            })
+            .catch((err) => {
+              console.error("Error in reduceHearts", err);
+              toast.error("Something went wrong");
+              isCompletingRef.current = false;
+            });
+        }
+      });
+    },
+    [pending, challenges, initialPercentage, correctControls, openHeartsModal, incorrectControls, toast]
+  );
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -187,9 +202,13 @@ export const Quiz = ({
     }
   };
 
-  const handleCompleteChallenge = useCallback((challengeId: number) => {
-    completeChallenge(challengeId, true);
-  }, [completeChallenge]);
+  const handleCompleteChallenge = useCallback(
+    (challengeId: number) => {
+      console.log("🎤 handleCompleteChallenge called for", challengeId);
+      completeChallenge(challengeId, true);
+    },
+    [completeChallenge]
+  );
 
   // Build conversation stack
   let startIdx = activeIndex;
@@ -199,7 +218,7 @@ export const Quiz = ({
     windowCount = 3;
   }
   const visibleChallenges = challenges.slice(startIdx, startIdx + windowCount);
-  let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
+  let visibleActiveIndex = visibleChallenges.findIndex((c) => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
   // Finish screen
@@ -207,11 +226,19 @@ export const Quiz = ({
     return (
       <>
         {finishAudio}
-        <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={500}
+          tweenDuration={10000}
+        />
         <div className="flex flex-col gap-y-4 lg:gap-y-8 max-w-lg mx-auto text-center items-center justify-center h-full">
           <Image src="/finish.svg" alt="Finish" className="hidden lg:block" height={100} width={100} />
           <Image src="/finish.svg" alt="Finish" className="block lg:hidden" height={50} width={50} />
-          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
+          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">
+            Great job! <br /> You&apos;ve completed the lesson.
+          </h1>
           <div className="flex items-center gap-x-4 w-full">
             <ResultCard variant="points" value={challenges.length * 10} />
             <ResultCard variant="hearts" value={hearts} />
@@ -228,7 +255,11 @@ export const Quiz = ({
     <>
       {incorrectAudio}
       {correctAudio}
-      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
+      <Header
+        hearts={hearts}
+        percentage={percentage}
+        hasActiveSubscription={!!userSubscription?.isActive}
+      />
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
@@ -242,7 +273,10 @@ export const Quiz = ({
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 disabled={pending}
-                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                onComplete={() => {
+                  console.log("🎤 ActionButtons mic clicked, calling completeChallenge for", currentChallenge.id);
+                  completeChallenge(currentChallenge.id, true);
+                }}
               />
             )}
 
