@@ -26,7 +26,8 @@ export const Sidebar = ({ className }: Props) => {
         </div>
       </Link>
       <div className="flex flex-col gap-y-2 flex-1">
-        {/* "Learn" item removed – homepage now serves learning content */}
+        {/* New Courses item */}
+        <SidebarItem label="Courses" href="/courses" iconSrc="/learn.svg" />
         <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
         <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
         <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
