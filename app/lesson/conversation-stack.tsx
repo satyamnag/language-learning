@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { CheckCircle } from "lucide-react";
 import { challenges, challengeOptions } from "@/db/schema";
 import { QuestionBubble } from "./question-bubble";
+import { CheckCircle } from "lucide-react";
 
 type Conversation = typeof challenges.$inferSelect & {
   completed: boolean;
@@ -12,11 +11,10 @@ type Conversation = typeof challenges.$inferSelect & {
 
 type Props = {
   conversations: Conversation[];
-  activeIndex: number;
-  onComplete: (index: number) => void;
+  activeIndex: number; // only used for styling
 };
 
-export const ConversationStack = ({ conversations, activeIndex, onComplete }: Props) => {
+export const ConversationStack = ({ conversations, activeIndex }: Props) => {
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-3xl mx-auto px-4">
       {conversations.map((conv, idx) => {
@@ -40,8 +38,6 @@ export const ConversationStack = ({ conversations, activeIndex, onComplete }: Pr
               translation={conv.nativeText ?? undefined}
               speaker={conv.speaker ?? undefined}
               romanized={conv.directAnswer ?? undefined}
-              audioSrc={conv.audioSrc ?? undefined}
-              onComplete={isActive ? () => onComplete(idx) : undefined}
             />
             {isCompleted && (
               <div className="flex justify-center mt-2">
