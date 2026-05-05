@@ -4,10 +4,11 @@ import { Volume2, Mic } from "lucide-react";
 
 type Props = {
   audioSrc?: string;
+  onComplete: () => void;
   disabled?: boolean;
 };
 
-export const ActionButtons = ({ audioSrc, disabled }: Props) => {
+export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
   const handleSpeakerClick = () => {
     if (!audioSrc || disabled) return;
     const audio = new Audio(audioSrc);
@@ -16,7 +17,7 @@ export const ActionButtons = ({ audioSrc, disabled }: Props) => {
 
   const handleMicClick = () => {
     if (disabled) return;
-    console.log("Mic clicked – voice input coming soon");
+    onComplete();
   };
 
   return (
@@ -33,7 +34,7 @@ export const ActionButtons = ({ audioSrc, disabled }: Props) => {
         onClick={handleMicClick}
         disabled={disabled}
         className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Voice input (coming soon)"
+        aria-label="Complete challenge"
       >
         <Mic className="w-7 h-7 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
       </button>
