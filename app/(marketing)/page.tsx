@@ -20,7 +20,7 @@ import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
-// ✅ Correct absolute imports
+// ✅ Absolute imports – these must work if the file exists at app/(main)/learn/unit.tsx
 import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
 
