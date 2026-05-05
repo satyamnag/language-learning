@@ -19,6 +19,7 @@ import { Footer } from "./footer";
 import { Challenge } from "./challenge";
 import { ResultCard } from "./result-card";
 import { QuestionBubble } from "./question-bubble";
+import { ConversationStack } from "./conversation-stack";
 
 type Props ={
   initialPercentage: number;
@@ -50,20 +51,11 @@ export const Quiz = ({
   });
 
   const { width, height } = useWindowSize();
-
   const router = useRouter();
 
   const [finishAudio] = useAudio({ src: "/finish.mp3", autoPlay: true });
-  const [
-    correctAudio,
-    _c,
-    correctControls,
-  ] = useAudio({ src: "/correct.wav" });
-  const [
-    incorrectAudio,
-    _i,
-    incorrectControls,
-  ] = useAudio({ src: "/incorrect.wav" });
+  const [correctAudio, _c, correctControls] = useAudio({ src: "/correct.wav" });
+  const [incorrectAudio, _i, incorrectControls] = useAudio({ src: "/incorrect.wav" });
   const [pending, startTransition] = useTransition();
 
   const [lessonId] = useState(initialLessonId);
@@ -71,85 +63,66 @@ export const Quiz = ({
   const [percentage, setPercentage] = useState(() => {
     return initialPercentage === 100 ? 0 : initialPercentage;
   });
-  const [challenges] = useState(initialLessonChallenges);
+  const [challenges, setChallenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
-    const uncompletedIndex = challenges.findIndex((challenge) => !challenge.completed);
-    return uncompletedIndex === -1 ? 0 : uncompletedIndex;
+    const idx = challenges.findIndex((c) => !c.completed);
+    return idx === -1 ? 0 : idx;
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
+  const currentChallenge = challenges[activeIndex];
+  const options = currentChallenge?.challengeOptions ?? [];
 
-  // --- Word translator (Tippy.js + cache) for all challenges ---
+  // --- Word translator (Tippy.js + cache) for SELECT questions ---
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!challenge) return;
-    if (challenge.type === "SELECT" && challenge.question && selectQuestionRef.current) {
-      const html = wrapWords(challenge.question);
+    if (currentChallenge && currentChallenge.type === "SELECT" && currentChallenge.question && selectQuestionRef.current) {
+      const html = wrapWords(currentChallenge.question);
       selectQuestionRef.current.innerHTML = html;
       attachTooltips(selectQuestionRef.current);
-    } else if (challenge.type === "ASSIST" && challenge.question && assistQuestionRef.current) {
-      const html = wrapWords(challenge.question);
-      assistQuestionRef.current.innerHTML = html;
-      attachTooltips(assistQuestionRef.current);
     }
-  }, [challenge, wrapWords, attachTooltips]);
-  // --- end of translator integration ---
+    // For ASSIST challenges, tooltips are handled inside QuestionBubble
+  }, [currentChallenge, wrapWords, attachTooltips]);
 
-  const onNext = () => {
-    setActiveIndex((current) => current + 1);
-  };
-
-  const onSelect = (id: number) => {
-    if (status !== "none") return;
-    setSelectedOption(id);
-  };
-
-  const onContinue = () => {
-    if (!selectedOption) return;
-
-    if (status === "wrong") {
-      setStatus("none");
-      setSelectedOption(undefined);
-      return;
-    }
-
-    if (status === "correct") {
-      onNext();
-      setStatus("none");
-      setSelectedOption(undefined);
-      return;
-    }
-
-    const correctOption = options.find((option) => option.correct);
-    if (!correctOption) return;
-
-    if (correctOption.id === selectedOption) {
-      startTransition(() => {
-        upsertChallengeProgress(challenge.id)
+  // --- Core completion logic (used by both status icon and multiple‑choice) ---
+  const completeChallenge = (challengeId: number, isCorrect: boolean) => {
+    if (pending) return;
+    startTransition(() => {
+      if (isCorrect) {
+        upsertChallengeProgress(challengeId)
           .then((response) => {
             if (response?.error === "hearts") {
               openHeartsModal();
               return;
             }
             correctControls.play();
-            setStatus("correct");
+            // Mark completed locally
+            setChallenges((prev) =>
+              prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
+            );
             setPercentage((prev) => prev + 100 / challenges.length);
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
+            // Find next incomplete
+            const nextIdx = challenges.findIndex((c, idx) => idx > activeIndex && !c.completed);
+            if (nextIdx !== -1) {
+              setActiveIndex(nextIdx);
+              setStatus("none");
+              setSelectedOption(undefined);
+            } else {
+              // All completed
+              setActiveIndex(challenges.length);
+            }
           })
-          .catch(() => toast.error("Something went wrong. Please try again."))
-      });
-    } else {
-      startTransition(() => {
-        reduceHearts(challenge.id)
+          .catch(() => toast.error("Something went wrong"));
+      } else {
+        reduceHearts(challengeId)
           .then((response) => {
             if (response?.error === "hearts") {
               openHeartsModal();
@@ -161,144 +134,109 @@ export const Quiz = ({
               setHearts((prev) => Math.max(prev - 1, 0));
             }
           })
-          .catch(() => toast.error("Something went wrong. Please try again."))
-      });
-    }
-  };
-
-  // Direct answer handler: mark correct and go to next challenge
-  const handleDirectAnswer = () => {
-    if (pending || status !== "none") return;
-    startTransition(() => {
-      upsertChallengeProgress(challenge.id)
-        .then((response) => {
-          if (response?.error === "hearts") {
-            openHeartsModal();
-            return;
-          }
-          correctControls.play();
-          setStatus("correct");
-          setPercentage((prev) => prev + 100 / challenges.length);
-          if (initialPercentage === 100) {
-            setHearts((prev) => Math.min(prev + 1, 5));
-          }
-          // Automatically move to next challenge after a short delay
-          setTimeout(() => {
-            if (activeIndex + 1 < challenges.length) {
-              setActiveIndex(activeIndex + 1);
-              setStatus("none");
-            } else {
-              setActiveIndex(activeIndex + 1);
-            }
-          }, 800);
-        })
-        .catch(() => toast.error("Something went wrong. Please try again."));
+          .catch(() => toast.error("Something went wrong"));
+      }
     });
   };
 
-  if (!challenge) {
+  // For multiple‑choice challenges
+  const onSelect = (id: number) => {
+    if (status !== "none") return;
+    setSelectedOption(id);
+  };
+
+  const onContinue = () => {
+    if (!selectedOption) return;
+    const correctOption = options.find((opt) => opt.correct);
+    if (!correctOption) return;
+    const isCorrect = correctOption.id === selectedOption;
+    if (isCorrect) {
+      setStatus("correct");
+      completeChallenge(currentChallenge.id, true);
+    } else {
+      setStatus("wrong");
+      completeChallenge(currentChallenge.id, false);
+    }
+  };
+
+  // For direct‑answer challenges (via status icon in QuestionBubble)
+  const handleDirectAnswerComplete = () => {
+    if (currentChallenge && !pending) {
+      completeChallenge(currentChallenge.id, true);
+    }
+  };
+
+  // Build the conversation stack (up to 3 items)
+  const WINDOW_SIZE = 3;
+  let startIdx = Math.max(0, activeIndex - 1);
+  const visibleChallenges = challenges.slice(startIdx, startIdx + WINDOW_SIZE);
+  let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
+  if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
+
+  // Finish screen
+  if (activeIndex >= challenges.length) {
     return (
       <>
         {finishAudio}
-        <Confetti
-          width={width}
-          height={height}
-          recycle={false}
-          numberOfPieces={500}
-          tweenDuration={10000}
-        />
+        <Confetti width={width} height={height} recycle={false} numberOfPieces={500} tweenDuration={10000} />
         <div className="flex flex-col gap-y-4 lg:gap-y-8 max-w-lg mx-auto text-center items-center justify-center h-full">
-          <Image
-            src="/finish.svg"
-            alt="Finish"
-            className="hidden lg:block"
-            height={100}
-            width={100}
-          />
-          <Image
-            src="/finish.svg"
-            alt="Finish"
-            className="block lg:hidden"
-            height={50}
-            width={50}
-          />
-          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">
-            Great job! <br /> You&apos;ve completed the lesson.
-          </h1>
+          <Image src="/finish.svg" alt="Finish" className="hidden lg:block" height={100} width={100} />
+          <Image src="/finish.svg" alt="Finish" className="block lg:hidden" height={50} width={50} />
+          <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
           <div className="flex items-center gap-x-4 w-full">
             <ResultCard variant="points" value={challenges.length * 10} />
             <ResultCard variant="hearts" value={hearts} />
           </div>
         </div>
-        <Footer
-          lessonId={lessonId}
-          status="completed"
-          onCheck={() => router.push("/learn")}
-        />
+        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/learn")} />
       </>
     );
   }
 
-  const title = challenge.type === "ASSIST" ? "" : challenge.question;
-  const usesDirectAnswer = !!challenge.directAnswer;
+  const usesDirectAnswer = !!currentChallenge.directAnswer;
 
   return (
     <>
       {incorrectAudio}
       {correctAudio}
-      <Header
-        hearts={hearts}
-        percentage={percentage}
-        hasActiveSubscription={!!userSubscription?.isActive}
-      />
+      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {challenge.type === "SELECT" ? (
-              <div
-                ref={selectQuestionRef}
-                className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700"
-              />
-            ) : (
-              <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700">
-                {title}
-              </h1>
-            )}
-            <div>
-              {challenge.type === "ASSIST" && (
-                <QuestionBubble
-                  key={challenge.id}
-                  ref={assistQuestionRef}
-                  question={challenge.question}
-                  translation={challenge.nativeText ?? undefined}
-                  speaker={challenge.speaker ?? undefined}
-                  romanized={challenge.directAnswer ?? undefined}
-                  audioSrc={challenge.audioSrc ?? undefined}
-                  onComplete={handleDirectAnswer}
-                />
-              )}
-              {/* Only show multiple‑choice options if NOT a direct answer */}
-              {!usesDirectAnswer && (
-                <Challenge
-                  options={options}
-                  onSelect={onSelect}
+            <ConversationStack
+              conversations={visibleChallenges}
+              activeIndex={visibleActiveIndex}
+              onComplete={(idx) => {
+                const conv = visibleChallenges[idx];
+                if (conv && conv.id === currentChallenge.id) {
+                  completeChallenge(conv.id, true);
+                }
+              }}
+            />
+
+            {/* For multiple‑choice challenges that are NOT direct‑answer, show answer options and footer */}
+            {!usesDirectAnswer && (
+              <>
+                <div className="mt-4">
+                  <Challenge
+                    options={options}
+                    onSelect={onSelect}
+                    status={status}
+                    selectedOption={selectedOption}
+                    disabled={pending}
+                    type={currentChallenge.type}
+                  />
+                </div>
+                <Footer
+                  disabled={pending || !selectedOption}
                   status={status}
-                  selectedOption={selectedOption}
-                  disabled={pending}
-                  type={challenge.type}
+                  onCheck={onContinue}
                 />
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
-      {!usesDirectAnswer && (
-        <Footer
-          disabled={pending || !selectedOption}
-          status={status}
-          onCheck={onContinue}
-        />
-      )}
     </>
   );
 };
