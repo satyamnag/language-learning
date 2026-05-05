@@ -25,7 +25,6 @@ import { Header } from "@/app/(main)/learn/header";
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
 
-// Inline component to avoid import path issues
 async function LearnContent() {
   const userProgressData = getUserProgress();
   const courseProgressData = getCourseProgress();
@@ -98,67 +97,73 @@ export default async function Home() {
   const activeCourseId = userProgress?.activeCourseId;
 
   return (
-    <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
-      <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
-        <Image src="/hero.png" fill alt="Hero" />
-      </div>
-      <div className="flex flex-col items-center gap-y-8">
-        <div className="flex flex-col items-center gap-y-3 max-w-[380px] w-full">
-          <ClerkLoading>
-            <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
-          </ClerkLoading>
-          <ClerkLoaded>
-            <SignedOut>
-              <h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-justify">
-                Learn, practice, and master Indian regional languages with{" "}
-                <span className="text-blue-600 font-extrabold">SUNO</span>{" "}
-                <span className="text-green-600 font-extrabold">BOLO</span>.
-              </h1>
-              <div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full mt-4">
-                <SignUpButton mode="modal" fallbackRedirectUrl="/learn">
-                  <Button size="lg" variant="primary" className="w-full">
-                    Get Started
-                  </Button>
-                </SignUpButton>
-                <SignInButton mode="modal" fallbackRedirectUrl="/learn">
-                  <Button size="lg" variant="primaryOutline" className="w-full">
-                    I already have an account
-                  </Button>
-                </SignInButton>
-              </div>
-            </SignedOut>
-            <SignedIn>
-              {/* Sidebar + main content layout (same as /learn) */}
-              <>
-                <MobileHeader />
-                <div className="flex h-full">
-                  <Sidebar className="hidden lg:flex" />
-                  <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
-                    <div className="max-w-[1056px] mx-auto pt-6 h-full">
-                      <div className="flex flex-col gap-4">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                          <div className="flex-1">
-                            <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
-                          </div>
-                          {courses.length > 0 && (
-                            <div className="flex-1">
-                              <TargetLanguageSelectorClient 
-                                courses={courses}
-                                currentCourseId={activeCourseId ?? undefined}
-                              />
-                            </div>
-                          )}
-                        </div>
-                        {activeCourseId && <LearnContent />}
-                      </div>
-                    </div>
-                  </main>
-                </div>
-              </>
-            </SignedIn>
-          </ClerkLoaded>
+    <>
+      {/* Marketing hero – only shown when signed out */}
+      <SignedOut>
+        <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
+          <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
+            <Image src="/hero.png" fill alt="Hero" />
+          </div>
+          <div className="flex flex-col items-center gap-y-8">
+            <div className="flex flex-col items-center gap-y-3 max-w-[380px] w-full">
+              <ClerkLoading>
+                <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
+              </ClerkLoading>
+              <ClerkLoaded>
+                <SignedOut>
+                  <h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-justify">
+                    Learn, practice, and master Indian regional languages with{" "}
+                    <span className="text-blue-600 font-extrabold">SUNO</span>{" "}
+                    <span className="text-green-600 font-extrabold">BOLO</span>.
+                  </h1>
+                  <div className="flex flex-col items-center gap-y-3 max-w-[330px] w-full mt-4">
+                    <SignUpButton mode="modal" fallbackRedirectUrl="/learn">
+                      <Button size="lg" variant="primary" className="w-full">
+                        Get Started
+                      </Button>
+                    </SignUpButton>
+                    <SignInButton mode="modal" fallbackRedirectUrl="/learn">
+                      <Button size="lg" variant="primaryOutline" className="w-full">
+                        I already have an account
+                      </Button>
+                    </SignInButton>
+                  </div>
+                </SignedOut>
+              </ClerkLoaded>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </SignedOut>
+
+      {/* Signed‑in dashboard – hero removed, dropdowns placed at top */}
+      <SignedIn>
+        <MobileHeader />
+        <div className="flex h-full">
+          <Sidebar className="hidden lg:flex" />
+          <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
+            <div className="max-w-[1056px] mx-auto pt-6 h-full">
+              {/* Dropdowns section – replaces the hero/start button */}
+              <div className="mb-8">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex-1 max-w-md mx-auto sm:mx-0">
+                    <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
+                  </div>
+                  <div className="flex-1 max-w-md mx-auto sm:mx-0">
+                    {courses.length > 0 && (
+                      <TargetLanguageSelectorClient 
+                        courses={courses}
+                        currentCourseId={activeCourseId ?? undefined}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+              {/* Learning content (units/lessons) */}
+              {activeCourseId && <LearnContent />}
+            </div>
+          </main>
+        </div>
+      </SignedIn>
+    </>
   );
 }
