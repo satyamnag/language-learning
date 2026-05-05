@@ -296,7 +296,7 @@ export const Quiz = ({
                 question={challenge.question}
                 translation={challenge.nativeText ?? undefined}
                 speaker={challenge.speaker ?? undefined}
-                romanized={challenge.directAnswer}   // <-- added this line
+                romanized={challenge.directAnswer ?? undefined}   // <-- added this line
               />
             )}
               {/* Direct answer button OR traditional challenge options */}
