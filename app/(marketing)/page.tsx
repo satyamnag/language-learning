@@ -20,10 +20,9 @@ import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { lessons, units as unitsSchema } from "@/db/schema";
-import { Unit } from "@/app/(main)/learn/unit";
-import { Header } from "@/app/(main)/learn/header";
+import { Unit } from "../main/learn/unit";
+import { Header } from "../main/learn/header";
 
-// Local component that renders the main learning dashboard
 async function LearnContent() {
   const userProgressData = getUserProgress();
   const courseProgressData = getCourseProgress();
@@ -140,7 +139,6 @@ export default async function Home() {
                     </div>
                   )}
                 </div>
-                {/* Learn content – shown only when a course is selected */}
                 {activeCourseId && <LearnContent />}
               </div>
             </SignedIn>
