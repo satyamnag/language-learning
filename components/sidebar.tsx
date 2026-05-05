@@ -20,7 +20,7 @@ export const Sidebar = ({ className }: Props) => {
     )}>
       <Link href="/">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <span className="text-2xl font-extrabold text-green-600 tracking-wide">
+          <span className="text-2xl font-extrabold text-blue-600 tracking-wide">
             bolbolke
           </span>
         </div>
