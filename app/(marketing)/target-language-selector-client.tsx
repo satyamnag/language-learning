@@ -43,7 +43,7 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
           disabled={isPending}
           className="w-full appearance-none rounded-xl border border-gray-300 bg-white py-3 pl-4 pr-10 text-gray-700 shadow-sm transition-all duration-200 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 disabled:bg-gray-50 disabled:text-gray-400"
         >
-          <option value="" disabled>Select</option>
+          {/* "Select" option removed – first course is now the default */}
           {courses.map((course) => (
             <option key={course.id} value={course.id}>
               {course.title}
