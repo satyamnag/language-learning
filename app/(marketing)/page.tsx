@@ -92,7 +92,7 @@ export default async function Home() {
 
   return (
     <>
-      {/* Marketing hero – only shown when signed out, buttons removed (already in header) */}
+      {/* Marketing hero – only shown when signed out (buttons removed, header already has login) */}
       <SignedOut>
         <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
           <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
@@ -110,7 +110,6 @@ export default async function Home() {
                     <span className="text-blue-600 font-extrabold">SUNO</span>{" "}
                     <span className="text-green-600 font-extrabold">BOLO</span>.
                   </h1>
-                  {/* Sign‑up / Sign‑in buttons removed – use the header button instead */}
                 </SignedOut>
               </ClerkLoaded>
             </div>
