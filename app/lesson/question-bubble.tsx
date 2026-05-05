@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect, useState } from 'react';
-import { Circle, CheckCircle } from 'lucide-react';
+import { Circle, CheckCircle, Clock } from 'lucide-react';
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
@@ -76,7 +76,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
               <Circle className="w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors" strokeWidth={1.8} />
             </button>
           ) : (
-            <Circle className="w-6 h-6 text-gray-300" strokeWidth={1.8} />
+            <Clock className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
           )}
         </div>
         {/* Arrow pointer */}
