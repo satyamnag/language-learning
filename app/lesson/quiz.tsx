@@ -66,7 +66,6 @@ export const Quiz = ({
   });
   const [challenges, setChallenges] = useState(initialLessonChallenges);
   const [activeIndex, setActiveIndex] = useState(() => {
-    // find first incomplete challenge
     const idx = challenges.findIndex((c) => !c.completed);
     return idx === -1 ? 0 : idx;
   });
@@ -90,11 +89,12 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // --- Completion logic using order field ---
+  // --- Completion logic using order field (only completes the specified challenge) ---
   const isCompletingRef = useRef(false);
 
   const completeChallenge = (challengeId: number, isCorrect: boolean) => {
-    if (pending || isCompletingRef.current) return;
+    // Safety: if pending, already completing, or the challenge is already completed, ignore
+    if (pending || isCompletingRef.current || challenges[activeIndex]?.completed) return;
     isCompletingRef.current = true;
     startTransition(() => {
       if (isCorrect) {
@@ -106,7 +106,7 @@ export const Quiz = ({
               return;
             }
             correctControls.play();
-            // Update challenges by marking this one completed
+            // Mark this specific challenge as completed
             setChallenges((prev) =>
               prev.map((c) => (c.id === challengeId ? { ...c, completed: true } : c))
             );
@@ -114,12 +114,12 @@ export const Quiz = ({
             if (initialPercentage === 100) {
               setHearts((prev) => Math.min(prev + 1, 5));
             }
-            // Find the next incomplete challenge using order
+            // Find the next incomplete challenge (by order) and make it active
             setChallenges((prev) => {
-              const completedChallenge = prev.find((c) => c.id === challengeId);
-              if (!completedChallenge) return prev;
+              const completedOrder = prev.find((c) => c.id === challengeId)?.order;
+              if (completedOrder === undefined) return prev;
               const nextChallenge = prev.find(
-                (c) => c.order > completedChallenge.order && !c.completed
+                (c) => c.order > completedOrder && !c.completed
               );
               if (nextChallenge) {
                 const nextIndex = prev.indexOf(nextChallenge);
@@ -127,9 +127,9 @@ export const Quiz = ({
                 setStatus("none");
                 setSelectedOption(undefined);
               } else {
-                setActiveIndex(prev.length); // finish lesson
+                setActiveIndex(prev.length); // all completed, finish lesson
               }
-              return prev; // no mutation
+              return prev;
             });
             isCompletingRef.current = false;
           })
@@ -179,7 +179,7 @@ export const Quiz = ({
     }
   };
 
-  // Build conversation stack
+  // Build conversation stack (2 items initially, 3 after first completion)
   let startIdx = activeIndex;
   let windowCount = 2;
   if (activeIndex > 0 && challenges[activeIndex - 1]?.completed) {
@@ -190,7 +190,7 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
-  // Finish screen
+  // Finish screen when all challenges are completed or activeIndex out of range
   if (activeIndex >= challenges.length) {
     return (
       <>
