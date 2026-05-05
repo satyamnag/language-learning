@@ -165,7 +165,7 @@ export const Quiz = ({
         }
       });
     },
-    [pending, challenges, initialPercentage, correctControls, openHeartsModal, incorrectControls, toast]
+    [pending, challenges, initialPercentage, correctControls, openHeartsModal, incorrectControls]
   );
 
   const onSelect = (id: number) => {
