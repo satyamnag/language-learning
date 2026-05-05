@@ -7,8 +7,9 @@ import {
 import { Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarItem } from "./sidebar-item";
-import { Promo } from "./promo";        // import the promo component
+import { Promo } from "./promo";
 import { getUserSubscription } from "@/db/queries";
+import { SidebarProgress } from "./sidebar-progress";
 
 type Props = {
   className?: string;
@@ -36,7 +37,10 @@ export const Sidebar = async ({ className }: Props) => {
         <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
         <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
       </div>
-      {/* Upgrade to Pro promo – placed below shop */}
+
+      {/* Progress section – shows current lesson and progress bar */}
+      <SidebarProgress />
+
       {!isPro && <Promo />}
       <div className="p-4">
         <ClerkLoading>
