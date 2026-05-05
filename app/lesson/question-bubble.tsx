@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useEffect } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Mic } from 'lucide-react';
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 type Props = {
@@ -26,6 +26,11 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
     if (!audioSrc) return;
     const audio = new Audio(audioSrc);
     audio.play().catch(err => console.warn("Audio play failed:", err));
+  };
+
+  const handleMicClick = () => {
+    // Placeholder – no functionality yet
+    console.log("Mic clicked – voice input coming soon");
   };
 
   return (
@@ -55,15 +60,22 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({ question, tra
             {romanized}
           </div>
         )}
-        {/* Centered speaker button with enhanced UI */}
+        {/* Speaker & Mic icons (centered, side by side) */}
         {audioSrc && (
-          <div className="flex justify-center mt-2">
+          <div className="flex justify-center gap-3 mt-2">
             <button
               onClick={handleSpeakerClick}
               className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
               aria-label="Play pronunciation"
             >
               <Volume2 className="w-6 h-6 text-blue-600 hover:text-blue-700 transition-colors" strokeWidth={1.8} />
+            </button>
+            <button
+              onClick={handleMicClick}
+              className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              aria-label="Voice input (coming soon)"
+            >
+              <Mic className="w-6 h-6 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
             </button>
           </div>
         )}
