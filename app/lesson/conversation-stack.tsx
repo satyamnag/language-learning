@@ -11,10 +11,9 @@ type Conversation = typeof challenges.$inferSelect & {
 };
 
 type Props = {
-  conversations: Conversation[]; // exactly three items (may be fewer at edges)
-  activeIndex: number; // index of the active conversation in this array (0,1,2)
-  onComplete: (index: number) => void; // called when the active conversation is completed
-  audioSrc?: string; // for the active conversation? Actually each challenge has its own audioSrc
+  conversations: Conversation[];
+  activeIndex: number;
+  onComplete: (index: number) => void;
 };
 
 export const ConversationStack = ({ conversations, activeIndex, onComplete }: Props) => {
@@ -43,7 +42,6 @@ export const ConversationStack = ({ conversations, activeIndex, onComplete }: Pr
               romanized={conv.directAnswer ?? undefined}
               audioSrc={conv.audioSrc ?? undefined}
               onComplete={isActive ? () => onComplete(idx) : undefined}
-              isCompleted={isCompleted}
             />
             {isCompleted && (
               <div className="flex justify-center mt-2">
