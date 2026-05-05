@@ -217,13 +217,11 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* Conversation stack (2 or 3 items) */}
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
             />
 
-            {/* Action buttons for the active challenge */}
             {currentChallenge && (
               <ActionButtons
                 key={currentChallenge.id}
@@ -233,7 +231,6 @@ export const Quiz = ({
               />
             )}
 
-            {/* For multiple‑choice challenges, show answer options and footer */}
             {!usesDirectAnswer && (
               <>
                 <div className="mt-4">
