@@ -87,7 +87,6 @@ export const Quiz = ({
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
-  const directAnswerRef = useRef<HTMLDivElement>(null); // for direct answer container
 
   useEffect(() => {
     if (!challenge) return;
@@ -101,16 +100,6 @@ export const Quiz = ({
       attachTooltips(assistQuestionRef.current);
     }
   }, [challenge, wrapWords, attachTooltips]);
-
-  // Wrap direct answer text and attach tooltips
-  useEffect(() => {
-    if (challenge?.directAnswer && directAnswerRef.current) {
-      const html = wrapWords(challenge.directAnswer);
-      directAnswerRef.current.innerHTML = html;
-      attachTooltips(directAnswerRef.current);
-    }
-  }, [challenge?.directAnswer, wrapWords, attachTooltips]);
-
   // --- end of translator integration ---
 
   const onNext = () => {
@@ -177,39 +166,7 @@ export const Quiz = ({
     }
   };
 
-  // Direct answer handler: mark correct and go to next challenge
-  const handleDirectAnswer = () => {
-    if (pending || status !== "none") return;
-    startTransition(() => {
-      upsertChallengeProgress(challenge.id)
-        .then((response) => {
-          if (response?.error === "hearts") {
-            openHeartsModal();
-            return;
-          }
-          correctControls.play();
-          setStatus("correct");
-          setPercentage((prev) => prev + 100 / challenges.length);
-          if (initialPercentage === 100) {
-            setHearts((prev) => Math.min(prev + 1, 5));
-          }
-          // Automatically move to next challenge after a short delay
-          setTimeout(() => {
-            if (activeIndex + 1 < challenges.length) {
-              setActiveIndex(activeIndex + 1);
-              setStatus("none");
-            } else {
-              // This will trigger the finish screen (challenge becomes undefined)
-              setActiveIndex(activeIndex + 1);
-            }
-          }, 800);
-        })
-        .catch(() => toast.error("Something went wrong. Please try again."));
-    });
-  };
-
   if (!challenge) {
-    // Finish screen (unchanged)
     return (
       <>
         {finishAudio}
@@ -254,9 +211,6 @@ export const Quiz = ({
 
   const title = challenge.type === "ASSIST" ? "" : challenge.question;
 
-  // Determine if this challenge uses a direct answer
-  const usesDirectAnswer = !!challenge.directAnswer;
-
   return (
     <>
       {incorrectAudio}
@@ -269,7 +223,7 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
-            {/* Question rendering (unchanged) */}
+            {/* For SELECT challenges, use the word‑wrappable container with tooltips */}
             {challenge.type === "SELECT" ? (
               <div
                 ref={selectQuestionRef}
@@ -289,41 +243,23 @@ export const Quiz = ({
                   speaker={challenge.speaker ?? undefined}
                 />
               )}
-              {/* Direct answer button OR traditional challenge options */}
-              {usesDirectAnswer ? (
-                <div className="flex justify-center">
-                  <div
-                    ref={directAnswerRef}
-                    role="button"
-                    tabIndex={0}
-                    onClick={handleDirectAnswer}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDirectAnswer(); }}
-                    className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition cursor-pointer text-center"
-                  >
-                    {challenge.directAnswer}
-                  </div>
-                </div>
-              ) : (
-                <Challenge
-                  options={options}
-                  onSelect={onSelect}
-                  status={status}
-                  selectedOption={selectedOption}
-                  disabled={pending}
-                  type={challenge.type}
-                />
-              )}
+              <Challenge
+                options={options}
+                onSelect={onSelect}
+                status={status}
+                selectedOption={selectedOption}
+                disabled={pending}
+                type={challenge.type}
+              />
             </div>
           </div>
         </div>
       </div>
-      {!usesDirectAnswer && (
-        <Footer
-          disabled={pending || !selectedOption}
-          status={status}
-          onCheck={onContinue}
-        />
-      )}
+      <Footer
+        disabled={pending || !selectedOption}
+        status={status}
+        onCheck={onContinue}
+      />
     </>
   );
 };
