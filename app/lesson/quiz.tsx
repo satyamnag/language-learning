@@ -166,10 +166,15 @@ export const Quiz = ({
     }
   };
 
-  // Build the conversation stack (up to 3 items)
-  const WINDOW_SIZE = 3;
-  let startIdx = Math.max(0, activeIndex - 1);
-  const visibleChallenges = challenges.slice(startIdx, startIdx + WINDOW_SIZE);
+  // Build the conversation stack: initially show 2 items (active + next); after first completion show 3 items.
+  let startIdx = activeIndex;
+  let windowCount = 2; // default: show active and next waiting
+  // If there is a completed conversation immediately above the active, include it (so we show 3 items)
+  if (activeIndex > 0 && challenges[activeIndex - 1].completed) {
+    startIdx = activeIndex - 1;
+    windowCount = 3;
+  }
+  const visibleChallenges = challenges.slice(startIdx, startIdx + windowCount);
   let visibleActiveIndex = visibleChallenges.findIndex(c => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
@@ -203,6 +208,7 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
+            {/* Conversation stack (2 or 3 items depending on progress) */}
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
