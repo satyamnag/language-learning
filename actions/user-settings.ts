@@ -28,7 +28,17 @@ export const updateNativeLanguage = async (languageCode: string) => {
     }
   }
 
-  // Update native language and optionally clear activeCourseId
+  // If active course was cleared (or didn't exist), try to find a course that matches the new native language
+  if (!activeCourseId) {
+    const matchingCourse = await db.query.courses.findFirst({
+      where: eq(courses.sourceLanguage, languageCode),
+    });
+    if (matchingCourse) {
+      activeCourseId = matchingCourse.id;
+    }
+  }
+
+  // Update native language and (potentially) the active course
   await db
     .update(userProgress)
     .set({ nativeLanguage: languageCode, activeCourseId })
