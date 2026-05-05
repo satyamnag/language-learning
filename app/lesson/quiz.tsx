@@ -6,7 +6,6 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
-import { Volume2 } from "lucide-react";
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -88,7 +87,6 @@ export const Quiz = ({
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
   const assistQuestionRef = useRef<HTMLDivElement>(null);
-  const directAnswerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!challenge) return;
@@ -102,15 +100,6 @@ export const Quiz = ({
       attachTooltips(assistQuestionRef.current);
     }
   }, [challenge, wrapWords, attachTooltips]);
-
-  // Wrap direct answer text and attach tooltips
-  useEffect(() => {
-    if (challenge?.directAnswer && directAnswerRef.current) {
-      const html = wrapWords(challenge.directAnswer);
-      directAnswerRef.current.innerHTML = html;
-      attachTooltips(directAnswerRef.current);
-    }
-  }, [challenge?.directAnswer, wrapWords, attachTooltips]);
   // --- end of translator integration ---
 
   const onNext = () => {
@@ -276,35 +265,20 @@ export const Quiz = ({
               </h1>
             )}
             <div>
-            {challenge.type === "ASSIST" && (
-              <QuestionBubble
-                key={challenge.id}   // <-- add this line
-                ref={assistQuestionRef}
-                question={challenge.question}
-                translation={challenge.nativeText ?? undefined}
-                speaker={challenge.speaker ?? undefined}
-                romanized={challenge.directAnswer ?? undefined}
-                audioSrc={challenge.audioSrc ?? undefined}
-                onComplete={handleDirectAnswer}
-              />
-            )}
-              {usesDirectAnswer ? (
-                <div className="flex justify-center">
-                  <div className="relative w-full">
-                    <div
-                      ref={directAnswerRef}
-                      role="button"
-                      tabIndex={0}
-                      onClick={handleDirectAnswer}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDirectAnswer(); }}
-                      className="w-full py-3 px-6 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition cursor-pointer text-center"
-                    >
-                      {challenge.directAnswer}
-                    </div>
-                    {/* Speaker icon removed from here */}
-                  </div>
-                </div>
-              ) : (
+              {challenge.type === "ASSIST" && (
+                <QuestionBubble
+                  key={challenge.id}
+                  ref={assistQuestionRef}
+                  question={challenge.question}
+                  translation={challenge.nativeText ?? undefined}
+                  speaker={challenge.speaker ?? undefined}
+                  romanized={challenge.directAnswer ?? undefined}
+                  audioSrc={challenge.audioSrc ?? undefined}
+                  onComplete={handleDirectAnswer}
+                />
+              )}
+              {/* Only show multiple‑choice options if NOT a direct answer */}
+              {!usesDirectAnswer && (
                 <Challenge
                   options={options}
                   onSelect={onSelect}
