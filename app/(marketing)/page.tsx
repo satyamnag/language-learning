@@ -103,7 +103,7 @@ export default async function Home() {
                 <SignedOut>
                   <h1 className="text-xl lg:text-3xl font-bold text-neutral-600 max-w-[480px] text-justify">
                     Learn, practice, and master Indian regional languages with{" "}
-                    <span className="text-green-600 font-extrabold">bolbolke</span>{" "}
+                    <span className="text-green-600 font-extrabold">bolbolke</span>{.}
                   </h1>
                 </SignedOut>
               </ClerkLoaded>
