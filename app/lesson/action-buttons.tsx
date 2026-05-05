@@ -17,7 +17,7 @@ export const ActionButtons = ({ audioSrc, onComplete, disabled }: Props) => {
 
   const handleMicClick = () => {
     if (disabled) return;
-    onComplete();
+    onComplete(); // same completion logic as status icon
   };
 
   return (

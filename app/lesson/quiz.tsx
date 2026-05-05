@@ -231,7 +231,7 @@ export const Quiz = ({
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 disabled={pending}
-                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                onComplete={() => completeChallenge(currentChallenge.id, true)} // <-- mic calls this
               />
             )}
 
