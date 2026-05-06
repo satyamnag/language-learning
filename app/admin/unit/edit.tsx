@@ -3,11 +3,6 @@ import { SimpleForm, Edit, TextInput, ReferenceInput, NumberInput, required } fr
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   hi: "Hindi",
-  te: "Telugu",
-  ta: "Tamil",
-  kn: "Kannada",
-  or: "Odia",
-  bn: "Bengali",
 };
 
 // Format: "source → target" (e.g., "English → Hindi")
