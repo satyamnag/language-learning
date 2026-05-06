@@ -10,11 +10,10 @@ const LANGUAGE_NAMES: Record<string, string> = {
   bn: "Bengali",
 };
 
-// Format: "Known Language (Source) -> Target Language"
 const formatCourseLabel = (record: any) => {
   if (!record) return "";
   const sourceLang = record.sourceLanguage;
-  const sourceName = sourceLang ? (LANGUAGE_NAMES[sourceLang] || sourceLang) : "";
+  const sourceName = sourceLang ? LANGUAGE_NAMES[sourceLang] || sourceLang : "";
   return sourceName ? `${sourceName} -> ${record.title}` : record.title;
 };
 
