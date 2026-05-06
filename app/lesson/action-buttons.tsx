@@ -34,13 +34,40 @@ function similarity(str1: string, str2: string): number {
 
 export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }: Props) => {
   const [isListening, setIsListening] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const recognitionRef = useRef<any>(null);
   const completingRef = useRef(false); // prevent double completion
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleSpeakerClick = () => {
     if (!audioSrc || disabled) return;
+    // Stop any currently playing audio
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+      setIsPlaying(false);
+    }
     const audio = new Audio(audioSrc);
-    audio.play().catch(err => console.warn("Audio play failed:", err));
+    currentAudioRef.current = audio;
+
+    const onPlay = () => setIsPlaying(true);
+    const onEnd = () => {
+      setIsPlaying(false);
+      currentAudioRef.current = null;
+    };
+    const onError = () => {
+      setIsPlaying(false);
+      currentAudioRef.current = null;
+    };
+
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('ended', onEnd);
+    audio.addEventListener('error', onError);
+    audio.play().catch(err => {
+      console.warn("Audio play failed:", err);
+      setIsPlaying(false);
+      currentAudioRef.current = null;
+    });
   };
 
   const handleMicClick = () => {
@@ -115,6 +142,10 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
       completingRef.current = false; // reset on unmount
     };
   }, []);
@@ -124,7 +155,9 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }
       <button
         onClick={handleSpeakerClick}
         disabled={disabled || !audioSrc}
-        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isPlaying ? "animate-pulse ring-2 ring-blue-400" : ""
+        }`}
         aria-label="Play pronunciation"
       >
         <Volume2 className="w-7 h-7 text-blue-600 hover:text-blue-700 transition-colors" strokeWidth={1.8} />
