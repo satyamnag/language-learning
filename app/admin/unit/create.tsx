@@ -12,7 +12,6 @@ const LANGUAGE_NAMES: Record<string, string> = {
 
 // Format: "source → target" (e.g., "English → Hindi")
 const formatCourseLabel = (record: any) => {
-  console.log("formatCourseLabel called", record);
   if (!record) return "";
   const sourceLang = record.sourceLanguage;
   const sourceName = sourceLang ? (LANGUAGE_NAMES[sourceLang] || sourceLang) : "";
