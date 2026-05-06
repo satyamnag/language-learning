@@ -10,7 +10,7 @@ import "./globals.css";
 const font = Nunito({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Language Learning App",
+  title: "Bol Bol Ke",
   description: "Learn Indian Regional languages with Us",
 };
 
