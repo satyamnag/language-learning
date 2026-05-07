@@ -26,7 +26,7 @@ export const Sidebar = async ({ className }: Props) => {
     )}>
       <Link href="/">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-          <span className="text-2xl font-extrabold text-green-600 tracking-wide">
+          <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
             Bol Bol Ke
           </span>
         </div>

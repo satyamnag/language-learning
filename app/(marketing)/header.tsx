@@ -31,7 +31,7 @@ export const Header = async () => {
       <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full">
         <SignedOut>
           <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-            <span className="text-2xl font-extrabold text-blue-600 tracking-wide">
+            <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
               Bol Bol Ke
             </span>
           </Link>
