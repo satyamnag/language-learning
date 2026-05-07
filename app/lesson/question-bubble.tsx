@@ -22,7 +22,6 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
   onComplete,
 }, ref) => {
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
-  const romanizedRef = useRef<HTMLDivElement>(null);
   const [localCompleted, setLocalCompleted] = useState(false);
 
   // Reset local completed when a new challenge becomes active
@@ -32,13 +31,15 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
     }
   }, [isActive]);
 
+  // Tooltips are only applied to the main Tamil question (not to Romanized)
   useEffect(() => {
-    if (romanized && romanizedRef.current) {
-      const html = wrapWords(romanized);
-      romanizedRef.current.innerHTML = html;
-      attachTooltips(romanizedRef.current);
+    const el = ref as React.RefObject<HTMLDivElement>;
+    if (el?.current) {
+      const html = wrapWords(question);
+      el.current.innerHTML = html;
+      attachTooltips(el.current);
     }
-  }, [romanized, wrapWords, attachTooltips]);
+  }, [question, wrapWords, attachTooltips, ref]);
 
   const handleStatusClick = () => {
     if (!isActive || isCompleted || localCompleted) return;
@@ -66,7 +67,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
           </div>
         )}
         {romanized && (
-          <div ref={romanizedRef} className="mt-1 ml-1 text-sm text-gray-500 pl-3">
+          <div className="mt-1 ml-1 text-sm text-gray-500 pl-3">
             {romanized}
           </div>
         )}
