@@ -25,7 +25,10 @@ export const Header = ({
       />
       <div className="flex-1 text-center">
         <h2 className="text-base font-bold text-[#7C3AED] mb-1">{title}</h2>
-        <Progress value={percentage} />
+        <Progress
+          value={percentage}
+          className="[&>div]:bg-[#7C3AED] bg-white"
+        />
       </div>
       <div className="text-[#7A7581] flex items-center font-bold">
         {currentIndex + 1} / {totalCount}
