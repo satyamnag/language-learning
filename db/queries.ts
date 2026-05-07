@@ -9,7 +9,8 @@ import {
   lessons, 
   units, 
   userProgress,
-  userSubscription
+  userSubscription,
+  pronunciationHistory
 } from "@/db/schema";
 
 export const getUserProgress = cache(async () => {
@@ -277,6 +278,19 @@ export const getTopTenUsers = cache(async () => {
       userImageSrc: true,
       points: true,
     },
+  });
+
+  return data;
+});
+
+export const getPronunciationHistory = cache(async () => {
+  const { userId } = await auth();
+
+  if (!userId) return [];
+
+  const data = await db.query.pronunciationHistory.findMany({
+    where: eq(pronunciationHistory.userId, userId),
+    orderBy: (history, { desc }) => [desc(history.createdAt)],
   });
 
   return data;

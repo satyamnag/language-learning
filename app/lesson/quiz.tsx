@@ -261,6 +261,7 @@ export const Quiz = ({
                 key={currentChallenge.id}
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 targetSentence={currentChallenge.question}
+                challengeId={currentChallenge.id}
                 disabled={pending}
                 onComplete={() => completeChallenge(currentChallenge.id, true)}
                 onReset={handleReset}

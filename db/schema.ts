@@ -121,3 +121,26 @@ export const userSubscription = pgTable("user_subscription", {
   stripePriceId: text("stripe_price_id").notNull(),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_end").notNull(),
 });
+
+// NEW: Pronunciation history table
+export const pronunciationHistory = pgTable("pronunciation_history", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => userProgress.userId, { onDelete: "cascade" }),
+  challengeId: integer("challenge_id").notNull().references(() => challenges.id, { onDelete: "cascade" }),
+  score: integer("score").notNull(),
+  spokenText: text("spoken_text").notNull(),
+  targetSentence: text("target_sentence").notNull(),
+  explanation: text("explanation").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const pronunciationHistoryRelations = relations(pronunciationHistory, ({ one }) => ({
+  userProgress: one(userProgress, {
+    fields: [pronunciationHistory.userId],
+    references: [userProgress.userId],
+  }),
+  challenge: one(challenges, {
+    fields: [pronunciationHistory.challengeId],
+    references: [challenges.id],
+  }),
+}));

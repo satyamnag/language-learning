@@ -3,10 +3,13 @@
 import { Volume2, Mic, RotateCcw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
+import { storePronunciationAssessment } from "@/actions/pronunciation-history";
 
 type Props = {
   audioSrc?: string;
   targetSentence?: string;
+  challengeId?: number;
   disabled?: boolean;
   onComplete?: () => void;
   onReset: () => void;
@@ -32,7 +35,8 @@ function similarity(str1: string, str2: string): number {
   return maxLen === 0 ? 1 : (maxLen - matrix[b.length][a.length]) / maxLen;
 }
 
-export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, onReset }: Props) => {
+export const ActionButtons = ({ audioSrc, targetSentence, challengeId, disabled, onComplete, onReset }: Props) => {
+  const { userId } = useAuth();
   const [isListening, setIsListening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -125,6 +129,17 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
         message = "Keep practicing! Listen carefully and repeat.";
       }
       toast.success(`${emoji} ${message} (Score: ${rounded}%)`, { duration: 5000 });
+
+      // Store the pronunciation assessment in history
+      if (userId && challengeId) {
+        storePronunciationAssessment({
+          challengeId,
+          score: rounded,
+          spokenText: spoken,
+          targetSentence,
+          explanation: message,
+        }).catch(console.error);
+      }
 
       if (onComplete && !completingRef.current) {
         completingRef.current = true;

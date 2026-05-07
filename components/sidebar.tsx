@@ -36,6 +36,7 @@ export const Sidebar = async ({ className }: Props) => {
         <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
         <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
         <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
+        <SidebarItem label="History" href="/history" iconSrc="/history.svg" />
       </div>
 
       {/* Progress section – shows current lesson and progress bar */}
