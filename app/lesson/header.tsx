@@ -1,19 +1,18 @@
-import Image from "next/image";
-import { InfinityIcon, X } from "lucide-react";
-
+// app/lesson/header.tsx
 import { Progress } from "@/components/ui/progress";
+import { X } from "lucide-react";
 import { useExitModal } from "@/store/use-exit-modal";
 
 type Props = {
-  hearts: number;
-  percentage: number;
-  hasActiveSubscription: boolean;
+  currentIndex: number; // 0‑based index of the current challenge
+  totalCount: number;   // total number of challenges in the lesson
+  percentage: number;   // overall lesson completion percentage
 };
 
 export const Header = ({
-  hearts,
+  currentIndex,
+  totalCount,
   percentage,
-  hasActiveSubscription,
 }: Props) => {
   const { open } = useExitModal();
 
@@ -25,17 +24,7 @@ export const Header = ({
       />
       <Progress value={percentage} />
       <div className="text-rose-500 flex items-center font-bold">
-        <Image
-          src="/heart.svg"
-          height={28}
-          width={28}
-          alt="Heart"
-          className="mr-2"
-        />
-        {hasActiveSubscription
-          ? <InfinityIcon className="h-6 w-6 stroke-[3] shrink-0" />
-          : hearts
-        }
+        {currentIndex + 1} / {totalCount}
       </div>
     </header>
   );

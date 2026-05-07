@@ -1,3 +1,4 @@
+// app/lesson/quiz.tsx
 "use client";
 
 import { toast } from "sonner";
@@ -6,7 +7,6 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
-// Removed RotateCw import – no longer needed in this file
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -231,7 +231,11 @@ export const Quiz = ({
     <>
       {incorrectAudio}
       {correctAudio}
-      <Header hearts={hearts} percentage={percentage} hasActiveSubscription={!!userSubscription?.isActive} />
+      <Header
+        currentIndex={activeIndex}
+        totalCount={challenges.length}
+        percentage={percentage}
+      />
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
