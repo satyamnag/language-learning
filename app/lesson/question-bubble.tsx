@@ -56,7 +56,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
       <div className="relative max-w-2xl w-full flex flex-col">
         <div
           ref={ref}
-          className="bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-lg transition-shadow p-5 text-gray-800 text-base lg:text-lg leading-relaxed"
+          className="bg-white border border-gray-100 rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 text-gray-800 text-base lg:text-lg leading-relaxed"
         >
           {question}
         </div>
