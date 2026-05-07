@@ -27,7 +27,7 @@ export const Header = ({
         <h2 className="text-base font-bold text-[#7C3AED] mb-1">{title}</h2>
         <Progress
           value={percentage}
-          className="[&>div]:bg-[#7C3AED] bg-white"
+          className="bg-[#ede5f4] [&>div]:bg-[#7C3AED]"
         />
       </div>
       <div className="text-[#7A7581] flex items-center font-bold">
