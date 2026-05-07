@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 type Props = {
   variant: "points" | "hearts" | "average";
   value: number;
-  isAvailable?: boolean;   // ← this is the missing prop
+  isAvailable?: boolean;
 };
 
 export const ResultCard = ({ variant, value, isAvailable = true }: Props) => {
+  // Average percentage – no image, colour‑coded value
   if (variant === "average") {
     const colorClass =
       isAvailable
@@ -30,20 +31,32 @@ export const ResultCard = ({ variant, value, isAvailable = true }: Props) => {
     );
   }
 
-  // points / hearts card (unchanged)
-  const imageSrc = variant === "points" ? "/points.svg" : "/heart.svg";
+  // Total XP – no image
+  if (variant === "points") {
+    return (
+      <div className="w-full rounded-2xl border-2 p-4 bg-white text-center">
+        <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
+          Total XP
+        </p>
+        <p className="text-3xl font-extrabold text-neutral-700">
+          {value}
+        </p>
+      </div>
+    );
+  }
 
+  // Hearts – keeps the heart image (unchanged)
   return (
     <div className="w-full rounded-2xl border-2 p-4 bg-white text-center">
       <Image
-        src={imageSrc}
-        alt={variant}
+        src="/heart.svg"
+        alt="Hearts"
         height={30}
         width={30}
         className="mx-auto mb-2"
       />
       <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
-        {variant === "points" ? "Total XP" : "Hearts Left"}
+        Hearts Left
       </p>
       <p className="text-3xl font-extrabold text-neutral-700">
         {value}

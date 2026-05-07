@@ -75,7 +75,6 @@ export const Quiz = ({
   const [selectedOption, setSelectedOption] = useState<number>();
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  // Track pronunciation scores for the average calculation
   const [scores, setScores] = useState<number[]>([]);
 
   const currentChallenge = challenges[activeIndex];
@@ -99,7 +98,6 @@ export const Quiz = ({
 
   const isCompletingRef = useRef(false);
 
-  // Core completion logic – now accepts an optional score
   const completeChallenge = useCallback(
     (challengeId: number, isCorrect: boolean, score?: number) => {
       if (pending || isCompletingRef.current) return;
@@ -219,13 +217,12 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex((c) => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
-  // Compute average pronunciation percentage
   const averageScore =
     scores.length > 0
       ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
       : null;
 
-  // ---------- Finish screen (no points card, only average %) ----------
+  // ---------- Finish screen with Total XP and Average % ----------
   if (activeIndex >= challenges.length) {
     return (
       <>
@@ -235,15 +232,13 @@ export const Quiz = ({
           <Image src="/finish.svg" alt="Finish" className="hidden lg:block" height={100} width={100} />
           <Image src="/finish.svg" alt="Finish" className="block lg:hidden" height={50} width={50} />
           <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
-          <div className="flex items-center justify-center w-full">
-            {/* Only AVERAGE % card, centered */}
-            <div className="w-full max-w-xs">
-              <ResultCard
-                variant="average"
-                value={averageScore ?? 0}
-                isAvailable={averageScore !== null}
-              />
-            </div>
+          <div className="flex items-center gap-x-4 w-full">
+            <ResultCard variant="points" value={challenges.length * 10} />
+            <ResultCard
+              variant="average"
+              value={averageScore ?? 0}
+              isAvailable={averageScore !== null}
+            />
           </div>
         </div>
         <Footer
