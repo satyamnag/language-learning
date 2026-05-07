@@ -38,12 +38,25 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
         </div>
       )}
       <div className="relative max-w-2xl w-full flex flex-col">
+        {/* Main bubble – now contains the status icon */}
         <div
           ref={ref}
-          className="bg-white border border-gray-100 rounded-3xl shadow-md hover:shadow-lg transition-shadow p-5 text-gray-800 text-base lg:text-lg leading-relaxed"
+          className="relative bg-white border border-gray-100 rounded-3xl shadow-md hover:shadow-lg transition-shadow p-5 pr-12 text-gray-800 text-base lg:text-lg leading-relaxed"
         >
           {question}
+
+          {/* Status icon placed inside the bubble, bottom‑right corner */}
+          <span className="absolute bottom-3 right-3">
+            {isCompleted ? (
+              <CheckCircle className="w-6 h-6 text-green-500" strokeWidth={1.8} />
+            ) : isActive ? (
+              <Circle className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
+            ) : (
+              <Clock className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
+            )}
+          </span>
         </div>
+
         {translation && (
           <div className="mt-2 ml-1 text-xs text-gray-400 italic border-l-2 border-gray-200 pl-3">
             {translation}
@@ -54,17 +67,8 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
             {romanized}
           </div>
         )}
-        {/* Status icon – purely visual, no interaction */}
-        <div className="flex justify-end mt-3 mr-2">
-          {isCompleted ? (
-            <CheckCircle className="w-6 h-6 text-green-500" strokeWidth={1.8} />
-          ) : isActive ? (
-            <Circle className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
-          ) : (
-            <Clock className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
-          )}
-        </div>
-        {/* Speech arrow pointer */}
+
+        {/* Speech arrow pointer (unchanged) */}
         <div
           className="absolute left-[-10px] top-[24px] w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-gray-100"
           style={{ filter: 'drop-shadow(-1px 1px 1px rgba(0,0,0,0.03))' }}
