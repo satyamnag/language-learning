@@ -33,7 +33,7 @@ type Props = {
   userSubscription: typeof userSubscription.$inferSelect & {
     isActive: boolean;
   } | null;
-  lessonTitle: string;               // NEW
+  lessonTitle: string;
 };
 
 export const Quiz = ({
@@ -42,7 +42,7 @@ export const Quiz = ({
   initialLessonId,
   initialLessonChallenges,
   userSubscription,
-  lessonTitle,                       // NEW
+  lessonTitle,
 }: Props) => {
   const { open: openHeartsModal } = useHeartsModal();
   const { open: openPracticeModal } = usePracticeModal();
@@ -78,7 +78,6 @@ export const Quiz = ({
   const currentChallenge = challenges[activeIndex];
   const options = currentChallenge?.challengeOptions ?? [];
 
-  // Word translator for SELECT questions
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
   const selectQuestionRef = useRef<HTMLDivElement>(null);
 
@@ -90,7 +89,6 @@ export const Quiz = ({
     }
   }, [currentChallenge, wrapWords, attachTooltips]);
 
-  // Ref to keep the latest activeIndex inside callbacks
   const activeIndexRef = useRef(activeIndex);
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -98,7 +96,6 @@ export const Quiz = ({
 
   const isCompletingRef = useRef(false);
 
-  // Core completion logic (used by status icon inside bubble)
   const completeChallenge = useCallback(
     (challengeId: number, isCorrect: boolean) => {
       if (pending || isCompletingRef.current) return;
@@ -195,7 +192,6 @@ export const Quiz = ({
     [completeChallenge]
   );
 
-  // Reset lesson handler
   const handleReset = () => {
     startTransition(() => {
       resetLessonProgress(lessonId)
@@ -206,7 +202,6 @@ export const Quiz = ({
     });
   };
 
-  // Build conversation stack
   let startIdx = activeIndex;
   let windowCount = 2;
   if (activeIndex > 0 && challenges[activeIndex - 1]?.completed) {
@@ -217,7 +212,6 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex((c) => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
-  // Finish screen (replay button removed)
   if (activeIndex >= challenges.length) {
     return (
       <>
@@ -250,9 +244,9 @@ export const Quiz = ({
         percentage={percentage}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Scrollable conversation area */}
+        {/* Scrollable conversation area – takes remaining space */}
         <div className="flex-1 overflow-y-auto px-4 lg:px-0">
-          <div className="lg:min-h-[350px] lg:w-[600px] w-full mx-auto flex flex-col gap-y-12 pt-2">
+          <div className="lg:min-h-[350px] lg:w-[600px] w-full mx-auto flex flex-col gap-y-8 lg:gap-y-12 pt-2">
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
@@ -261,20 +255,22 @@ export const Quiz = ({
           </div>
         </div>
 
-        {/* Fixed bottom area – always visible */}
-        <div className="flex-shrink-0 px-4 lg:px-0 pb-4">
-          <div className="lg:w-[600px] w-full mx-auto flex flex-col gap-y-12">
+        {/* Fixed bottom area – always visible, with safe-area padding */}
+        <div className="flex-shrink-0 px-4 lg:px-0 pb-4 pb-safe">
+          <div className="lg:w-[600px] w-full mx-auto flex flex-col gap-y-6 lg:gap-y-12">
             {currentChallenge && (
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
+                targetSentence={currentChallenge.question}
                 disabled={pending}
+                onComplete={() => completeChallenge(currentChallenge.id, true)}
                 onReset={handleReset}
               />
             )}
 
             {!usesDirectAnswer && (
               <>
-                <div className="mt-4">
+                <div className="mt-2 lg:mt-4">
                   <Challenge
                     options={options}
                     onSelect={onSelect}
