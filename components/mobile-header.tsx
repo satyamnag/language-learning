@@ -2,8 +2,14 @@ import { MobileSidebar } from "./mobile-sidebar";
 
 export const MobileHeader = () => {
   return (
-    <nav className="lg:hidden px-6 h-[50px] flex items-center bg-green-500 border-b fixed top-0 w-full z-50">
+    <nav className="lg:hidden fixed top-0 w-full h-[50px] bg-[#7C3AED] z-50 flex items-center border-b border-purple-700 px-4">
       <MobileSidebar />
+      <div className="flex-1 flex justify-center">
+        <span className="text-white font-extrabold text-xl tracking-wide">
+          Bol Bol Ke
+        </span>
+      </div>
+      <div className="w-[50px]" /> {/* balanced spacing for symmetry */}
     </nav>
   );
 };
