@@ -25,7 +25,7 @@ export const ConversationStack = ({ conversations, activeIndex, onCompleteChalle
             key={conv.id}
             className={`w-full transition-all duration-300 ${
               isActive
-                ? "scale-105 shadow-2xl z-10"
+                ? "scale-105 shadow-2xl ring-2 ring-[#7C3AED] ring-offset-2 z-10"
                 : isCompleted
                 ? "opacity-70 scale-95"
                 : "opacity-50 scale-95"
