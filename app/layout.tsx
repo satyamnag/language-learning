@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Roboto, Noto_Sans_Devanagari } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from "@/components/ui/sonner";
 import { ExitModal } from "@/components/modals/exit-modal";
@@ -9,6 +9,11 @@ import "./globals.css";
 
 const roboto = Roboto({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
   weight: ["400", "500", "700"],
 });
 
@@ -28,7 +33,7 @@ export default function RootLayout({
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
         </head>
-        <body className={roboto.className}>
+        <body className={`${roboto.className} ${notoSansDevanagari.className}`}>
           <Toaster />
           <ExitModal />
           <HeartsModal />

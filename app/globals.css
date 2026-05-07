@@ -105,3 +105,8 @@ textarea, input, select, button {
 html {
   scroll-behavior: smooth;
 }
+
+/* Ensure proper font for Hindi (Devanagari) text */
+body {
+  font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+}
