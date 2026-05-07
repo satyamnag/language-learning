@@ -18,7 +18,7 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "bolbolke",
+  title: "Bol Bol Ke",
   description: "Learn Indian Regional languages with Us",
 };
 

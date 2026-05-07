@@ -32,7 +32,7 @@ export const Header = async () => {
         <SignedOut>
           <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
             <span className="text-2xl font-extrabold text-blue-600 tracking-wide">
-              bolbolke
+              Bol Bol Ke
             </span>
           </Link>
         </SignedOut>
