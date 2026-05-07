@@ -1,6 +1,6 @@
 "use client";
 
-import { Volume2, Mic } from "lucide-react";
+import { Volume2, Mic, RotateCcw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -9,6 +9,7 @@ type Props = {
   targetSentence?: string;   // the sentence the user should speak
   disabled?: boolean;
   onComplete?: () => void;    // called after pronunciation evaluation (completes challenge)
+  onReset: () => void;        // reset lesson
 };
 
 // Simple Levenshtein‑based similarity (no external dependency)
@@ -32,7 +33,7 @@ function similarity(str1: string, str2: string): number {
   return maxLen === 0 ? 1 : (maxLen - matrix[b.length][a.length]) / maxLen;
 }
 
-export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }: Props) => {
+export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, onReset }: Props) => {
   const [isListening, setIsListening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -151,17 +152,30 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete }
   }, []);
 
   return (
-    <div className="flex justify-center gap-6 mt-8 pb-4">
+    <div className="flex items-center justify-center gap-6 mt-8 pb-4">
+      {/* Reset icon – left */}
+      <button
+        onClick={onReset}
+        disabled={disabled}
+        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Reset lesson"
+      >
+        <RotateCcw className="w-7 h-7 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
+      </button>
+
+      {/* Speaker icon – center, large, purple */}
       <button
         onClick={handleSpeakerClick}
         disabled={disabled || !audioSrc}
-        className={`p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isPlaying ? "animate-pulse ring-2 ring-blue-400" : ""
+        className={`p-6 bg-[#7C3AED] rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isPlaying ? "animate-pulse ring-4 ring-purple-300" : ""
         }`}
         aria-label="Play pronunciation"
       >
-        <Volume2 className="w-7 h-7 text-blue-600 hover:text-blue-700 transition-colors" strokeWidth={1.8} />
+        <Volume2 className="w-16 h-16 text-white" strokeWidth={1.8} />
       </button>
+
+      {/* Mic icon – right */}
       <button
         onClick={handleMicClick}
         disabled={disabled || isListening}

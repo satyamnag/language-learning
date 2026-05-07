@@ -195,6 +195,17 @@ export const Quiz = ({
     [completeChallenge]
   );
 
+  // Reset lesson handler
+  const handleReset = () => {
+    startTransition(() => {
+      resetLessonProgress(lessonId)
+        .then(() => {
+          router.refresh();
+        })
+        .catch(() => toast.error("Failed to reset lesson"));
+    });
+  };
+
   // Build conversation stack
   let startIdx = activeIndex;
   let windowCount = 2;
@@ -256,9 +267,8 @@ export const Quiz = ({
             {currentChallenge && (
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
-                targetSentence={currentChallenge.question}
                 disabled={pending}
-                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                onReset={handleReset}
               />
             )}
 
