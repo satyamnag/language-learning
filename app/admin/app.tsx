@@ -33,7 +33,7 @@ const App = () => {
         list={CourseList}
         create={CourseCreate}
         edit={CourseEdit}
-        recordRepresentation="title"   // simple title for references
+        recordRepresentation="title"   // simple title – no custom formatting
       />
       <Resource
         name="units"
