@@ -163,16 +163,16 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
         <RotateCcw className="w-7 h-7 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
       </button>
 
-      {/* Speaker icon – center, large, purple */}
+      {/* Speaker icon – center, purple, now 2x smaller (w-8 h-8, p-4) */}
       <button
         onClick={handleSpeakerClick}
         disabled={disabled || !audioSrc}
-        className={`p-6 bg-[#7C3AED] rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`p-4 bg-[#7C3AED] rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
           isPlaying ? "animate-pulse ring-4 ring-purple-300" : ""
         }`}
         aria-label="Play pronunciation"
       >
-        <Volume2 className="w-16 h-16 text-white" strokeWidth={1.8} />
+        <Volume2 className="w-8 h-8 text-white" strokeWidth={1.8} />
       </button>
 
       {/* Mic icon – right */}
