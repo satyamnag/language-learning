@@ -11,7 +11,7 @@ type Props = {
   targetSentence?: string;
   challengeId?: number;
   disabled?: boolean;
-  onComplete?: () => void;
+  onComplete?: (score?: number) => void;   // FIXED: accepts optional score
   onReset: () => void;
 };
 
