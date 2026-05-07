@@ -11,10 +11,10 @@ type Conversation = typeof challenges.$inferSelect & {
 type Props = {
   conversations: Conversation[];
   activeIndex: number;
-  onCompleteChallenge: (challengeId: number) => void;
+  onCompleteChallenge: (challengeId: number) => void;   // kept for future use, but not passed to children
 };
 
-export const ConversationStack = ({ conversations, activeIndex, onCompleteChallenge }: Props) => {
+export const ConversationStack = ({ conversations, activeIndex }: Props) => {
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-3xl mx-auto px-4">
       {conversations.map((conv, idx) => {
@@ -43,7 +43,6 @@ export const ConversationStack = ({ conversations, activeIndex, onCompleteChalle
               romanized={conv.directAnswer ?? undefined}
               isActive={isActive}
               isCompleted={isCompleted}
-              onComplete={isActive ? () => onCompleteChallenge(conv.id) : undefined}
             />
           </div>
         );

@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useEffect, useState } from 'react';
+import { forwardRef, useRef, useEffect } from 'react';
 import { Circle, CheckCircle, Clock } from 'lucide-react';
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
@@ -9,7 +9,6 @@ type Props = {
   romanized?: string;
   isActive?: boolean;
   isCompleted?: boolean;
-  onComplete?: () => void;
 };
 
 export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
@@ -19,19 +18,9 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
   romanized,
   isActive = false,
   isCompleted = false,
-  onComplete,
 }, ref) => {
   const { wrapWords, attachTooltips } = useWordTranslator('ta', 'en');
-  const [localCompleted, setLocalCompleted] = useState(false);
 
-  // Reset local completed when a new challenge becomes active
-  useEffect(() => {
-    if (isActive) {
-      setLocalCompleted(false);
-    }
-  }, [isActive]);
-
-  // Tooltips are only applied to the main Tamil question (not to Romanized)
   useEffect(() => {
     const el = ref as React.RefObject<HTMLDivElement>;
     if (el?.current) {
@@ -40,12 +29,6 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
       attachTooltips(el.current);
     }
   }, [question, wrapWords, attachTooltips, ref]);
-
-  const handleStatusClick = () => {
-    if (!isActive || isCompleted || localCompleted) return;
-    setLocalCompleted(true);
-    onComplete?.();
-  };
 
   return (
     <div className="flex items-start gap-x-4 mb-8">
@@ -71,18 +54,12 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
             {romanized}
           </div>
         )}
-        {/* Status icon – bottom right */}
+        {/* Status icon – purely visual, no interaction */}
         <div className="flex justify-end mt-3 mr-2">
           {isCompleted ? (
             <CheckCircle className="w-6 h-6 text-green-500" strokeWidth={1.8} />
           ) : isActive ? (
-            <button
-              onClick={handleStatusClick}
-              className="focus:outline-none"
-              aria-label="Mark as complete"
-            >
-              <Circle className="w-6 h-6 text-gray-400 hover:text-[#7C3AED] transition-colors" strokeWidth={1.8} />
-            </button>
+            <Circle className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
           ) : (
             <Clock className="w-6 h-6 text-gray-400" strokeWidth={1.8} />
           )}
