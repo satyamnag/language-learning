@@ -21,7 +21,7 @@ export const Header = ({
     <header className="lg:pt-[50px] pt-[20px] px-10 flex gap-x-7 items-center justify-between max-w-[1140px] mx-auto w-full">
       <X
         onClick={open}
-        className="text-slate-500 hover:opacity-75 transition cursor-pointer"
+        className="text-red-500 hover:text-red-600 hover:opacity-75 transition cursor-pointer"
       />
       <div className="flex-1 text-center">
         <h2 className="text-base font-bold text-[#7C3AED] mb-1">{title}</h2>
