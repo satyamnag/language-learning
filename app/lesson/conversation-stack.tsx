@@ -23,7 +23,7 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
         return (
           <div
             key={conv.id}
-            className={`relative w-full transition-all duration-300 ${
+            className={`relative w-full transition-all duration-300 rounded-2xl ${
               isActive
                 ? "scale-105 shadow-2xl ring-2 ring-[#7C3AED] ring-offset-2 z-10"
                 : isCompleted
