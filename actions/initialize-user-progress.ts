@@ -1,17 +1,15 @@
 "use server";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import db from "@/db/drizzle";
 import { userProgress } from "@/db/schema";
 
-export const initializeUserProgress = async (courseId: number) => {
-  const { userId } = await auth();
+export const initializeUserProgress = async (userId: string, courseId: number) => {
   const user = await currentUser();
-
-  if (!userId || !user) {
-    throw new Error("Unauthorized");
+  if (!user) {
+    throw new Error("User not found");
   }
 
   const existing = await db.query.userProgress.findFirst({
