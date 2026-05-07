@@ -196,7 +196,7 @@ export const Quiz = ({
     startTransition(() => {
       resetLessonProgress(lessonId)
         .then(() => {
-          router.refresh();
+          router.refresh();   // Refresh page → server re‑fetches data → lesson resets
         })
         .catch(() => toast.error("Failed to reset lesson"));
     });
@@ -257,7 +257,7 @@ export const Quiz = ({
           <div className="lg:w-[600px] w-full mx-auto flex flex-col gap-y-6 lg:gap-y-12">
             {currentChallenge && (
               <ActionButtons
-                key={currentChallenge.id}                            // forces fresh instance each challenge
+                key={currentChallenge.id}
                 audioSrc={currentChallenge.audioSrc ?? undefined}
                 targetSentence={currentChallenge.question}
                 disabled={pending}
