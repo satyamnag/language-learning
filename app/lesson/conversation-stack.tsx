@@ -11,7 +11,7 @@ type Conversation = typeof challenges.$inferSelect & {
 type Props = {
   conversations: Conversation[];
   activeIndex: number;
-  onCompleteChallenge: (challengeId: number) => void;   // kept for future use, but not passed to children
+  onCompleteChallenge: (challengeId: number) => void;
 };
 
 export const ConversationStack = ({ conversations, activeIndex }: Props) => {
@@ -32,8 +32,8 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
             }`}
           >
             {isActive && (
-              <span className="absolute top-2 left-2 z-20 bg-[#7C3AED] text-white text-xs font-bold px-2 py-0.5 rounded">
-                ACTIVE
+              <span className="absolute top-2 left-2 z-20">
+                <span className="block w-5 h-5 bg-green-500 rounded-full shadow-md ring-2 ring-white" />
               </span>
             )}
             <QuestionBubble
