@@ -81,10 +81,13 @@ export default async function Home() {
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
   let activeCourseId = userProgress?.activeCourseId;
 
-  // If user is signed in, has no active course, and there is at least one course available,
-  // automatically set the first one as active and redirect to reload the page.
+  // If signed in and no active course, set default to English → Hindi course
   if (userProgress && !activeCourseId && courses.length > 0) {
-    await setDefaultCourse(courses[0].id);
+    const englishToHindiCourse = courses.find(
+      (course) => course.sourceLanguage === "en" && course.title.toLowerCase() === "hindi"
+    );
+    const defaultCourseId = englishToHindiCourse?.id ?? courses[0].id;
+    await setDefaultCourse(defaultCourseId);
   }
 
   return (
