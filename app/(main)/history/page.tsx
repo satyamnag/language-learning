@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs";
 import { getPronunciationHistory } from "@/db/queries";
-import { Card } from "@/components/ui/card";
 
 const HistoryPage = async () => {
   const { userId } = await auth();
@@ -17,7 +16,10 @@ const HistoryPage = async () => {
       ) : (
         <div className="space-y-4">
           {records.map((rec) => (
-            <Card key={rec.id} className="p-4">
+            <div
+              key={rec.id}
+              className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm"
+            >
               <div className="flex justify-between items-start">
                 <div>
                   <p className="font-semibold text-lg">{rec.targetSentence}</p>
@@ -26,8 +28,10 @@ const HistoryPage = async () => {
                 <span className="text-2xl font-bold text-[#7C3AED]">{rec.score}%</span>
               </div>
               <p className="mt-2 text-sm text-gray-600">{rec.explanation}</p>
-              <p className="text-xs text-gray-400 mt-1">{new Date(rec.createdAt).toLocaleString()}</p>
-            </Card>
+              <p className="text-xs text-gray-400 mt-1">
+                {new Date(rec.createdAt).toLocaleString()}
+              </p>
+            </div>
           ))}
         </div>
       )}
