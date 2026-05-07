@@ -17,6 +17,7 @@ import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
+import { setDefaultCourse } from "@/actions/set-default-course";
 
 async function LearnContent() {
   const userProgressData = getUserProgress();
@@ -50,8 +51,7 @@ async function LearnContent() {
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
-        {/* UserProgress, Promo, Quests removed – hearts/points already in Shop page */}
-        <div /> {/* empty child to satisfy TypeScript */}
+        <div />
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />
@@ -79,11 +79,16 @@ export default async function Home() {
   const userProgress = await getUserProgress();
   const currentNativeLanguage = userProgress?.nativeLanguage || "en";
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
-  const activeCourseId = userProgress?.activeCourseId;
+  let activeCourseId = userProgress?.activeCourseId;
+
+  // If user is signed in, has no active course, and there is at least one course available,
+  // automatically set the first one as active and redirect to reload the page.
+  if (userProgress && !activeCourseId && courses.length > 0) {
+    await setDefaultCourse(courses[0].id);
+  }
 
   return (
     <>
-      {/* Marketing hero – only shown when signed out (hero image removed) */}
       <SignedOut>
         <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
           <div className="flex flex-col items-center gap-y-8">
@@ -104,14 +109,12 @@ export default async function Home() {
         </div>
       </SignedOut>
 
-      {/* Signed‑in dashboard – hero removed, dropdowns at top */}
       <SignedIn>
         <MobileHeader />
         <div className="flex h-full">
           <Sidebar className="hidden lg:flex" />
           <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
             <div className="max-w-[1056px] mx-auto pt-6 h-full">
-              {/* Dropdowns section */}
               <div className="mb-8">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <div className="flex-1 max-w-md mx-auto sm:mx-0">
@@ -127,7 +130,6 @@ export default async function Home() {
                   </div>
                 </div>
               </div>
-              {/* Learning content (units/lessons) – only shown if a course is active */}
               {activeCourseId && <LearnContent />}
             </div>
           </main>
