@@ -17,7 +17,7 @@ import { Unit } from "@/app/(main)/learn/unit";
 import { Header } from "@/app/(main)/learn/header";
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
-import { setDefaultCourse } from "@/actions/set-default-course";
+import { initializeUserProgress } from "@/actions/initialize-user-progress";
 
 async function LearnContent() {
   const userProgressData = getUserProgress();
@@ -81,14 +81,20 @@ export default async function Home() {
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
   let activeCourseId = userProgress?.activeCourseId;
 
-  // If signed in and no active course, set default to English → Hindi course
-  if (userProgress && !activeCourseId && courses.length > 0) {
+  // If signed in and no active course (or no userProgress record at all),
+  // initialise the user with the default English → Hindi course.
+  const isSignedIn = userProgress !== undefined; // actually getUserProgress returns null if no record, but user exists in Clerk
+  // We need to know if the user is signed in. We can use the `auth` directly? For simplicity:
+  // We'll rely on the presence of userProgress? But new user has null. We'll add a separate check using `auth`.
+  // Simpler: if activeCourseId is null and courses exist, we initialise.
+  // However for a new user, activeCourseId is null, but userProgress is null, so the condition below will work.
+  if (!activeCourseId && courses.length > 0) {
     const englishToHindiCourse = courses.find(
       (course) => course.sourceLanguage === "en" && course.title.toLowerCase() === "hindi"
     );
     const defaultCourseId = englishToHindiCourse?.id ?? courses[0].id;
-    await setDefaultCourse(defaultCourseId);
-    redirect("/"); // force a fresh load with the newly set active course
+    await initializeUserProgress(defaultCourseId);
+    redirect("/");
   }
 
   return (
