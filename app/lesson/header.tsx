@@ -24,7 +24,7 @@ export const Header = ({
         className="text-slate-500 hover:opacity-75 transition cursor-pointer"
       />
       <div className="flex-1 text-center">
-        <h2 className="text-base font-medium text-[#7C3AED] mb-1">{title}</h2>
+        <h2 className="text-base font-bold text-[#7C3AED] mb-1">{title}</h2>
         <Progress value={percentage} />
       </div>
       <div className="text-rose-500 flex items-center font-bold">
