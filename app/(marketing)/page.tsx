@@ -88,6 +88,7 @@ export default async function Home() {
     );
     const defaultCourseId = englishToHindiCourse?.id ?? courses[0].id;
     await setDefaultCourse(defaultCourseId);
+    redirect("/"); // force a fresh load with the newly set active course
   }
 
   return (
