@@ -23,6 +23,11 @@ import { ChallengeOptionList } from "./challengeOption/list";
 import { ChallengeOptionEdit } from "./challengeOption/edit";
 import { ChallengeOptionCreate } from "./challengeOption/create";
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+};
+
 const dataProvider = simpleRestProvider("/api");
 
 const App = () => {
@@ -33,7 +38,12 @@ const App = () => {
         list={CourseList}
         create={CourseCreate}
         edit={CourseEdit}
-        recordRepresentation="title"   // simple title – no custom formatting
+        recordRepresentation={(record: any) => {
+          if (!record) return "";
+          const sourceLang = record.sourceLanguage;
+          const sourceName = sourceLang ? (LANGUAGE_NAMES[sourceLang] || sourceLang) : "";
+          return sourceName ? `${sourceName} → ${record.title}` : record.title;
+        }}
       />
       <Resource
         name="units"
