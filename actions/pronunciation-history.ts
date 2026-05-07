@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import db from "@/db/drizzle";
 import { pronunciationHistory } from "@/db/schema";
 

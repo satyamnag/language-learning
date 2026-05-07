@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { challengeOptions } from "@/db/schema";
+import Image from "next/image";
 
 type Props = {
   options: typeof challengeOptions.$inferSelect[];
@@ -45,10 +46,12 @@ export const Challenge = ({
           >
             {option.text}
             {option.imageSrc && (
-              <img
+              <Image
                 src={option.imageSrc}
                 alt={option.text}
-                className="mt-2 mx-auto h-12 object-cover rounded-md"
+                width={48}
+                height={48}
+                className="mt-2 mx-auto h-12 w-auto object-cover rounded-md"
               />
             )}
             {option.audioSrc && (
