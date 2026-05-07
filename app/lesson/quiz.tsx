@@ -196,7 +196,8 @@ export const Quiz = ({
     startTransition(() => {
       resetLessonProgress(lessonId)
         .then(() => {
-          router.refresh();   // Refresh page → server re‑fetches data → lesson resets
+          // Full navigation to the same lesson page → completely remounts the Quiz component
+          router.push(`/lesson/${lessonId}`);
         })
         .catch(() => toast.error("Failed to reset lesson"));
     });
