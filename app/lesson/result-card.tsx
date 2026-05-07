@@ -4,16 +4,19 @@ import { cn } from "@/lib/utils";
 type Props = {
   variant: "points" | "hearts" | "average";
   value: number;
+  isAvailable?: boolean;   // ← this is the missing prop
 };
 
-export const ResultCard = ({ variant, value }: Props) => {
+export const ResultCard = ({ variant, value, isAvailable = true }: Props) => {
   if (variant === "average") {
     const colorClass =
-      value <= 50
-        ? "text-red-500"
-        : value <= 75
-        ? "text-yellow-500"
-        : "text-green-500";
+      isAvailable
+        ? value <= 50
+          ? "text-red-500"
+          : value <= 75
+          ? "text-yellow-500"
+          : "text-green-500"
+        : "text-neutral-400";
 
     return (
       <div className="w-full rounded-2xl border-2 p-4 bg-white text-center">
@@ -21,13 +24,13 @@ export const ResultCard = ({ variant, value }: Props) => {
           AVERAGE %
         </p>
         <p className={cn("text-3xl font-extrabold", colorClass)}>
-          {value}%
+          {isAvailable ? `${value}%` : "N/A"}
         </p>
       </div>
     );
   }
 
-  // existing points / hearts cards
+  // points / hearts card (unchanged)
   const imageSrc = variant === "points" ? "/points.svg" : "/heart.svg";
 
   return (
