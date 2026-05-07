@@ -6,7 +6,7 @@ const HistoryPage = async () => {
   const { userId } = await auth();
   if (!userId) redirect("/");
 
-  const records = await getPronunciationHistory(userId);
+  const records = await getPronunciationHistory(); // no argument needed
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
