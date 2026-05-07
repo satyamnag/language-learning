@@ -1,4 +1,4 @@
-import { SimpleForm, Edit, TextInput, ReferenceInput, NumberInput, required, SelectInput } from "react-admin";
+import { SimpleForm, Edit, TextInput, ReferenceInput, NumberInput, required } from "react-admin";
 
 export const ChallengeEdit = () => {
   return (
@@ -7,32 +7,24 @@ export const ChallengeEdit = () => {
         <TextInput 
           source="question" 
           validate={[required()]} 
-          label="Target Language Sentence (e.g., Tamil)"
+          label="Roman Sentence"
         />
         <TextInput 
           source="nativeText" 
           validate={[required()]} 
-          label="Known Language Translation (e.g., English)"
-        />
-        <SelectInput
-          source="type"
-          choices={[
-            { id: "SELECT", name: "SELECT" },
-            { id: "ASSIST", name: "ASSIST" },
-          ]}
-          validate={[required()]} 
+          label="Source Language Translation"
         />
         <TextInput
           source="speaker"
-          label="Speaker name (e.g., Riya, Aarav, Priya, etc.)"
+          label="Speaker Name"
         />
         <TextInput
           source="audioSrc"
-          label="Audio URL (optional)"
+          label="Audio URL"
         />
         <TextInput
           source="directAnswer"
-          label="Direct answer (optional) – if set, challenge options are ignored"
+          label="Target Language Sentence"
         />
         <ReferenceInput source="lessonId" reference="lessons" />
         <NumberInput source="order" validate={[required()]} label="Order" />

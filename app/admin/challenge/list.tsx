@@ -1,23 +1,16 @@
-import { Datagrid, List, TextField, ReferenceField, NumberField, SelectField } from "react-admin";
+import { Datagrid, List, TextField, ReferenceField, NumberField } from "react-admin";
 
 export const ChallengeList = () => {
   return (
     <List>
       <Datagrid rowClick="edit">
-        <TextField source="id" />
-        <TextField source="question" label="Target Language Sentence" />
-        <TextField source="nativeText" label="Known Language Translation" />
-        <SelectField
-          source="type"
-          choices={[
-            { id: "SELECT", name: "SELECT" },
-            { id: "ASSIST", name: "ASSIST" },
-          ]}
-        />
-        <TextField source="speaker" label="Speaker" />
-        <TextField source="audioSrc" label="Audio URL (optional)" />  {/* Changed from TextInput to TextField */}
-        <TextField source="directAnswer" label="Direct Answer" />
-        <ReferenceField source="lessonId" reference="lessons" />
+        <NumberField source="id" />
+        <TextField source="question" label="Roman Sentence" />
+        <TextField source="nativeText" label="Source Language Translation" />
+        <TextField source="speaker" label="Speaker Name" />
+        <TextField source="audioSrc" label="Audio URL" />
+        <TextField source="directAnswer" label="Target Language Sentence" />
+        <ReferenceField source="lessonId" reference="lessons" label="Lesson" />
         <NumberField source="order" />
       </Datagrid>
     </List>

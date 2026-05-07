@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import db from "@/db/drizzle";
 import { isAdmin } from "@/lib/admin";
 import { challenges } from "@/db/schema";
@@ -21,8 +20,10 @@ export const POST = async (req: Request) => {
 
   const body = await req.json();
 
+  // Default to 'ASSIST' if type is missing (the dropdown has been removed)
   const data = await db.insert(challenges).values({
     ...body,
+    type: body.type || "ASSIST",
   }).returning();
 
   return NextResponse.json(data[0]);
