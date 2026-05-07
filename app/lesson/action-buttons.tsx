@@ -6,12 +6,13 @@ import { toast } from "sonner";
 
 type Props = {
   audioSrc?: string;
-  targetSentence?: string;
+  targetSentence?: string;   // the sentence the user should speak
   disabled?: boolean;
-  onComplete?: () => void;
-  onReset: () => void;
+  onComplete?: () => void;    // called after pronunciation evaluation (completes challenge)
+  onReset: () => void;        // reset lesson
 };
 
+// Simple Levenshtein‑based similarity (no external dependency)
 function similarity(str1: string, str2: string): number {
   const a = str1.toLowerCase();
   const b = str2.toLowerCase();
@@ -36,11 +37,12 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
   const [isListening, setIsListening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const recognitionRef = useRef<any>(null);
-  const completingRef = useRef(false);
+  const completingRef = useRef(false); // prevent double completion
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleSpeakerClick = () => {
     if (!audioSrc || disabled) return;
+    // Stop any currently playing audio
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current = null;
@@ -80,7 +82,7 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
 
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
-    recognition.lang = "en-US";
+    recognition.lang = "en-US"; // can be changed dynamically later
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -126,6 +128,7 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
       }
       toast.success(`${emoji} ${message} (Score: ${rounded}%)`, { duration: 5000 });
 
+      // Complete the challenge after evaluation (only once)
       if (onComplete && !completingRef.current) {
         completingRef.current = true;
         onComplete();
@@ -137,49 +140,51 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
 
   useEffect(() => {
     return () => {
-      if (recognitionRef.current) recognitionRef.current.abort();
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
       if (currentAudioRef.current) {
         currentAudioRef.current.pause();
         currentAudioRef.current = null;
       }
-      completingRef.current = false;
+      completingRef.current = false; // reset on unmount
     };
   }, []);
 
   return (
-    <div className="flex items-center justify-center gap-6 mt-4 pb-4">
-      {/* Reset icon – left, transparent background */}
+    <div className="flex items-center justify-center gap-6 mt-8 pb-4">
+      {/* Reset icon – left */}
       <button
         onClick={onReset}
         disabled={disabled}
-        className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Reset lesson"
       >
-        <RotateCcw className="w-7 h-7 text-gray-500 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
+        <RotateCcw className="w-7 h-7 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
       </button>
 
-      {/* Speaker icon – center, purple, transparent background */}
+      {/* Speaker icon – center, purple, now 2x smaller (w-8 h-8, p-4) */}
       <button
         onClick={handleSpeakerClick}
         disabled={disabled || !audioSrc}
-        className={`p-1.5 rounded-full hover:bg-purple-50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isPlaying ? "ring-2 ring-purple-300" : ""
+        className={`p-4 bg-[#7C3AED] rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isPlaying ? "animate-pulse ring-4 ring-purple-300" : ""
         }`}
         aria-label="Play pronunciation"
       >
-        <Volume2 className="w-8 h-8 text-[#7C3AED]" strokeWidth={1.8} />
+        <Volume2 className="w-8 h-8 text-white" strokeWidth={1.8} />
       </button>
 
-      {/* Mic icon – right, transparent background */}
+      {/* Mic icon – right */}
       <button
         onClick={handleMicClick}
         disabled={disabled || isListening}
-        className={`p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isListening ? "ring-2 ring-green-500" : ""
+        className={`p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isListening ? "animate-pulse ring-2 ring-green-500" : ""
         }`}
         aria-label="Record your pronunciation"
       >
-        <Mic className="w-7 h-7 text-gray-500 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
+        <Mic className="w-7 h-7 text-gray-600 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
       </button>
     </div>
   );
