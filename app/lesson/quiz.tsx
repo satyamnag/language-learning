@@ -75,6 +75,9 @@ export const Quiz = ({
   const [selectedOption, setSelectedOption] = useState<number>();
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
+  // ---------- NEW: track pronunciation scores ----------
+  const [scores, setScores] = useState<number[]>([]);
+
   const currentChallenge = challenges[activeIndex];
   const options = currentChallenge?.challengeOptions ?? [];
 
@@ -96,8 +99,9 @@ export const Quiz = ({
 
   const isCompletingRef = useRef(false);
 
+  // Core completion logic – now accepts an optional score
   const completeChallenge = useCallback(
-    (challengeId: number, isCorrect: boolean) => {
+    (challengeId: number, isCorrect: boolean, score?: number) => {
       if (pending || isCompletingRef.current) return;
       const currentIdx = activeIndexRef.current;
       const activeCh = challenges[currentIdx];
@@ -134,6 +138,9 @@ export const Quiz = ({
               setPercentage((prev) => prev + 100 / challenges.length);
               if (initialPercentage === 100) {
                 setHearts((prev) => Math.min(prev + 1, 5));
+              }
+              if (typeof score === "number") {
+                setScores((prev) => [...prev, score]);      // store the score
               }
               isCompletingRef.current = false;
             })
@@ -196,7 +203,6 @@ export const Quiz = ({
     startTransition(() => {
       resetLessonProgress(lessonId)
         .then(() => {
-          // Full page reload → server component re‑fetches → Quiz remounts with fresh data
           window.location.href = `/lesson/${lessonId}`;
         })
         .catch(() => toast.error("Failed to reset lesson"));
@@ -213,6 +219,13 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex((c) => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
+  // ---------- Compute average pronunciation percentage ----------
+  const averageScore =
+    scores.length > 0
+      ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+      : null;
+
+  // ---------- Finish screen – now shows AVERAGE % instead of hearts ----------
   if (activeIndex >= challenges.length) {
     return (
       <>
@@ -224,10 +237,20 @@ export const Quiz = ({
           <h1 className="text-xl lg:text-3xl font-bold text-neutral-700">Great job! <br /> You&apos;ve completed the lesson.</h1>
           <div className="flex items-center gap-x-4 w-full">
             <ResultCard variant="points" value={challenges.length * 10} />
-            <ResultCard variant="hearts" value={hearts} />
+            {/* AVERAGE % card replaces the old hearts card */}
+            <ResultCard
+              variant="average"
+              value={averageScore ?? 0}
+              isAvailable={averageScore !== null}
+            />
           </div>
         </div>
-        <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/")} />
+        <Footer
+          lessonId={lessonId}
+          status="completed"
+          onCheck={() => router.push("/")}
+          buttonClass="bg-[#7C3AED] hover:bg-purple-700"
+        />
       </>
     );
   }
@@ -263,7 +286,7 @@ export const Quiz = ({
                 targetSentence={currentChallenge.question}
                 challengeId={currentChallenge.id}
                 disabled={pending}
-                onComplete={() => completeChallenge(currentChallenge.id, true)}
+                onComplete={(score?: number) => completeChallenge(currentChallenge.id, true, score)}
                 onReset={handleReset}
               />
             )}

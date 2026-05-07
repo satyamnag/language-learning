@@ -143,7 +143,7 @@ export const ActionButtons = ({ audioSrc, targetSentence, challengeId, disabled,
 
       if (onComplete && !completingRef.current) {
         completingRef.current = true;
-        onComplete();
+        onComplete(rounded);
       }
     };
 

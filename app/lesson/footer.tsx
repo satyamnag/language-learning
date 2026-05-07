@@ -9,6 +9,7 @@ type Props = {
   status: "correct" | "wrong" | "none" | "completed";
   disabled?: boolean;
   lessonId?: number;
+  buttonClass?: string;   // optional additional classes for the main action button
 };
 
 export const Footer = ({
@@ -16,6 +17,7 @@ export const Footer = ({
   status,
   disabled,
   lessonId,
+  buttonClass,
 }: Props) => {
   useKey("Enter", onCheck, {}, [onCheck]);
   const isMobile = useMedia("(max-width: 1024px)");
@@ -50,7 +52,10 @@ export const Footer = ({
         )}
         <Button
           disabled={disabled}
-          className="ml-auto"
+          className={cn(
+            "ml-auto",
+            buttonClass,   // allows the parent to inject custom styles (e.g., purple colour)
+          )}
           onClick={onCheck}
           size={isMobile ? "sm" : "lg"}
           variant={status === "wrong" ? "danger" : "secondary"}
