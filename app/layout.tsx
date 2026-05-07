@@ -33,7 +33,7 @@ export default function RootLayout({
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
         </head>
-        <body className={`${roboto.className} ${notoSansDevanagari.className}`}>
+        <body className={`${roboto.className} ${notoSansDevanagari.className} bg-[#fef7ff]`}>
           <Toaster />
           <ExitModal />
           <HeartsModal />
