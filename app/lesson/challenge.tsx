@@ -36,11 +36,11 @@ export const Challenge = ({
             disabled={disabled}
             onClick={() => onSelect(option.id)}
             className={cn(
-              "w-full rounded-xl border-2 border-b-4 p-3 lg:p-4 text-sm lg:text-base font-medium transition-all duration-200 active:translate-y-[2px] active:border-b-2",
-              !isSelected && "bg-white text-neutral-700 border-neutral-200 hover:bg-gray-50",
-              showCorrect && "bg-green-50 text-green-700 border-green-300",
-              showWrong && "bg-red-50 text-red-700 border-red-300",
-              showOtherCorrect && "bg-green-50 text-green-700 border-green-300",
+              "w-full rounded-xl p-3 lg:p-4 text-sm lg:text-base font-medium transition-all duration-200",
+              !isSelected && "bg-white text-neutral-700 hover:bg-gray-50",
+              showCorrect && "bg-green-50 text-green-700",
+              showWrong && "bg-red-50 text-red-700",
+              showOtherCorrect && "bg-green-50 text-green-700",
               disabled && "pointer-events-none opacity-80"
             )}
           >
