@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { resetLessonProgress } from "@/actions/lesson-progress";
+import { useTransition } from "react";
 
 type Props = {
   id: number;
@@ -11,7 +13,7 @@ type Props = {
   locked?: boolean;
   current?: boolean;
   percentage: number;
-  title: string;        // lesson title passed from parent
+  title: string;
 };
 
 export const LessonButton = ({
@@ -22,8 +24,17 @@ export const LessonButton = ({
   title,
 }: Props) => {
   const href = `/lesson/${id}`;
-
   const isCompleted = !locked && !current && percentage === 100;
+  const [isResetting, startReset] = useTransition();
+
+  const handleReset = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isResetting) return;
+    startReset(() => {
+      resetLessonProgress(id);
+    });
+  };
 
   return (
     <Link
@@ -41,7 +52,16 @@ export const LessonButton = ({
           <h3 className="font-semibold text-gray-800 text-base">
             {title}
           </h3>
-          {isCompleted && <Check className="w-5 h-5 text-green-600" />}
+          <div className="flex items-center gap-2">
+            {isCompleted && <Check className="w-5 h-5 text-green-600" />}
+            <button
+              onClick={handleReset}
+              className="text-gray-400 hover:text-gray-600 transition"
+              aria-label="Reset lesson progress"
+            >
+              <RotateCw className="w-4 h-4" />
+            </button>
+          </div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div

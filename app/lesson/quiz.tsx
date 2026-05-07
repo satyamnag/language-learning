@@ -6,7 +6,7 @@ import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
-import { RotateCw } from "lucide-react";
+// Removed RotateCw import – no longer needed in this file
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
@@ -205,7 +205,7 @@ export const Quiz = ({
   let visibleActiveIndex = visibleChallenges.findIndex((c) => c.id === currentChallenge?.id);
   if (visibleActiveIndex === -1 && visibleChallenges.length) visibleActiveIndex = 0;
 
-  // Finish screen
+  // Finish screen (replay button removed)
   if (activeIndex >= challenges.length) {
     return (
       <>
@@ -221,15 +221,6 @@ export const Quiz = ({
           </div>
         </div>
         <Footer lessonId={lessonId} status="completed" onCheck={() => router.push("/")} />
-        <div className="flex justify-center gap-6 mt-8 pb-4">
-          <button
-            onClick={() => resetLessonProgress(lessonId)}
-            className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
-            aria-label="Replay lesson"
-          >
-            <RotateCw className="w-7 h-7 text-green-600" strokeWidth={1.8} />
-          </button>
-        </div>
       </>
     );
   }
