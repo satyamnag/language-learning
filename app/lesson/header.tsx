@@ -1,15 +1,16 @@
-// app/lesson/header.tsx
 import { Progress } from "@/components/ui/progress";
 import { X } from "lucide-react";
 import { useExitModal } from "@/store/use-exit-modal";
 
 type Props = {
-  currentIndex: number; // 0‑based index of the current challenge
-  totalCount: number;   // total number of challenges in the lesson
-  percentage: number;   // overall lesson completion percentage
+  title: string;            // lesson title
+  currentIndex: number;    // 0‑based index of the current challenge
+  totalCount: number;       // total number of challenges in the lesson
+  percentage: number;       // overall lesson completion percentage
 };
 
 export const Header = ({
+  title,
   currentIndex,
   totalCount,
   percentage,
@@ -22,7 +23,10 @@ export const Header = ({
         onClick={open}
         className="text-slate-500 hover:opacity-75 transition cursor-pointer"
       />
-      <Progress value={percentage} />
+      <div className="flex-1 text-center">
+        <h2 className="text-sm font-medium text-gray-600 mb-1">{title}</h2>
+        <Progress value={percentage} />
+      </div>
       <div className="text-rose-500 flex items-center font-bold">
         {currentIndex + 1} / {totalCount}
       </div>

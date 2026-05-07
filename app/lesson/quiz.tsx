@@ -1,4 +1,3 @@
-// app/lesson/quiz.tsx
 "use client";
 
 import { toast } from "sonner";
@@ -34,6 +33,7 @@ type Props = {
   userSubscription: typeof userSubscription.$inferSelect & {
     isActive: boolean;
   } | null;
+  lessonTitle: string;               // NEW
 };
 
 export const Quiz = ({
@@ -42,6 +42,7 @@ export const Quiz = ({
   initialLessonId,
   initialLessonChallenges,
   userSubscription,
+  lessonTitle,                       // NEW
 }: Props) => {
   const { open: openHeartsModal } = useHeartsModal();
   const { open: openPracticeModal } = usePracticeModal();
@@ -232,6 +233,7 @@ export const Quiz = ({
       {incorrectAudio}
       {correctAudio}
       <Header
+        title={lessonTitle}
         currentIndex={activeIndex}
         totalCount={challenges.length}
         percentage={percentage}
