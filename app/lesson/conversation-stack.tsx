@@ -23,7 +23,7 @@ export const ConversationStack = ({ conversations, activeIndex, onCompleteChalle
         return (
           <div
             key={conv.id}
-            className={`w-full transition-all duration-300 ${
+            className={`relative w-full transition-all duration-300 ${
               isActive
                 ? "scale-105 shadow-2xl ring-2 ring-[#7C3AED] ring-offset-2 z-10"
                 : isCompleted
@@ -31,6 +31,11 @@ export const ConversationStack = ({ conversations, activeIndex, onCompleteChalle
                 : "opacity-50 scale-95"
             }`}
           >
+            {isActive && (
+              <span className="absolute top-2 left-2 z-20 bg-[#7C3AED] text-white text-xs font-bold px-2 py-0.5 rounded">
+                ACTIVE
+              </span>
+            )}
             <QuestionBubble
               question={conv.question}
               translation={conv.nativeText ?? undefined}
