@@ -238,15 +238,21 @@ export const Quiz = ({
         totalCount={challenges.length}
         percentage={percentage}
       />
-      <div className="flex-1">
-        <div className="h-full flex items-center justify-center">
-          <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Scrollable conversation area */}
+        <div className="flex-1 overflow-y-auto px-4 lg:px-0">
+          <div className="lg:min-h-[350px] lg:w-[600px] w-full mx-auto flex flex-col gap-y-12 pt-2">
             <ConversationStack
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
               onCompleteChallenge={handleCompleteChallenge}
             />
+          </div>
+        </div>
 
+        {/* Fixed bottom area – always visible */}
+        <div className="flex-shrink-0 px-4 lg:px-0 pb-4">
+          <div className="lg:w-[600px] w-full mx-auto flex flex-col gap-y-12">
             {currentChallenge && (
               <ActionButtons
                 audioSrc={currentChallenge.audioSrc ?? undefined}
