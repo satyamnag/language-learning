@@ -27,7 +27,7 @@ export const Header = ({
         <h2 className="text-base font-bold text-[#7C3AED] mb-1">{title}</h2>
         <Progress value={percentage} />
       </div>
-      <div className="text-rose-500 flex items-center font-bold">
+      <div className="text-[#7A7581] flex items-center font-bold">
         {currentIndex + 1} / {totalCount}
       </div>
     </header>
