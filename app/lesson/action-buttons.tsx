@@ -158,24 +158,43 @@ export const ActionButtons = ({ audioSrc, targetSentence, disabled, onComplete, 
         <RotateCcw className="w-7 h-7 text-gray-500 hover:text-gray-700 transition-colors" strokeWidth={1.8} />
       </button>
 
-      {/* Speaker icon – center, purple, transparent background */}
-      <button
-        onClick={handleSpeakerClick}
-        disabled={disabled || !audioSrc}
-        className={`p-1.5 rounded-full hover:bg-purple-50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isPlaying ? "ring-2 ring-purple-300" : ""
-        }`}
-        aria-label="Play pronunciation"
-      >
-        <Volume2 className="w-8 h-8 text-[#7C3AED]" strokeWidth={1.8} />
-      </button>
+      {/* Speaker icon – center, purple, now with voice animation while playing */}
+      <div className="relative flex items-center justify-center">
+        {/* Voice animation rings – visible only while audio is playing */}
+        {isPlaying && (
+          <>
+            <span
+              className="absolute inset-0 animate-ping rounded-full bg-purple-400 opacity-25"
+              style={{ animationDuration: '1.5s', animationDelay: '0s' }}
+            />
+            <span
+              className="absolute inset-0 animate-ping rounded-full bg-purple-400 opacity-15"
+              style={{ animationDuration: '1.5s', animationDelay: '0.5s' }}
+            />
+            <span
+              className="absolute inset-0 animate-ping rounded-full bg-purple-400 opacity-10"
+              style={{ animationDuration: '1.5s', animationDelay: '1s' }}
+            />
+          </>
+        )}
+        <button
+          onClick={handleSpeakerClick}
+          disabled={disabled || !audioSrc}
+          className={`relative z-10 p-1.5 rounded-full hover:bg-purple-50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+            isPlaying ? 'ring-2 ring-purple-300' : ''
+          }`}
+          aria-label="Play pronunciation"
+        >
+          <Volume2 className="w-8 h-8 text-[#7C3AED]" strokeWidth={1.8} />
+        </button>
+      </div>
 
       {/* Mic icon – right, transparent background */}
       <button
         onClick={handleMicClick}
         disabled={disabled || isListening}
         className={`p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isListening ? "ring-2 ring-green-500" : ""
+          isListening ? 'ring-2 ring-green-500' : ''
         }`}
         aria-label="Record your pronunciation"
       >
