@@ -283,6 +283,26 @@ export const getTopTenUsers = cache(async () => {
   return data;
 });
 
+export const getAllUsers = cache(async () => {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return [];
+  }
+
+  const data = await db.query.userProgress.findMany({
+    orderBy: (userProgress, { desc }) => [desc(userProgress.points)],
+    columns: {
+      userId: true,
+      userName: true,
+      userImageSrc: true,
+      points: true,
+    },
+  });
+
+  return data;
+});
+
 export const getPronunciationHistory = cache(async () => {
   const { userId } = await auth();
 

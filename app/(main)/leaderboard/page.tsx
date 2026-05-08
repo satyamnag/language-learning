@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { StickyWrapper } from "@/components/sticky-wrapper";
-import { getTopTenUsers, getUserProgress, getUserSubscription } from "@/db/queries";
+import { getAllUsers, getUserProgress, getUserSubscription } from "@/db/queries";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Promo } from "@/components/promo";
@@ -13,16 +13,16 @@ import { Quests } from "@/components/quests";
 const LeaderboardPage = async () => {
   const userProgressData = getUserProgress();
   const userSubscriptionData = getUserSubscription();
-  const leaderboardData = getTopTenUsers();
+  const allUsersData = getAllUsers();
 
   const [
     userProgress,
     userSubscription,
-    leaderboard,
+    allUsers,
   ] = await Promise.all([
     userProgressData,
     userSubscriptionData,
-    leaderboardData,
+    allUsersData,
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
@@ -60,9 +60,9 @@ const LeaderboardPage = async () => {
             See where you stand among other learners in the community.
           </p>
           <Separator className="mb-4 h-0.5 rounded-full" />
-          {leaderboard.map((userProgressEntry, index) => (
+          {allUsers.map((user, index) => (
             <div 
-              key={userProgressEntry.userId}
+              key={user.userId}
               className="flex items-center w-full p-2 px-4 rounded-xl hover:bg-gray-200/50"
             >
               <p className="font-bold text-lime-700 mr-4">{index + 1}</p>
@@ -71,14 +71,14 @@ const LeaderboardPage = async () => {
               >
                 <AvatarImage
                   className="object-cover"
-                  src={userProgressEntry.userImageSrc}
+                  src={user.userImageSrc}
                 />
               </Avatar>
               <p className="font-bold text-neutral-800 flex-1">
-                {userProgressEntry.userName}
+                {user.userName}
               </p>
               <p className="text-neutral-500 font-medium">
-                {userProgressEntry.points} XP
+                {user.points} XP
               </p>
             </div>
           ))}
