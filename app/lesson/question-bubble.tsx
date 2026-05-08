@@ -33,7 +33,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
   return (
     <div className="flex items-start gap-x-4 mb-8">
       {/* Speaker label removed from outside – now inside bubble */}
-      <div className="relative max-w-2xl w-full flex flex-col">
+      <div className="relative max-w-[40rem] w-full flex flex-col">
         {/* Main bubble */}
         <div
           ref={ref}
