@@ -22,7 +22,7 @@ const QuestsPage = async () => {
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
-    redirect("/courses");
+    redirect("/");
   }
 
   const isPro = !!userSubscription?.isActive;
@@ -51,7 +51,7 @@ const QuestsPage = async () => {
           <h1 className="text-center font-bold text-neutral-800 text-2xl my-6">
             Quests
           </h1>
-          <p className="text-muted-foreground text-center text-lg mb-6">
+          <p className="text-neutral-600 text-center text-lg mb-6">
             Complete quests by earning points.
           </p>
           <ul className="w-full">
@@ -70,7 +70,7 @@ const QuestsPage = async () => {
                     height={60}
                   />
                   <div className="flex flex-col gap-y-2 w-full">
-                    <p className="text-neutral-700 text-xl font-bold">
+                    <p className="text-neutral-800 text-xl font-bold">
                       {quest.title}
                     </p>
                     <Progress value={progress} className="h-3" />
