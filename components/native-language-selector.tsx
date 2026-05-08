@@ -39,18 +39,18 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between border border-gray-300 bg-white shadow-sm text-xs sm:text-sm px-2 sm:px-3 py-1.5"
+          className="w-full justify-between border border-gray-300 bg-white shadow-sm text-[10px] sm:text-sm px-1 sm:px-3 py-1.5"
         >
-          <span className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-semibold">
-            <Languages className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span className="flex items-center gap-0.5 sm:gap-2 text-[10px] sm:text-sm font-semibold">
+            <Languages className="h-3 w-3 sm:h-4 sm:w-4" />
             I understand
           </span>
           {current && (
-            <span className="ml-1 text-[#7C3AED] text-xs sm:text-sm truncate">{current.name}</span>
+            <span className="ml-0.5 sm:ml-1 text-[#7C3AED] text-[10px] sm:text-sm truncate">{current.name}</span>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48 sm:w-56">
+      <DropdownMenuContent align="start" className="w-44 sm:w-56">
         {LANGUAGE_LIST.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
