@@ -33,7 +33,7 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
           >
             {isActive && (
               <span className="absolute top-2 left-2 z-20">
-                <span className="block w-5 h-5 bg-green-500 rounded-full shadow-md ring-2 ring-white" />
+                <span className="block w-2.5 h-2.5 bg-green-500 rounded-full shadow-md ring-2 ring-white" />
               </span>
             )}
             <QuestionBubble
