@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Promo } from "@/components/promo";
 import { Quests } from "@/components/quests";
 
-const LearderboardPage = async () => {
+const LeaderboardPage = async () => {
   const userProgressData = getUserProgress();
   const userSubscriptionData = getUserSubscription();
   const leaderboardData = getTopTenUsers();
@@ -26,7 +26,7 @@ const LearderboardPage = async () => {
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
-    redirect("/courses");
+    redirect("/");   // ← was "/courses"
   }
 
   const isPro = !!userSubscription?.isActive;
@@ -77,7 +77,7 @@ const LearderboardPage = async () => {
               <p className="font-bold text-neutral-800 flex-1">
                 {userProgress.userName}
               </p>
-              <p className="text-muted-foreground">
+              <p className="text-neutral-500 font-medium">
                 {userProgress.points} XP
               </p>
             </div>
@@ -88,4 +88,4 @@ const LearderboardPage = async () => {
   );
 };
  
-export default LearderboardPage;
+export default LeaderboardPage;
