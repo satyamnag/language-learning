@@ -69,7 +69,10 @@ const QuestsPage = async () => {
                     <p className="text-neutral-800 text-xl font-bold">
                       {quest.title}
                     </p>
-                    <Progress value={progress} className="h-3" />
+                    <Progress
+                      value={progress}
+                      className="h-3 bg-gray-200 [&>div]:bg-[#7C3AED]"
+                    />
                   </div>
                 </div>
               )
