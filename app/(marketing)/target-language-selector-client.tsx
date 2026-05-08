@@ -39,8 +39,8 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          className="w-full justify-between"
+          variant="ghost"
+          className="w-full justify-between border border-gray-300 bg-white shadow-sm"
           disabled={isPending}
         >
           <span className="flex items-center gap-2 text-sm font-semibold">

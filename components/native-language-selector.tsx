@@ -48,7 +48,10 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
+        <Button
+          variant="ghost"
+          className="w-full justify-between border border-gray-300 bg-white shadow-sm"
+        >
           <span className="flex items-center gap-2 text-sm font-semibold">
             <Languages className="h-4 w-4" />
             I understand
