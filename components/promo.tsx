@@ -19,13 +19,12 @@ export const Promo = () => {
           </h3>
         </div>
         <p className="text-muted-foreground">
-          Get unlimited hearts and more!
+          Get unlimited access
         </p>
       </div>
       <Button
         asChild
-        variant="super"
-        className="w-full"
+        className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md shadow-purple-200/50 transition-all"
         size="lg"
       >
         <Link href="/shop">
