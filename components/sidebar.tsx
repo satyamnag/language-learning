@@ -61,18 +61,18 @@ export const Sidebar = async ({ className }: Props) => {
       {/* Pro promo */}
       {!isPro && <Promo />}
 
-      {/* User + points */}
+      {/* User (left) + points (right) */}
       <div className="p-4 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-x-1.5 text-gray-600">
-          <Coins className="h-4 w-4 text-yellow-500" />
-          <span className="text-sm font-semibold">{totalPoints}</span>
-        </div>
         <ClerkLoading>
           <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
         </ClerkLoading>
         <ClerkLoaded>
           <UserButton afterSignOutUrl="/" />
         </ClerkLoaded>
+        <div className="flex items-center gap-x-1.5 text-gray-600">
+          <Coins className="h-4 w-4 text-yellow-500" />
+          <span className="text-sm font-semibold">{totalPoints}</span>
+        </div>
       </div>
     </div>
   );
