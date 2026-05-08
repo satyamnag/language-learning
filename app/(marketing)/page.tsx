@@ -1,3 +1,5 @@
+// app/(marketing)/page.tsx
+
 import Image from "next/image";
 import { Loader } from "lucide-react";
 import { 
@@ -19,6 +21,16 @@ import { Header } from "@/app/(main)/learn/header";
 import { Sidebar } from "@/components/sidebar";
 import { MobileHeader } from "@/components/mobile-header";
 import { initializeUserProgress } from "@/actions/initialize-user-progress";
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+  te: "Telugu",
+  ta: "Tamil",
+  kn: "Kannada",
+  or: "Odia",
+  bn: "Bengali",
+};
 
 async function LearnContent() {
   const userProgressData = getUserProgress();
@@ -107,7 +119,7 @@ export default async function Home() {
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
   let activeCourseId = userProgress?.activeCourseId;
 
-  // If no active course, set default
+  // If no active course, set default to English → Hindi course
   if (!activeCourseId && courses.length > 0) {
     const englishToHindiCourse = courses.find(
       (course) => course.sourceLanguage === "en" && course.title.toLowerCase() === "hindi"
@@ -117,6 +129,11 @@ export default async function Home() {
     redirect("/");
   }
 
+  // Language pair tag data
+  const nativeLangName = LANGUAGE_NAMES[currentNativeLanguage] || currentNativeLanguage;
+  const activeCourse = courses.find(c => c.id === activeCourseId);
+  const learningLangName = activeCourse?.title || "";
+
   return (
     <>
       <MobileHeader />
@@ -124,6 +141,15 @@ export default async function Home() {
         <Sidebar className="hidden lg:flex" />
         <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
           <div className="max-w-[1056px] mx-auto pt-6 h-full">
+            {/* Language pair tag – centered above dropdowns */}
+            {userProgress && learningLangName && (
+              <div className="flex justify-center mb-4">
+                <span className="inline-block bg-[#7C3AED] text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-md">
+                  {nativeLangName} → {learningLangName}
+                </span>
+              </div>
+            )}
+
             <div className="mb-8">
               {/* Side‑by‑side selectors with equal width */}
               <div className="flex flex-row gap-2 justify-center items-stretch">
