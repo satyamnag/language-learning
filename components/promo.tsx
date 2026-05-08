@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export const Promo = () => {
   return (
-    <div className="border-2 rounded-xl p-4 space-y-4 w-1/2 lg:w-auto">
+    <div className="border-2 rounded-xl p-4 space-y-4 w-3/4 lg:w-auto">
       <div className="space-y-2">
         <div className="flex items-center gap-x-2">
           <Infinity className="h-[26px] w-[26px]" />
