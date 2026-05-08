@@ -29,16 +29,12 @@ export const Header = async () => {
   return (
     <header className="h-20 w-full border-b-2 border-slate-200 px-4">
       <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full">
-        <SignedOut>
-          <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
-            <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
-              Bol Bol Ke
-            </span>
-          </Link>
-        </SignedOut>
-        <SignedIn>
-          <div className="w-10" /> {/* spacer to keep layout balanced */}
-        </SignedIn>
+        {/* Always visible logo – prevents layout shift */}
+        <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
+          <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
+            Bol Bol Ke
+          </span>
+        </Link>
 
         <SignedIn>
           {learningLangName && (
