@@ -44,10 +44,10 @@ export const LessonButton = ({
       className={cn(
         "block w-full mb-3 transition-all duration-200",
         locked && "opacity-50 cursor-not-allowed",
-        current && "ring-2 ring-green-500 shadow-md"
+        current && "ring-2 ring-[#7C3AED] shadow-md"
       )}
     >
-      <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
+      <div className="bg-white border rounded-2xl p-4 shadow-sm hover:shadow-md transition">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold text-gray-800 text-base">
             {title}
