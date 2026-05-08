@@ -22,7 +22,7 @@ export const Promo = () => {
         className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md shadow-purple-200/50 transition-all"
         size="lg"
       >
-        <Link href="/shop">
+        <Link href="/upgrade">
           Upgrade today
         </Link>
       </Button>

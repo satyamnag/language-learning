@@ -4,7 +4,7 @@ import {
   ClerkLoaded,
   UserButton,
 } from "@clerk/nextjs";
-import { Loader, Medal, Target, ShoppingBag, History } from "lucide-react";
+import { Loader, Medal, Target, Crown, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Promo } from "./promo";
 import { getUserSubscription } from "@/db/queries";
@@ -21,7 +21,7 @@ export const Sidebar = async ({ className }: Props) => {
   const navItems = [
     { label: "Leaderboard", href: "/leaderboard", icon: Medal },
     { label: "Quests", href: "/quests", icon: Target },
-    { label: "Shop", href: "/shop", icon: ShoppingBag },
+    { label: "Upgrade", href: "/upgrade", icon: Crown },
     { label: "History", href: "/history", icon: History },
   ];
 
