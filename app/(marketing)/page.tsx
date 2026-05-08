@@ -60,7 +60,7 @@ async function LearnContent() {
   }
 
   return (
-    <div className="flex flex-row-reverse gap-[48px] px-6">
+    <div className="flex flex-row-reverse gap-4 lg:gap-[48px] px-4 lg:px-6">
       <StickyWrapper>
         <div />
       </StickyWrapper>
@@ -134,7 +134,6 @@ export default async function Home() {
       <div className="flex h-full">
         <Sidebar className="hidden lg:flex" />
         <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
-          {/* Reduced top padding on mobile: pt-2, desktop: lg:pt-6 */}
           <div className="max-w-[1056px] mx-auto pt-2 lg:pt-6 h-full">
             {userProgress && learningLangName && (
               <div className="flex justify-center mb-4">
@@ -146,10 +145,10 @@ export default async function Home() {
 
             <div className="mb-8">
               <div className="flex flex-row gap-2 justify-center items-stretch">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   {courses.length > 0 && (
                     <TargetLanguageSelectorClient 
                       courses={courses}
