@@ -32,20 +32,16 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
 
   return (
     <div className="flex items-start gap-x-4 mb-8">
-      {speaker && (
-        <div className="flex-shrink-0 font-semibold text-gray-600 self-center text-sm">
-          {speaker.charAt(0).toUpperCase() + speaker.slice(1)}:
-        </div>
-      )}
+      {/* Speaker label removed from outside – now inside bubble */}
       <div className="relative max-w-2xl w-full flex flex-col">
-        {/* Main bubble – now contains the status icon */}
+        {/* Main bubble */}
         <div
           ref={ref}
           className="relative bg-white border border-gray-100 rounded-3xl shadow-md hover:shadow-lg transition-shadow p-5 pr-12 text-gray-800 text-base lg:text-lg leading-relaxed"
         >
           {question}
 
-          {/* Status icon placed inside the bubble, bottom‑right corner */}
+          {/* Status icon inside the bubble, bottom‑right corner */}
           <span className="absolute bottom-3 right-3">
             {isCompleted ? (
               <CheckCircle className="w-6 h-6 text-green-500" strokeWidth={1.8} />
@@ -62,6 +58,14 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
             {translation}
           </div>
         )}
+
+        {/* Speaker name – compact, right above Romanized text */}
+        {speaker && (
+          <div className="mt-1 ml-1 text-xs text-gray-400 italic pl-3">
+            {speaker}
+          </div>
+        )}
+
         {romanized && (
           <div className="mt-1 ml-1 text-sm text-gray-500 pl-3">
             {romanized}
