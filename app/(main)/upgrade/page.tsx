@@ -39,7 +39,7 @@ const UpgradePage = async () => {
       <FeedWrapper>
         <div className="w-full flex flex-col items-center">
           <Image
-            src="/shop.svg"          // you can keep the same icon or change it
+            src="/unlimited.svg"
             alt="Upgrade"
             height={90}
             width={90}
@@ -48,7 +48,7 @@ const UpgradePage = async () => {
             Upgrade
           </h1>
           <p className="text-neutral-600 text-center text-lg mb-6">
-            Get premium features and unlimited hearts.
+            Get premium features with unlimited access.
           </p>
           <Items
             hearts={userProgress.hearts}
