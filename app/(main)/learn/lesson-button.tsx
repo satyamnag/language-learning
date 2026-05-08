@@ -42,9 +42,9 @@ export const LessonButton = ({
       aria-disabled={locked}
       style={{ pointerEvents: locked ? "none" : "auto" }}
       className={cn(
-        "block w-full mb-3 transition-all duration-200 rounded-2xl",
+        "block w-full mb-3 transition-all duration-200",
         locked && "opacity-50 cursor-not-allowed",
-        current && "ring-2 ring-[#7C3AED] shadow-md"
+        current && "ring-2 ring-[#7C3AED] shadow-md shadow-purple-200/50 rounded-xl"
       )}
     >
       <div className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition">
