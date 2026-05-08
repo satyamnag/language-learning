@@ -4,9 +4,8 @@ import {
   ClerkLoaded,
   UserButton,
 } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
+import { Loader, Medal, Target, ShoppingBag, History } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SidebarItem } from "./sidebar-item";
 import { Promo } from "./promo";
 import { getUserSubscription } from "@/db/queries";
 import { SidebarProgress } from "./sidebar-progress";
@@ -19,11 +18,19 @@ export const Sidebar = async ({ className }: Props) => {
   const userSubscription = await getUserSubscription();
   const isPro = !!userSubscription?.isActive;
 
+  const navItems = [
+    { label: "Leaderboard", href: "/leaderboard", icon: Medal },
+    { label: "Quests", href: "/quests", icon: Target },
+    { label: "Shop", href: "/shop", icon: ShoppingBag },
+    { label: "History", href: "/history", icon: History },
+  ];
+
   return (
     <div className={cn(
-      "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 border-r-2 flex-col",
+      "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 border-r-2 flex-col bg-white",
       className,
     )}>
+      {/* Brand */}
       <Link href="/">
         <div className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
           <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
@@ -31,17 +38,28 @@ export const Sidebar = async ({ className }: Props) => {
           </span>
         </div>
       </Link>
-      <div className="flex flex-col gap-y-2 flex-1">
-        {/* Courses item REMOVED */}
-        <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
-        <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
-        <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
-        <SidebarItem label="History" href="/history" iconSrc="/history.svg" />
+
+      {/* Navigation */}
+      <div className="flex flex-col gap-y-1 flex-1">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex items-center gap-x-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-purple-50 hover:text-[#7C3AED] transition-colors duration-200"
+          >
+            <item.icon className="h-5 w-5" />
+            <span className="text-sm font-medium">{item.label}</span>
+          </Link>
+        ))}
       </div>
 
+      {/* Progress section */}
       <SidebarProgress />
 
+      {/* Pro promo */}
       {!isPro && <Promo />}
+
+      {/* User */}
       <div className="p-4">
         <ClerkLoading>
           <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
