@@ -28,7 +28,8 @@ export const Header = async () => {
 
   return (
     <header className="h-20 w-full border-b-2 border-slate-200 px-4">
-      <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full">
+      <div className="lg:max-w-screen-lg mx-auto flex items-center justify-between h-full relative">
+        {/* Left: brand logo (visible only when signed out) */}
         <SignedOut>
           <Link href="/" className="pt-8 pl-4 pb-7 flex items-center gap-x-3">
             <span className="text-2xl font-extrabold text-[#7C3AED] tracking-wide">
@@ -36,18 +37,22 @@ export const Header = async () => {
             </span>
           </Link>
         </SignedOut>
+        
+        {/* Left spacer (keeps right-side alignment when signed in) */}
         <SignedIn>
-          <div className="w-10" /> {/* spacer to keep layout balanced */}
+          <div className="w-10" />
         </SignedIn>
 
-        <SignedIn>
-          {learningLangName && (
-            <div className="text-xs sm:text-sm font-semibold bg-[#7C3AED] text-white px-3 py-1.5 rounded-full shadow-md shadow-purple-200/50 whitespace-nowrap">
+        {/* Center: language pair banner – absolutely centered, purple pill */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          {userProgress && learningLangName && (
+            <span className="inline-block text-xs sm:text-sm font-semibold bg-[#7C3AED] text-white px-3 py-1.5 rounded-full shadow-md shadow-purple-200/50 whitespace-nowrap">
               {nativeLangName} → {learningLangName}
-            </div>
+            </span>
           )}
-        </SignedIn>
+        </div>
 
+        {/* Right: login / loading */}
         <ClerkLoading>
           <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
         </ClerkLoading>
