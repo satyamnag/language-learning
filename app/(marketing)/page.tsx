@@ -1,5 +1,3 @@
-// app/(marketing)/page.tsx
-
 import Image from "next/image";
 import { Loader } from "lucide-react";
 import { 
@@ -90,7 +88,6 @@ async function LearnContent() {
 export default async function Home() {
   const { userId } = await auth();
   
-  // Signed‑out user: show marketing hero
   if (!userId) {
     return (
       <div className="max-w-[988px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-4 gap-2">
@@ -113,13 +110,11 @@ export default async function Home() {
     );
   }
 
-  // Signed‑in user: load dashboard
   const userProgress = await getUserProgress();
   const currentNativeLanguage = userProgress?.nativeLanguage || "en";
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
   let activeCourseId = userProgress?.activeCourseId;
 
-  // If no active course, set default to English → Hindi course
   if (!activeCourseId && courses.length > 0) {
     const englishToHindiCourse = courses.find(
       (course) => course.sourceLanguage === "en" && course.title.toLowerCase() === "hindi"
@@ -129,7 +124,6 @@ export default async function Home() {
     redirect("/");
   }
 
-  // Language pair tag data
   const nativeLangName = LANGUAGE_NAMES[currentNativeLanguage] || currentNativeLanguage;
   const activeCourse = courses.find(c => c.id === activeCourseId);
   const learningLangName = activeCourse?.title || "";
@@ -140,8 +134,8 @@ export default async function Home() {
       <div className="flex h-full">
         <Sidebar className="hidden lg:flex" />
         <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
-          <div className="max-w-[1056px] mx-auto pt-6 h-full">
-            {/* Language pair tag – centered above dropdowns */}
+          {/* Reduced top padding on mobile: pt-2, desktop: lg:pt-6 */}
+          <div className="max-w-[1056px] mx-auto pt-2 lg:pt-6 h-full">
             {userProgress && learningLangName && (
               <div className="flex justify-center mb-4">
                 <span className="inline-block bg-[#7C3AED] text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-full shadow-md">
@@ -151,7 +145,6 @@ export default async function Home() {
             )}
 
             <div className="mb-8">
-              {/* Side‑by‑side selectors with equal width */}
               <div className="flex flex-row gap-2 justify-center items-stretch">
                 <div className="flex-1">
                   <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />

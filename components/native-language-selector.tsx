@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,20 +22,10 @@ type Props = {
 };
 
 export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
-  const [mounted, setMounted] = useState(false);
-  const [selected, setSelected] = useState(currentNativeLanguage);
   const router = useRouter();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  const current = LANGUAGE_LIST.find((l) => l.code === selected);
+  const current = LANGUAGE_LIST.find((l) => l.code === currentNativeLanguage);
 
   const handleSelect = async (code: string) => {
-    setSelected(code);
     try {
       await updateNativeLanguage(code);
       router.refresh();
@@ -69,7 +58,7 @@ export const NativeLanguageSelector = ({ currentNativeLanguage }: Props) => {
             className="flex justify-between"
           >
             {lang.name}
-            {lang.code === selected && <span className="text-green-500">✓</span>}
+            {lang.code === currentNativeLanguage && <span className="text-green-500">✓</span>}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
