@@ -18,7 +18,7 @@ export const Promo = () => {
             Upgrade to Pro
           </h3>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-gray-700">
           Get unlimited access
         </p>
       </div>
