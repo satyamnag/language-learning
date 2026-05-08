@@ -42,7 +42,7 @@ export const Header = async () => {
 
         <SignedIn>
           {learningLangName && (
-            <div className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full shadow-sm">
+            <div className="text-xs sm:text-sm font-semibold bg-[#7C3AED] text-white px-3 py-1.5 rounded-full shadow-md shadow-purple-200/50 whitespace-nowrap">
               {nativeLangName} → {learningLangName}
             </div>
           )}
