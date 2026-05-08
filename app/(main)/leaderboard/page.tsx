@@ -56,7 +56,7 @@ const LeaderboardPage = async () => {
           <h1 className="text-center font-bold text-neutral-800 text-2xl my-6">
             Leaderboard
           </h1>
-          <p className="text-muted-foreground text-center text-lg mb-6">
+          <p className="text-neutral-600 text-center text-lg mb-6">
             See where you stand among other learners in the community.
           </p>
           <Separator className="mb-4 h-0.5 rounded-full" />
