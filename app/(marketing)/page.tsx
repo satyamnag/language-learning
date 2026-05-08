@@ -42,11 +42,11 @@ async function LearnContent() {
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
-    redirect("/");   // ← was "/courses"
+    redirect("/");
   }
 
   if (!courseProgress) {
-    redirect("/");   // ← was "/courses"
+    redirect("/");
   }
 
   return (
@@ -107,7 +107,7 @@ export default async function Home() {
   const courses = await getCoursesByNativeLanguage(currentNativeLanguage);
   let activeCourseId = userProgress?.activeCourseId;
 
-  // If no active course, set default to English → Hindi course
+  // If no active course, set default
   if (!activeCourseId && courses.length > 0) {
     const englishToHindiCourse = courses.find(
       (course) => course.sourceLanguage === "en" && course.title.toLowerCase() === "hindi"
@@ -125,11 +125,12 @@ export default async function Home() {
         <main className="lg:pl-[256px] h-full pt-[50px] lg:pt-0 w-full">
           <div className="max-w-[1056px] mx-auto pt-6 h-full">
             <div className="mb-8">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <div className="flex-1 max-w-md mx-auto sm:mx-0">
+              {/* Side‑by‑side selectors with equal width */}
+              <div className="flex flex-row gap-2 justify-center items-stretch">
+                <div className="flex-1">
                   <NativeLanguageSelector currentNativeLanguage={currentNativeLanguage} />
                 </div>
-                <div className="flex-1 max-w-md mx-auto sm:mx-0">
+                <div className="flex-1">
                   {courses.length > 0 && (
                     <TargetLanguageSelectorClient 
                       courses={courses}
