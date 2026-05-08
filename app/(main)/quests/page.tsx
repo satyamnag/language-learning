@@ -22,7 +22,7 @@ const QuestsPage = async () => {
 
   return ( 
     <div className="flex flex-row-reverse gap-[48px] px-6">
-      <StickyWrapper />
+      <StickyWrapper><div /></StickyWrapper>
       <FeedWrapper>
         <div className="w-full flex flex-col items-center">
           <Image
