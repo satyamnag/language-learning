@@ -26,7 +26,7 @@ const LeaderboardPage = async () => {
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
-    redirect("/");   // ← was "/courses"
+    redirect("/");
   }
 
   const isPro = !!userSubscription?.isActive;
@@ -60,9 +60,9 @@ const LeaderboardPage = async () => {
             See where you stand among other learners in the community.
           </p>
           <Separator className="mb-4 h-0.5 rounded-full" />
-          {leaderboard.map((userProgress, index) => (
+          {leaderboard.map((userProgressEntry, index) => (
             <div 
-              key={userProgress.userId}
+              key={userProgressEntry.userId}
               className="flex items-center w-full p-2 px-4 rounded-xl hover:bg-gray-200/50"
             >
               <p className="font-bold text-lime-700 mr-4">{index + 1}</p>
@@ -71,14 +71,14 @@ const LeaderboardPage = async () => {
               >
                 <AvatarImage
                   className="object-cover"
-                  src={userProgress.userImageSrc}
+                  src={userProgressEntry.userImageSrc}
                 />
               </Avatar>
               <p className="font-bold text-neutral-800 flex-1">
-                {userProgress.userName}
+                {userProgressEntry.userName}
               </p>
               <p className="text-neutral-500 font-medium">
-                {userProgress.points} XP
+                {userProgressEntry.points} XP
               </p>
             </div>
           ))}
