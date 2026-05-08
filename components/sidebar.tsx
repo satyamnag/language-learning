@@ -4,10 +4,10 @@ import {
   ClerkLoaded,
   UserButton,
 } from "@clerk/nextjs";
-import { Loader, Medal, Target, Crown, History } from "lucide-react";
+import { Loader, Medal, Target, Crown, History, Coins } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Promo } from "./promo";
-import { getUserSubscription } from "@/db/queries";
+import { getUserProgress, getUserSubscription } from "@/db/queries";
 import { SidebarProgress } from "./sidebar-progress";
 
 type Props = {
@@ -16,7 +16,9 @@ type Props = {
 
 export const Sidebar = async ({ className }: Props) => {
   const userSubscription = await getUserSubscription();
+  const userProgress = await getUserProgress();
   const isPro = !!userSubscription?.isActive;
+  const totalPoints = userProgress?.points ?? 0;
 
   const navItems = [
     { label: "Leaderboard", href: "/leaderboard", icon: Medal },
@@ -59,8 +61,12 @@ export const Sidebar = async ({ className }: Props) => {
       {/* Pro promo */}
       {!isPro && <Promo />}
 
-      {/* User */}
-      <div className="p-4">
+      {/* User + points */}
+      <div className="p-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-x-1.5 text-gray-600">
+          <Coins className="h-4 w-4 text-yellow-500" />
+          <span className="text-sm font-semibold">{totalPoints}</span>
+        </div>
         <ClerkLoading>
           <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
         </ClerkLoading>
