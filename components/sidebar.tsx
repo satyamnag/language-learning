@@ -32,14 +32,13 @@ export const Sidebar = async ({ className }: Props) => {
         </div>
       </Link>
       <div className="flex flex-col gap-y-2 flex-1">
-        <SidebarItem label="Courses" href="/courses" iconSrc="/learn.svg" />
+        {/* Courses item REMOVED */}
         <SidebarItem label="Leaderboard" href="/leaderboard" iconSrc="/leaderboard.svg" />
         <SidebarItem label="quests" href="/quests" iconSrc="/quests.svg" />
         <SidebarItem label="shop" href="/shop" iconSrc="/shop.svg" />
         <SidebarItem label="History" href="/history" iconSrc="/history.svg" />
       </div>
 
-      {/* Progress section – shows current lesson and progress bar */}
       <SidebarProgress />
 
       {!isPro && <Promo />}

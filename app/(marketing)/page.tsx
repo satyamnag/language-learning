@@ -42,11 +42,11 @@ async function LearnContent() {
   ]);
 
   if (!userProgress || !userProgress.activeCourse) {
-    redirect("/courses");
+    redirect("/");   // ← was "/courses"
   }
 
   if (!courseProgress) {
-    redirect("/courses");
+    redirect("/");   // ← was "/courses"
   }
 
   return (
