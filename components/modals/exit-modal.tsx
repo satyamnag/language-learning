@@ -28,10 +28,16 @@ export const ExitModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md p-6 sm:p-8">
         <DialogHeader>
           <div className="flex items-center w-full justify-center mb-5">
-            <Image src="/mascot_sad.svg" alt="Mascot" height={80} width={80} />
+            <Image
+              src="/mascot_sad.svg"
+              alt="Mascot"
+              height={80}
+              width={80}
+              className="drop-shadow-md"
+            />
           </div>
           <DialogTitle className="text-center font-bold text-2xl">
             Wait, don&apos;t go!
@@ -42,7 +48,12 @@ export const ExitModal = () => {
         </DialogHeader>
         <DialogFooter className="mb-4">
           <div className="flex flex-col gap-y-4 w-full">
-            <Button variant="primary" className="w-full" size="lg" onClick={close}>
+            <Button
+              variant="primary"
+              className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white"
+              size="lg"
+              onClick={close}
+            >
               Keep learning
             </Button>
             <Button
@@ -51,7 +62,7 @@ export const ExitModal = () => {
               size="lg"
               onClick={() => {
                 close();
-                router.push("/");        // changed from "/learn" to "/"
+                router.push("/");
               }}
             >
               End session
