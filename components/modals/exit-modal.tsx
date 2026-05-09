@@ -28,38 +28,38 @@ export const ExitModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="max-w-md p-6 sm:p-8">
+      <DialogContent className="max-w-sm p-4 sm:p-5">
         <DialogHeader>
-          <div className="flex items-center w-full justify-center mb-5">
+          <div className="flex items-center justify-center mb-4">
             <Image
               src="/mascot_sad.svg"
               alt="Mascot"
-              height={80}
-              width={80}
-              className="drop-shadow-md"
+              height={60}
+              width={60}
+              className="drop-shadow-sm"
             />
           </div>
-          <DialogTitle className="text-center font-bold text-2xl">
+          <DialogTitle className="text-center font-bold text-xl">
             Wait, don&apos;t go!
           </DialogTitle>
-          <DialogDescription className="text-center text-base">
+          <DialogDescription className="text-center text-sm">
             You&apos;re about to leave the lesson. Are you sure?
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="mb-4">
-          <div className="flex flex-col gap-y-4 w-full">
+        <DialogFooter className="mt-4">
+          <div className="flex flex-col gap-y-3 w-full">
             <Button
               variant="primary"
-              className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white"
-              size="lg"
+              className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white text-sm py-2.5"
+              size="default"
               onClick={close}
             >
               Keep learning
             </Button>
             <Button
               variant="dangerOutline"
-              className="w-full"
-              size="lg"
+              className="w-full text-sm py-2.5"
+              size="default"
               onClick={() => {
                 close();
                 router.push("/");
