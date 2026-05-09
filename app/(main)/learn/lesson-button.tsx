@@ -63,7 +63,8 @@ export const LessonButton = ({
             </button>
           </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
+        {/* Purple progress bar */}
+        <div className="w-full bg-[#ede5f4] rounded-full h-2.5">
           <div
             className="bg-[#7C3AED] h-2.5 rounded-full transition-all duration-300"
             style={{ width: `${Math.min(100, percentage)}%` }}
