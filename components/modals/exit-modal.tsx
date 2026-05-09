@@ -28,7 +28,7 @@ export const ExitModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="max-w-xs p-4 sm:p-5">
+      <DialogContent className="max-w-xs p-4 sm:p-5 rounded-2xl">
         <DialogHeader>
           <div className="flex items-center w-full justify-center mb-4">
             <Image
