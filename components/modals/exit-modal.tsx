@@ -28,15 +28,15 @@ export const ExitModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="max-w-sm p-4 sm:p-5">
+      <DialogContent className="max-w-xs p-4 sm:p-5">
         <DialogHeader>
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center w-full justify-center mb-4">
             <Image
               src="/mascot_sad.svg"
               alt="Mascot"
               height={60}
               width={60}
-              className="drop-shadow-sm"
+              className="drop-shadow-md"
             />
           </div>
           <DialogTitle className="text-center font-bold text-xl">
@@ -46,20 +46,20 @@ export const ExitModal = () => {
             You&apos;re about to leave the lesson. Are you sure?
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="mt-4">
-          <div className="flex flex-col gap-y-3 w-full">
+        <DialogFooter className="mt-2">
+          <div className="flex flex-col gap-y-2 w-full">
             <Button
               variant="primary"
-              className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white text-sm py-2.5"
-              size="default"
+              className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white text-sm"
+              size="sm"
               onClick={close}
             >
               Keep learning
             </Button>
             <Button
               variant="dangerOutline"
-              className="w-full text-sm py-2.5"
-              size="default"
+              className="w-full text-sm"
+              size="sm"
               onClick={() => {
                 close();
                 router.push("/");
