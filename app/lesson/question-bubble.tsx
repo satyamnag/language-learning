@@ -32,7 +32,7 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
 
   return (
     <div className="flex items-start gap-x-4 mb-8">
-      {/* Speaker label removed from outside – now inside bubble */}
+      {/* Speaker label now inside bubble, bottom‑right */}
       <div className="relative max-w-[40rem] w-full flex flex-col">
         {/* Main bubble */}
         <div
@@ -59,16 +59,16 @@ export const QuestionBubble = forwardRef<HTMLDivElement, Props>(({
           </div>
         )}
 
-        {/* Speaker name – compact, right above Romanized text */}
-        {speaker && (
-          <div className="mt-1 ml-1 text-xs text-gray-400 italic pl-3">
-            {speaker}
-          </div>
-        )}
-
         {romanized && (
           <div className="mt-1 ml-1 text-sm text-gray-500 pl-3">
             {romanized}
+          </div>
+        )}
+
+        {/* Speaker name – bottom‑right corner, after Romanized text */}
+        {speaker && (
+          <div className="mt-1 text-right text-xs text-gray-400 italic pr-2">
+            — {speaker}
           </div>
         )}
 
