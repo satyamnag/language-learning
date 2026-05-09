@@ -31,7 +31,7 @@ export const TargetLanguageSelectorClient = ({ courses, currentCourseId }: Props
     setSelected(courseId);
     startTransition(async () => {
       await upsertUserProgress(courseId);
-      router.push("/lesson");
+      router.push("/");   // ← now redirects to homepage
     });
   };
 
