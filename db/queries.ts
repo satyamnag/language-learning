@@ -315,3 +315,40 @@ export const getPronunciationHistory = cache(async () => {
 
   return data;
 });
+
+export const getPronunciationHistoryGrouped = cache(async () => {
+  const { userId } = await auth();
+  if (!userId) return [];
+
+  const data = await db.query.pronunciationHistory.findMany({
+    where: eq(pronunciationHistory.userId, userId),
+    orderBy: (history, { desc }) => [desc(history.createdAt)],
+    with: {
+      challenge: {
+        with: {
+          lesson: {
+            with: {
+              unit: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Enrich each record with unit & lesson titles
+  const enriched = data.map((record) => ({
+    ...record,
+    unitTitle: record.challenge?.lesson?.unit?.title ?? "Unknown Unit",
+    lessonTitle: record.challenge?.lesson?.title ?? "Unknown Lesson",
+  }));
+
+  // Sort so grouping is natural: unit → lesson → date
+  enriched.sort((a, b) => {
+    if (a.unitTitle !== b.unitTitle) return a.unitTitle.localeCompare(b.unitTitle);
+    if (a.lessonTitle !== b.lessonTitle) return a.lessonTitle.localeCompare(b.lessonTitle);
+    return 0;
+  });
+
+  return enriched;
+});
