@@ -75,10 +75,20 @@ export const getUnits = cache(async () => {
     },
   });
 
+  // Fetch all pronunciations for this user in one go (more efficient than per‑lesson queries)
+  const allHistory = await db.query.pronunciationHistory.findMany({
+    where: eq(pronunciationHistory.userId, userId),
+  });
+
   const normalizedData = data.map((unit) => {
     const lessonsWithCompletedStatus = unit.lessons.map((lesson) => {
       if (lesson.challenges.length === 0) {
-        return { ...lesson, completed: false, percentage: 0 };
+        return {
+          ...lesson,
+          completed: false,
+          percentage: 0,
+          avgScore: null as number | null,
+        };
       }
 
       const completedChallenges = lesson.challenges.filter((challenge) => {
@@ -90,7 +100,24 @@ export const getUnits = cache(async () => {
       const allCompleted = completedChallenges === lesson.challenges.length;
       const percentage = Math.round((completedChallenges / lesson.challenges.length) * 100);
 
-      return { ...lesson, completed: allCompleted, percentage };
+      // Compute average pronunciation score for this lesson's challenges
+      const lessonChallengeIds = lesson.challenges.map((c) => c.id);
+      const relevantScores = allHistory.filter((h) =>
+        lessonChallengeIds.includes(h.challengeId)
+      );
+      const avgScore =
+        relevantScores.length > 0
+          ? Math.round(
+              relevantScores.reduce((sum, h) => sum + h.score, 0) / relevantScores.length
+            )
+          : null;
+
+      return {
+        ...lesson,
+        completed: allCompleted,
+        percentage,
+        avgScore,
+      };
     });
 
     return { ...unit, lessons: lessonsWithCompletedStatus };

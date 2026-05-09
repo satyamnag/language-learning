@@ -14,6 +14,7 @@ type Props = {
   current?: boolean;
   percentage: number;
   title: string;
+  avgScore?: number | null;
 };
 
 export const LessonButton = ({
@@ -22,6 +23,7 @@ export const LessonButton = ({
   current,
   percentage,
   title,
+  avgScore,
 }: Props) => {
   const href = `/lesson/${id}`;
   const isCompleted = !locked && !current && percentage === 100;
@@ -73,6 +75,12 @@ export const LessonButton = ({
         {current && (
           <p className="text-xs text-gray-500 mt-2 text-right">
             {Math.round(percentage)}% complete
+          </p>
+        )}
+        {/* Average pronunciation score */}
+        {typeof avgScore === "number" && (
+          <p className="text-xs text-[#7C3AED] mt-1 text-right font-medium">
+            Avg. pronunciation: {avgScore}%
           </p>
         )}
       </div>

@@ -11,6 +11,7 @@ type Props = {
   lessons: (typeof lessons.$inferSelect & {
     completed: boolean;
     percentage: number;          // each lesson now carries its own percentage
+    avgScore: number | null;     // average pronunciation score
   })[];
   activeLesson: typeof lessons.$inferSelect & {
     unit: typeof units.$inferSelect;
@@ -44,7 +45,8 @@ export const Unit = ({
               totalCount={lessons.length - 1}
               current={isCurrent}
               locked={isLocked}
-              percentage={lesson.percentage}   // ← individual percentage per lesson
+              percentage={lesson.percentage}
+              avgScore={lesson.avgScore ?? undefined}
             />
           );
         })}
