@@ -77,19 +77,20 @@ export const getUnits = cache(async () => {
 
   const normalizedData = data.map((unit) => {
     const lessonsWithCompletedStatus = unit.lessons.map((lesson) => {
-      if (
-        lesson.challenges.length === 0
-      ) {
-        return { ...lesson, completed: false };
+      if (lesson.challenges.length === 0) {
+        return { ...lesson, completed: false, percentage: 0 };
       }
 
-      const allCompletedChallenges = lesson.challenges.every((challenge) => {
+      const completedChallenges = lesson.challenges.filter((challenge) => {
         return challenge.challengeProgress
           && challenge.challengeProgress.length > 0
           && challenge.challengeProgress.every((progress) => progress.completed);
-      });
+      }).length;
 
-      return { ...lesson, completed: allCompletedChallenges };
+      const allCompleted = completedChallenges === lesson.challenges.length;
+      const percentage = Math.round((completedChallenges / lesson.challenges.length) * 100);
+
+      return { ...lesson, completed: allCompleted, percentage };
     });
 
     return { ...unit, lessons: lessonsWithCompletedStatus };

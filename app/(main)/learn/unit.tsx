@@ -10,11 +10,12 @@ type Props = {
   description: string;
   lessons: (typeof lessons.$inferSelect & {
     completed: boolean;
+    percentage: number;          // each lesson now carries its own percentage
   })[];
   activeLesson: typeof lessons.$inferSelect & {
     unit: typeof units.$inferSelect;
   } | undefined;
-  activeLessonPercentage: number;
+  activeLessonPercentage: number; // still accepted for compatibility, but no longer used
 };
 
 export const Unit = ({
@@ -43,7 +44,7 @@ export const Unit = ({
               totalCount={lessons.length - 1}
               current={isCurrent}
               locked={isLocked}
-              percentage={activeLessonPercentage}
+              percentage={lesson.percentage}   // ← individual percentage per lesson
             />
           );
         })}
