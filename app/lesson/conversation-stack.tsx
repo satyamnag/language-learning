@@ -2,6 +2,7 @@
 
 import { challenges, challengeOptions } from "@/db/schema";
 import { QuestionBubble } from "./question-bubble";
+import { RotateCw } from "lucide-react";
 
 type Conversation = typeof challenges.$inferSelect & {
   completed: boolean;
@@ -12,14 +13,24 @@ type Props = {
   conversations: Conversation[];
   activeIndex: number;
   onCompleteChallenge: (challengeId: number) => void;
+  challengeScores: Record<number, { score: number; explanation: string }>;
+  onRetryChallenge: (challengeId: number) => void;
 };
 
-export const ConversationStack = ({ conversations, activeIndex }: Props) => {
+export const ConversationStack = ({
+  conversations,
+  activeIndex,
+  onCompleteChallenge,
+  challengeScores,
+  onRetryChallenge,
+}: Props) => {
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-3xl mx-auto px-4">
       {conversations.map((conv, idx) => {
         const isActive = idx === activeIndex;
         const isCompleted = conv.completed;
+        const scoreData = challengeScores[conv.id];
+
         return (
           <div
             key={conv.id}
@@ -44,6 +55,24 @@ export const ConversationStack = ({ conversations, activeIndex }: Props) => {
               isActive={isActive}
               isCompleted={isCompleted}
             />
+            {/* Score badge & retry button for completed challenges */}
+            {isCompleted && scoreData && (
+              <div className="flex items-center justify-end gap-2 mt-1 pr-2">
+                <span className="text-xs font-medium text-[#7C3AED]">
+                  {scoreData.score}%
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRetryChallenge(conv.id);
+                  }}
+                  className="text-gray-400 hover:text-[#7C3AED] transition"
+                  title="Retry this challenge"
+                >
+                  <RotateCw className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         );
       })}
