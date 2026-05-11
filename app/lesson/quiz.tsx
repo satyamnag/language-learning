@@ -218,11 +218,16 @@ export const Quiz = ({
   const handleRetryChallenge = async (challengeId: number) => {
     try {
       await resetChallengeProgress(challengeId);
-      // Mark challenge as incomplete locally
-      setChallenges((prev) =>
-        prev.map((c) => (c.id === challengeId ? { ...c, completed: false } : c))
-      );
-      // Set it as active
+      setChallenges((prev) => {
+        const updated = prev.map((c) =>
+          c.id === challengeId ? { ...c, completed: false } : c
+        );
+        const total = updated.length;
+        const completedCount = updated.filter((c) => c.completed).length;
+        const newPercentage = (completedCount / total) * 100;
+        setPercentage(newPercentage);
+        return updated;
+      });
       const idx = challenges.findIndex((c) => c.id === challengeId);
       if (idx !== -1) {
         setActiveIndex(idx);
