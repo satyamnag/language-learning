@@ -4,15 +4,16 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Confetti from "react-confetti";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, useRef, useEffect, useCallback } from "react";
+import { useState, useTransition, useRef, useEffect, useCallback, useMemo } from "react";
 import { useAudio, useWindowSize, useMount } from "react-use";
 
 import { reduceHearts } from "@/actions/user-progress";
 import { useHeartsModal } from "@/store/use-hearts-modal";
-import { challengeOptions, challenges, userSubscription } from "@/db/schema";
+import { challengeOptions, challenges, userSubscription, pronunciationHistory } from "@/db/schema";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { resetLessonProgress } from "@/actions/lesson-progress";
+import { resetChallengeProgress } from "@/actions/reset-challenge-progress";
 import { useWordTranslator } from "@/hooks/useWordTranslator";
 
 import { Header } from "./header";
@@ -34,6 +35,7 @@ type Props = {
     isActive: boolean;
   } | null;
   lessonTitle: string;
+  initialPronunciationHistory: typeof pronunciationHistory.$inferSelect[];
 };
 
 export const Quiz = ({
@@ -43,6 +45,7 @@ export const Quiz = ({
   initialLessonChallenges,
   userSubscription,
   lessonTitle,
+  initialPronunciationHistory,
 }: Props) => {
   const { open: openHeartsModal } = useHeartsModal();
   const { open: openPracticeModal } = usePracticeModal();
@@ -75,7 +78,9 @@ export const Quiz = ({
   const [selectedOption, setSelectedOption] = useState<number>();
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  const [scores, setScores] = useState<number[]>([]);
+  // Scores now store both challengeId and numeric score
+  const [scores, setScores] = useState<Array<{ challengeId: number; score: number }>>([]);
+  const [localHistory, setLocalHistory] = useState(initialPronunciationHistory);
 
   const currentChallenge = challenges[activeIndex];
   const options = currentChallenge?.challengeOptions ?? [];
@@ -97,6 +102,19 @@ export const Quiz = ({
   }, [activeIndex]);
 
   const isCompletingRef = useRef(false);
+
+  // Build challenge → score map from initial history and session scores
+  const challengeScores = useMemo(() => {
+    const map: Record<number, { score: number; explanation: string }> = {};
+    localHistory.forEach((h) => {
+      map[h.challengeId] = { score: h.score, explanation: h.explanation };
+    });
+    // Session scores override/append
+    scores.forEach((s) => {
+      map[s.challengeId] = { score: s.score, explanation: map[s.challengeId]?.explanation ?? "" };
+    });
+    return map;
+  }, [localHistory, scores]);
 
   const completeChallenge = useCallback(
     (challengeId: number, isCorrect: boolean, score?: number) => {
@@ -138,7 +156,7 @@ export const Quiz = ({
                 setHearts((prev) => Math.min(prev + 1, 5));
               }
               if (typeof score === "number") {
-                setScores((prev) => [...prev, score]);
+                setScores((prev) => [...prev, { challengeId, score }]);
               }
               isCompletingRef.current = false;
             })
@@ -197,6 +215,25 @@ export const Quiz = ({
     [completeChallenge]
   );
 
+  const handleRetryChallenge = async (challengeId: number) => {
+    try {
+      await resetChallengeProgress(challengeId);
+      // Mark challenge as incomplete locally
+      setChallenges((prev) =>
+        prev.map((c) => (c.id === challengeId ? { ...c, completed: false } : c))
+      );
+      // Set it as active
+      const idx = challenges.findIndex((c) => c.id === challengeId);
+      if (idx !== -1) {
+        setActiveIndex(idx);
+        setStatus("none");
+        setSelectedOption(undefined);
+      }
+    } catch {
+      toast.error("Failed to reset challenge");
+    }
+  };
+
   const handleReset = () => {
     startTransition(() => {
       resetLessonProgress(lessonId)
@@ -219,7 +256,7 @@ export const Quiz = ({
 
   const averageScore =
     scores.length > 0
-      ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+      ? Math.round(scores.reduce((a, b) => a + b.score, 0) / scores.length)
       : null;
 
   // ---------- Finish screen with Total XP and Average % ----------
@@ -270,6 +307,8 @@ export const Quiz = ({
               conversations={visibleChallenges}
               activeIndex={visibleActiveIndex}
               onCompleteChallenge={handleCompleteChallenge}
+              challengeScores={challengeScores}
+              onRetryChallenge={handleRetryChallenge}
             />
           </div>
         </div>
